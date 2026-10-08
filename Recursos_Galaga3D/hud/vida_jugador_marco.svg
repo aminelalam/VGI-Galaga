@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="336" height="48" viewBox="0 0 336 48">
+<title>vida_jugador_marco — Galaga 3D</title>
+<polygon points="6,16 17,5 316,5 330,19 330,32 319,43 20,43 6,29" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.529412"/>
+<polyline points="6,19 6,16 17,5 83,5" fill="none" stroke="#36e6ed" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="253,43 319,43 330,32 330,26" fill="none" stroke="#36e6ed" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="25,11 303,11" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.313725"/>
+<polygon points="14,20 21,20 21,28 14,28" fill="#36e6ed"/>
+<polygon points="314,20 321,20 321,28 314,28" fill="#36e6ed" opacity="0.352941"/>
+<polyline points="121.33333333333333,15 121.33333333333333,18" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.666667"/>
+<polyline points="121.33333333333333,31 121.33333333333333,34" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.392157"/>
+<polyline points="214.66666666666666,15 214.66666666666666,18" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.666667"/>
+<polyline points="214.66666666666666,31 214.66666666666666,34" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.392157"/>
+</svg>

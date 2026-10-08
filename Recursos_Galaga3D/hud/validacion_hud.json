@@ -1,0 +1,16 @@
+{
+  "sprite_count": 16,
+  "rgba_with_transparency": true,
+  "atlas_exact_pixels": true,
+  "uv_valid_range": true,
+  "atlas_nonoverlap": true,
+  "preview_size": [
+    1280,
+    720
+  ],
+  "max_values": {
+    "jugador": 3,
+    "jefe": 24
+  },
+  "issues": []
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="48" viewBox="0 0 640 48">
+<title>vida_jefe_relleno — Galaga 3D</title>
+<polygon points="35,17 612,17 605,31 28,31" fill="#fa5269"/>
+<polygon points="35,17 612,17 610,21 33,21" fill="#d8edf3" opacity="0.376471"/>
+<polyline points="30,31 604,31" fill="none" stroke="#9478ff" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.745098"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>pausa — Galaga 3D</title>
+<polygon points="14,6 50,6 58,14 58,50 50,58 14,58 6,50 6,14" fill="#101a2c" stroke="#d8edf3" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="22" y="19" width="6" height="26" fill="#d8edf3"/>
+<rect x="36" y="19" width="6" height="26" fill="#d8edf3"/>
+<polyline points="6,21 6,14 14,6 25,6" fill="none" stroke="#36e6ed" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

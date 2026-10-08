@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>vida_nave — Galaga 3D</title>
+<polygon points="32,5 38,23 48,30 55,47 40,42 37,55 27,55 24,42 9,47 16,30 26,23" fill="#d8edf3" stroke="#36e6ed" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="32,17 36,29 32,37 28,29" fill="#9478ff"/>
+<polyline points="19,34 16,41" fill="none" stroke="#36e6ed" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="45,34 48,41" fill="none" stroke="#36e6ed" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="28,56 28,59" fill="none" stroke="#36e6ed" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="36,56 36,59" fill="none" stroke="#36e6ed" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

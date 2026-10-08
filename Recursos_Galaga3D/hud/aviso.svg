@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>aviso — Galaga 3D</title>
+<polygon points="32,6 59,53 56,58 8,58 5,53" fill="#101a2c" stroke="#ffba52" stroke-width="2.7" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="32,23 32,38" fill="none" stroke="#d8edf3" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<ellipse cx="32.0" cy="47.5" rx="2.5" ry="2.5" fill="#d8edf3"/>
+</svg>

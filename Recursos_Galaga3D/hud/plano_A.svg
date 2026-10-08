@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>plano_A — Galaga 3D</title>
+<ellipse cx="32.0" cy="32.0" rx="27.0" ry="27.0" fill="#101a2c" stroke="#36e6ed" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<ellipse cx="32.0" cy="32.0" rx="22.0" ry="22.0" fill="none" stroke="#d8edf3" stroke-width="0.6" stroke-linejoin="round" stroke-linecap="round" opacity="0.333333"/>
+<polyline points="22,44 32,20 42,44" fill="none" stroke="#d8edf3" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="27,34 37,34" fill="none" stroke="#d8edf3" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<ellipse cx="32.0" cy="57.0" rx="3.0" ry="3.0" fill="#36e6ed"/>
+</svg>

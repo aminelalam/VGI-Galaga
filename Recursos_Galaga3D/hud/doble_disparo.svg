@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>doble_disparo — Galaga 3D</title>
+<polygon points="10,59 10,20 20,5 30,20 30,59 24,59 24,23 20,16 16,23 16,59" fill="#36e6ed"/>
+<polygon points="34,59 34,20 44,5 54,20 54,59 48,59 48,23 44,16 40,23 40,59" fill="#9478ff"/>
+<polyline points="20,27 20,41" fill="none" stroke="#d8edf3" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="44,27 44,41" fill="none" stroke="#d8edf3" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

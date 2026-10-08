@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+<title>mira — Galaga 3D</title>
+<polyline points="32,8 14,8 8,14 8,32" fill="none" stroke="#36e6ed" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="64,8 82,8 88,14 88,32" fill="none" stroke="#36e6ed" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="8,64 8,82 14,88 32,88" fill="none" stroke="#36e6ed" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="64,88 82,88 88,82 88,64" fill="none" stroke="#36e6ed" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<ellipse cx="48.0" cy="48.0" rx="17.0" ry="17.0" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.745098"/>
+<polyline points="48,19 48,34" fill="none" stroke="#36e6ed" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="48,62 48,77" fill="none" stroke="#36e6ed" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="19,48 34,48" fill="none" stroke="#36e6ed" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="62,48 77,48" fill="none" stroke="#36e6ed" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+<ellipse cx="48.0" cy="48.0" rx="2.5" ry="2.5" fill="#36e6ed"/>
+</svg>

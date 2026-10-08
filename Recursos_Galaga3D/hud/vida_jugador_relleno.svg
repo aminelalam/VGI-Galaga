@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="336" height="48" viewBox="0 0 336 48">
+<title>vida_jugador_relleno — Galaga 3D</title>
+<polygon points="35.0,17 119.33333333333333,17 114.33333333333333,31 30.0,31" fill="#36e6ed"/>
+<polyline points="38.0,19 115.33333333333333,19" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.607843"/>
+<polygon points="128.33333333333331,17 212.66666666666666,17 207.66666666666666,31 123.33333333333333,31" fill="#36e6ed"/>
+<polyline points="131.33333333333331,19 208.66666666666666,19" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.607843"/>
+<polygon points="221.66666666666666,17 306.0,17 301.0,31 216.66666666666666,31" fill="#36e6ed"/>
+<polyline points="224.66666666666666,19 302.0,19" fill="none" stroke="#d8edf3" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.607843"/>
+</svg>

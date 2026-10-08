@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>flecha — Galaga 3D</title>
+<polygon points="8,14 24,14 48,32 24,50 8,50 32,32" fill="#36e6ed"/>
+<polyline points="33,13 57,32 33,51" fill="none" stroke="#d8edf3" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
