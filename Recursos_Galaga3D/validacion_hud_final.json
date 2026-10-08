@@ -1,0 +1,913 @@
+{
+  "status": "PASS",
+  "scope": "PNG/SVG/atlas/digitos/documentacion e importador estático; sin UI ni Blender",
+  "asset_files_preserved": true,
+  "checks": {
+    "svg": {
+      "file_count": 16,
+      "total_shape_counts": {
+        "polygon": 28,
+        "polyline": 109,
+        "ellipse": 6,
+        "rect": 2
+      },
+      "files": {
+        "aviso": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 1,
+            "polyline": 1,
+            "ellipse": 1
+          },
+          "shape_total": 3
+        },
+        "doble_disparo": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 2,
+            "polyline": 2
+          },
+          "shape_total": 4
+        },
+        "escudo": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 2,
+            "polyline": 2
+          },
+          "shape_total": 4
+        },
+        "flecha": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 1,
+            "polyline": 1
+          },
+          "shape_total": 2
+        },
+        "mira": {
+          "size_px": [
+            96,
+            96
+          ],
+          "shape_counts": {
+            "polyline": 8,
+            "ellipse": 2
+          },
+          "shape_total": 10
+        },
+        "pausa": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 1,
+            "rect": 2,
+            "polyline": 1
+          },
+          "shape_total": 4
+        },
+        "plano_A": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "ellipse": 3,
+            "polyline": 2
+          },
+          "shape_total": 5
+        },
+        "plano_B": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 2,
+            "polyline": 1
+          },
+          "shape_total": 3
+        },
+        "vida_jefe_fondo": {
+          "size_px": [
+            640,
+            48
+          ],
+          "shape_counts": {
+            "polygon": 2
+          },
+          "shape_total": 2
+        },
+        "vida_jefe_marco": {
+          "size_px": [
+            640,
+            48
+          ],
+          "shape_counts": {
+            "polygon": 3,
+            "polyline": 72
+          },
+          "shape_total": 75
+        },
+        "vida_jefe_relleno": {
+          "size_px": [
+            640,
+            48
+          ],
+          "shape_counts": {
+            "polygon": 2,
+            "polyline": 1
+          },
+          "shape_total": 3
+        },
+        "vida_jugador_fondo": {
+          "size_px": [
+            336,
+            48
+          ],
+          "shape_counts": {
+            "polygon": 2
+          },
+          "shape_total": 2
+        },
+        "vida_jugador_marco": {
+          "size_px": [
+            336,
+            48
+          ],
+          "shape_counts": {
+            "polygon": 3,
+            "polyline": 7
+          },
+          "shape_total": 10
+        },
+        "vida_jugador_relleno": {
+          "size_px": [
+            336,
+            48
+          ],
+          "shape_counts": {
+            "polygon": 3,
+            "polyline": 3
+          },
+          "shape_total": 6
+        },
+        "vida_nave": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 2,
+            "polyline": 4
+          },
+          "shape_total": 6
+        },
+        "vida_nave_inactiva": {
+          "size_px": [
+            64,
+            64
+          ],
+          "shape_counts": {
+            "polygon": 2,
+            "polyline": 4
+          },
+          "shape_total": 6
+        }
+      },
+      "blender_importer_supported_shapes": [
+        "ellipse",
+        "polygon",
+        "polyline",
+        "rect"
+      ],
+      "unsupported_shapes": {}
+    },
+    "png": {
+      "file_count": 47,
+      "files": {
+        "atlas_digitos.png": {
+          "size_px": [
+            512,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "atlas_hud.png": {
+          "size_px": [
+            1024,
+            512
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "aviso.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "componentes_hud.png": {
+          "size_px": [
+            1280,
+            720
+          ],
+          "mode": "RGB"
+        },
+        "digito_0.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_1.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_2.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_3.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_4.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_5.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_6.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_7.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_8.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "digito_9.png": {
+          "size_px": [
+            24,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "doble_disparo.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "ejemplo_puntos_012500.png": {
+          "size_px": [
+            144,
+            40
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "escudo.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_cerca.png": {
+          "size_px": [
+            56,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_control_disparar.png": {
+          "size_px": [
+            163,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_control_mover.png": {
+          "size_px": [
+            110,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_control_pausa.png": {
+          "size_px": [
+            77,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_control_plano.png": {
+          "size_px": [
+            156,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_jefe.png": {
+          "size_px": [
+            39,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_lejos.png": {
+          "size_px": [
+            50,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_oleada.png": {
+          "size_px": [
+            69,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_pausa.png": {
+          "size_px": [
+            57,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_plano_a.png": {
+          "size_px": [
+            74,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_plano_b.png": {
+          "size_px": [
+            74,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_puntos.png": {
+          "size_px": [
+            69,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_record.png": {
+          "size_px": [
+            70,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "etiqueta_vidas.png": {
+          "size_px": [
+            53,
+            24
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "flecha.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "mira.png": {
+          "size_px": [
+            96,
+            96
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "pausa.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "plano_A.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "plano_B.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "preview_digitos_1a1.png": {
+          "size_px": [
+            440,
+            140
+          ],
+          "mode": "RGB"
+        },
+        "preview_hud.png": {
+          "size_px": [
+            1280,
+            720
+          ],
+          "mode": "RGB"
+        },
+        "preview_hud_limpio.png": {
+          "size_px": [
+            1280,
+            720
+          ],
+          "mode": "RGB"
+        },
+        "vida_jefe_fondo.png": {
+          "size_px": [
+            640,
+            48
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "vida_jefe_marco.png": {
+          "size_px": [
+            640,
+            48
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "vida_jefe_relleno.png": {
+          "size_px": [
+            640,
+            48
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "vida_jugador_fondo.png": {
+          "size_px": [
+            336,
+            48
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "vida_jugador_marco.png": {
+          "size_px": [
+            336,
+            48
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "vida_jugador_relleno.png": {
+          "size_px": [
+            336,
+            48
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "vida_nave.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ]
+        },
+        "vida_nave_inactiva.png": {
+          "size_px": [
+            64,
+            64
+          ],
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            95
+          ]
+        }
+      }
+    },
+    "atlas_hud.json": {
+      "entry_count": 16,
+      "size_px": [
+        1024,
+        512
+      ],
+      "pixels_exact": true,
+      "rectangles_nonoverlap": true,
+      "uv_formulas_checked": true,
+      "pixel_origin": "top_left"
+    },
+    "atlas_digitos.json": {
+      "entry_count": 10,
+      "size_px": [
+        512,
+        64
+      ],
+      "pixels_exact": true,
+      "rectangles_nonoverlap": true,
+      "uv_formulas_checked": true,
+      "pixel_origin": "top_left"
+    },
+    "digits": {
+      "ascii_set_exact": true,
+      "example_012500_1_to_1": true,
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "label_count": 14
+    },
+    "life_clipping": {
+      "jugador": {
+        "max_value": 3,
+        "tested_values": [
+          {
+            "value": 0,
+            "clip_right_px": 28.0,
+            "polygon_area": 0,
+            "visible_pixel_segments": 0
+          },
+          {
+            "value": 1,
+            "clip_right_px": 121.33333333333333,
+            "polygon_area": 0.11806666666666743,
+            "visible_pixel_segments": 1
+          },
+          {
+            "value": 2,
+            "clip_right_px": 214.66666666666666,
+            "polygon_area": 0.23613333333333397,
+            "visible_pixel_segments": 2
+          },
+          {
+            "value": 3,
+            "clip_right_px": 308.0,
+            "polygon_area": 0.3542000000000005,
+            "visible_pixel_segments": 3
+          }
+        ],
+        "isolated_updater_clip": true,
+        "note": "Prueba de geometría sin bpy; no abre ni altera el archivo .blend."
+      },
+      "jefe": {
+        "max_value": 24,
+        "tested_values": [
+          {
+            "value": 0,
+            "clip_right_px": 28.0,
+            "polygon_area": 0
+          },
+          {
+            "value": 1,
+            "clip_right_px": 52.33333333333333,
+            "polygon_area": 0.036500000000001975
+          },
+          {
+            "value": 2,
+            "clip_right_px": 76.66666666666666,
+            "polygon_area": 0.08029999999999937
+          },
+          {
+            "value": 3,
+            "clip_right_px": 101.0,
+            "polygon_area": 0.12410000000000121
+          },
+          {
+            "value": 4,
+            "clip_right_px": 125.33333333333333,
+            "polygon_area": 0.16790000000000127
+          },
+          {
+            "value": 5,
+            "clip_right_px": 149.66666666666669,
+            "polygon_area": 0.2117000000000009
+          },
+          {
+            "value": 6,
+            "clip_right_px": 174.0,
+            "polygon_area": 0.25550000000000095
+          },
+          {
+            "value": 7,
+            "clip_right_px": 198.33333333333334,
+            "polygon_area": 0.29930000000000057
+          },
+          {
+            "value": 8,
+            "clip_right_px": 222.66666666666666,
+            "polygon_area": 0.3431000000000013
+          },
+          {
+            "value": 9,
+            "clip_right_px": 247.0,
+            "polygon_area": 0.3869000000000018
+          },
+          {
+            "value": 10,
+            "clip_right_px": 271.33333333333337,
+            "polygon_area": 0.43070000000000286
+          },
+          {
+            "value": 11,
+            "clip_right_px": 295.6666666666667,
+            "polygon_area": 0.4745000000000025
+          },
+          {
+            "value": 12,
+            "clip_right_px": 320.0,
+            "polygon_area": 0.5183000000000016
+          },
+          {
+            "value": 13,
+            "clip_right_px": 344.3333333333333,
+            "polygon_area": 0.5621000000000018
+          },
+          {
+            "value": 14,
+            "clip_right_px": 368.6666666666667,
+            "polygon_area": 0.6059000000000019
+          },
+          {
+            "value": 15,
+            "clip_right_px": 393.0,
+            "polygon_area": 0.6497000000000017
+          },
+          {
+            "value": 16,
+            "clip_right_px": 417.3333333333333,
+            "polygon_area": 0.6935000000000018
+          },
+          {
+            "value": 17,
+            "clip_right_px": 441.6666666666667,
+            "polygon_area": 0.737300000000003
+          },
+          {
+            "value": 18,
+            "clip_right_px": 466.0,
+            "polygon_area": 0.7811000000000035
+          },
+          {
+            "value": 19,
+            "clip_right_px": 490.3333333333333,
+            "polygon_area": 0.8249000000000022
+          },
+          {
+            "value": 20,
+            "clip_right_px": 514.6666666666667,
+            "polygon_area": 0.8686999999999987
+          },
+          {
+            "value": 21,
+            "clip_right_px": 539.0,
+            "polygon_area": 0.9125000000000019
+          },
+          {
+            "value": 22,
+            "clip_right_px": 563.3333333333334,
+            "polygon_area": 0.9563000000000015
+          },
+          {
+            "value": 23,
+            "clip_right_px": 587.6666666666666,
+            "polygon_area": 1.000100000000006
+          },
+          {
+            "value": 24,
+            "clip_right_px": 612.0,
+            "polygon_area": 1.0386000000000033
+          }
+        ],
+        "isolated_updater_clip": true,
+        "note": "Prueba de geometría sin bpy; no abre ni altera el archivo .blend."
+      }
+    },
+    "documentation": {
+      "readme_rules_and_origins": true,
+      "readme_digit_metrics": true
+    },
+    "fonts": {
+      "local_fonts_only": true,
+      "relative_metadata_paths": true,
+      "license_included": true,
+      "numeric_font_advances_match_vera": true
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

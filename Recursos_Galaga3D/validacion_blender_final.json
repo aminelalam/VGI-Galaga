@@ -1,0 +1,172 @@
+{
+  "status": "PASS",
+  "blender_version": "5.2.2 LTS",
+  "archivo": "blender/Galaga3D_Interfaz.blend",
+  "escenas": [
+    "01_HUD_TRANSPARENTE",
+    "02_PREVIEW_INTERFAZ",
+    "03_PANTALLA_PAUSA"
+  ],
+  "fuentes_locales_y_empaquetadas": true,
+  "rutas_render_relativas": true,
+  "boton_pausa_barras": 2,
+  "script_interno_coincide": true,
+  "pruebas": {
+    "puntos_y_record": {
+      "casos": 5,
+      "limites": [
+        0,
+        999999
+      ],
+      "cifras": 6
+    },
+    "vidas": {
+      "casos": 4,
+      "relleno_monotono": true,
+      "cero_sin_relleno": true,
+      "muestras": [
+        {
+          "valor": 0,
+          "area": 0
+        },
+        {
+          "valor": 1,
+          "area": 0.125800071
+        },
+        {
+          "valor": 2,
+          "area": 0.251600142
+        },
+        {
+          "valor": 3,
+          "area": 0.377400227
+        }
+      ]
+    },
+    "vida_jefe": {
+      "casos": 25,
+      "relleno_monotono": true,
+      "cero_sin_relleno": true,
+      "muestras": [
+        {
+          "valor": 0,
+          "area": 0
+        },
+        {
+          "valor": 1,
+          "area": 0.038733303
+        },
+        {
+          "valor": 2,
+          "area": 0.084966623
+        },
+        {
+          "valor": 3,
+          "area": 0.131199942
+        },
+        {
+          "valor": 4,
+          "area": 0.177433262
+        },
+        {
+          "valor": 5,
+          "area": 0.223666581
+        },
+        {
+          "valor": 6,
+          "area": 0.269899901
+        },
+        {
+          "valor": 7,
+          "area": 0.31613322
+        },
+        {
+          "valor": 8,
+          "area": 0.36236654
+        },
+        {
+          "valor": 9,
+          "area": 0.408599859
+        },
+        {
+          "valor": 10,
+          "area": 0.454833178
+        },
+        {
+          "valor": 11,
+          "area": 0.501066498
+        },
+        {
+          "valor": 12,
+          "area": 0.547299817
+        },
+        {
+          "valor": 13,
+          "area": 0.593533137
+        },
+        {
+          "valor": 14,
+          "area": 0.639766456
+        },
+        {
+          "valor": 15,
+          "area": 0.685999776
+        },
+        {
+          "valor": 16,
+          "area": 0.732233095
+        },
+        {
+          "valor": 17,
+          "area": 0.778466415
+        },
+        {
+          "valor": 18,
+          "area": 0.824699734
+        },
+        {
+          "valor": 19,
+          "area": 0.870933054
+        },
+        {
+          "valor": 20,
+          "area": 0.917166373
+        },
+        {
+          "valor": 21,
+          "area": 0.963399693
+        },
+        {
+          "valor": 22,
+          "area": 1.009633012
+        },
+        {
+          "valor": 23,
+          "area": 1.055866331
+        },
+        {
+          "valor": 24,
+          "area": 1.09599965
+        }
+      ]
+    },
+    "planos": [
+      "A/CERCA/circulo/cian",
+      "B/LEJOS/rombo/ambar"
+    ],
+    "recarga": {
+      "segundos": [
+        0,
+        0.6,
+        1.2
+      ],
+      "areas": [
+        0.16320049099921619,
+        0.08160024728775284,
+        0
+      ]
+    }
+  },
+  "errors": [],
+  "blend_modificado": false
+}

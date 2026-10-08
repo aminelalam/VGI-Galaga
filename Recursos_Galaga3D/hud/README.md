@@ -27,6 +27,6 @@ Cada sprite tiene 4 px de separación y 2 px de extrusión fuera de su rectángu
 
 ## Regenerar y editar
 
-`scripts/generar_hud.py` requiere Python y Pillow; no requiere Blender. Todas las formas usan una fuente compartida para SVG y rasterizado a 4× con reducción antialias. Los SVG no dependen de fuentes instaladas: las letras A/B están dibujadas con líneas. Los SVG son masters editables; si se editan manualmente, no ejecutar el generador sin guardar una copia, porque regenera el pack desde el script.
+`scripts/generar_hud.py` requiere Python y Pillow; no requiere Blender. Todas las formas usan una fuente compartida para SVG y rasterizado a 4× con reducción antialias. Los SVG no dependen de fuentes instaladas: las letras A/B están dibujadas con líneas. Las vistas previas usan exclusivamente las fuentes libres locales `fonts/Vera.ttf` y `fonts/VeraBd.ttf`; su licencia se incluye en `fonts/bitstream-vera-license.txt`. No hay rutas a fuentes del sistema. Los SVG son masters editables; si se editan manualmente, no ejecutar el generador sin guardar una copia, porque regenera el pack desde el script.
 
 Paleta: navy `#101a2c`, hielo `#d8edf3`, cian `#36e6ed`, ámbar `#ffba52`, rojo `#fa5269`, morado `#9478ff`. Diseño geométrico original para este proyecto. No hay dependencias de red.

@@ -1,0 +1,18 @@
+{
+  "ascii_digits": "0123456789",
+  "digit_count": 10,
+  "slot_px": [
+    24,
+    40
+  ],
+  "baseline_px_from_top": 30,
+  "advance_px": 24,
+  "example": "012500",
+  "example_size_px": [
+    144,
+    40
+  ],
+  "example_glyphs_1_to_1": true,
+  "preview_original_unchanged": true,
+  "issues": []
+}

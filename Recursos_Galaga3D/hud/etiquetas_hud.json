@@ -1,0 +1,235 @@
+{
+  "font_source": "Bitstream Vera Sans Bold (fuente libre incluida en el pack)",
+  "font_file": "../fonts/VeraBd.ttf",
+  "font_license": "../fonts/bitstream-vera-license.txt",
+  "font_paths_relative_to": "etiquetas_hud.json parent directory",
+  "font_size_px": 14,
+  "baseline_px_from_top": 18,
+  "alpha": "straight",
+  "labels": {
+    "puntos": {
+      "text": "PUNTOS",
+      "image": "etiqueta_puntos.png",
+      "size_px": [
+        69,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 69,
+      "ink_bbox_px": [
+        3,
+        8,
+        67,
+        18
+      ]
+    },
+    "record": {
+      "text": "RECORD",
+      "image": "etiqueta_record.png",
+      "size_px": [
+        70,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 70,
+      "ink_bbox_px": [
+        3,
+        8,
+        67,
+        18
+      ]
+    },
+    "oleada": {
+      "text": "OLEADA",
+      "image": "etiqueta_oleada.png",
+      "size_px": [
+        69,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 69,
+      "ink_bbox_px": [
+        2,
+        8,
+        67,
+        18
+      ]
+    },
+    "vidas": {
+      "text": "VIDAS",
+      "image": "etiqueta_vidas.png",
+      "size_px": [
+        53,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 53,
+      "ink_bbox_px": [
+        2,
+        8,
+        51,
+        18
+      ]
+    },
+    "jefe": {
+      "text": "JEFE",
+      "image": "etiqueta_jefe.png",
+      "size_px": [
+        39,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 39,
+      "ink_bbox_px": [
+        1,
+        8,
+        36,
+        21
+      ]
+    },
+    "plano_a": {
+      "text": "PLANO A",
+      "image": "etiqueta_plano_a.png",
+      "size_px": [
+        74,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 74,
+      "ink_bbox_px": [
+        3,
+        8,
+        72,
+        18
+      ]
+    },
+    "plano_b": {
+      "text": "PLANO B",
+      "image": "etiqueta_plano_b.png",
+      "size_px": [
+        74,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 74,
+      "ink_bbox_px": [
+        3,
+        8,
+        71,
+        18
+      ]
+    },
+    "cerca": {
+      "text": "CERCA",
+      "image": "etiqueta_cerca.png",
+      "size_px": [
+        56,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 56,
+      "ink_bbox_px": [
+        2,
+        8,
+        54,
+        18
+      ]
+    },
+    "lejos": {
+      "text": "LEJOS",
+      "image": "etiqueta_lejos.png",
+      "size_px": [
+        50,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 50,
+      "ink_bbox_px": [
+        3,
+        8,
+        48,
+        21
+      ]
+    },
+    "pausa": {
+      "text": "PAUSA",
+      "image": "etiqueta_pausa.png",
+      "size_px": [
+        57,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 57,
+      "ink_bbox_px": [
+        3,
+        8,
+        55,
+        18
+      ]
+    },
+    "control_mover": {
+      "text": "A / D  MOVER",
+      "image": "etiqueta_control_mover.png",
+      "size_px": [
+        110,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 110,
+      "ink_bbox_px": [
+        2,
+        8,
+        108,
+        20
+      ]
+    },
+    "control_disparar": {
+      "text": "ESPACIO  DISPARAR",
+      "image": "etiqueta_control_disparar.png",
+      "size_px": [
+        163,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 163,
+      "ink_bbox_px": [
+        3,
+        8,
+        161,
+        18
+      ]
+    },
+    "control_plano": {
+      "text": "E  CAMBIAR PLANO",
+      "image": "etiqueta_control_plano.png",
+      "size_px": [
+        156,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 156,
+      "ink_bbox_px": [
+        3,
+        8,
+        154,
+        18
+      ]
+    },
+    "control_pausa": {
+      "text": "P  PAUSA",
+      "image": "etiqueta_control_pausa.png",
+      "size_px": [
+        77,
+        24
+      ],
+      "baseline_px_from_top": 18,
+      "advance_px": 77,
+      "ink_bbox_px": [
+        3,
+        8,
+        75,
+        18
+      ]
+    }
+  }
+}

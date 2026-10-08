@@ -1,0 +1,28 @@
+{
+  "resolucion": [
+    1280,
+    720
+  ],
+  "escenas": [
+    "01_HUD_TRANSPARENTE",
+    "02_PREVIEW_INTERFAZ",
+    "03_PANTALLA_PAUSA"
+  ],
+  "mallas_vectoriales": 450,
+  "textos_editables": 25,
+  "valores_iniciales": {
+    "puntos": 12500,
+    "record": 34800,
+    "oleada": 3,
+    "vidas": 3,
+    "vida_jefe": 24,
+    "mostrar_jefe": true,
+    "plano_B": false,
+    "recarga_plano": 0.0,
+    "invulnerable": false,
+    "doble_disparo": false
+  },
+  "fuentes_empaquetadas": true,
+  "hud_transparente": true,
+  "modelos_juego_generados": false
+}

@@ -1,0 +1,368 @@
+{
+  "image": "atlas_digitos.png",
+  "size_px": [
+    512,
+    64
+  ],
+  "format": "RGBA8",
+  "alpha": "straight (no premultiplicado)",
+  "pixel_origin": "top_left",
+  "rect_order": "[x,y,width,height]",
+  "uv_order": "[u_min,v_min,u_max,v_max]",
+  "font_source": "Bitstream Vera Sans (fuente libre incluida en el pack)",
+  "font_file": "../fonts/Vera.ttf",
+  "font_license": "../fonts/bitstream-vera-license.txt",
+  "font_paths_relative_to": "atlas_digitos.json parent directory",
+  "font_size_px": 28,
+  "baseline_px_from_top": 30,
+  "line_height_px": 40,
+  "advance_px": 24,
+  "layout": "monospaced/tabular sprite slots",
+  "gutter_px": 8,
+  "extrusion_px": 2,
+  "position_from_baseline": "El quad de un glifo empieza en (pen_x, baseline_y - 30); después pen_x += 24.",
+  "uv_top_left_usage": "Filas PNG sin invertir: asociar v mínima al vértice superior.",
+  "uv_bottom_left_usage": "Invertir filas PNG al cargar: asociar v máxima al vértice superior.",
+  "glyphs": {
+    "0": {
+      "codepoint": 48,
+      "rect_px": [
+        4,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.0078125,
+        0.0625,
+        0.0546875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.0078125,
+        0.3125,
+        0.0546875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        5,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "1": {
+      "codepoint": 49,
+      "rect_px": [
+        36,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.0703125,
+        0.0625,
+        0.1171875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.0703125,
+        0.3125,
+        0.1171875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        7,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "2": {
+      "codepoint": 50,
+      "rect_px": [
+        68,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.1328125,
+        0.0625,
+        0.1796875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.1328125,
+        0.3125,
+        0.1796875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        6,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "3": {
+      "codepoint": 51,
+      "rect_px": [
+        100,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.1953125,
+        0.0625,
+        0.2421875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.1953125,
+        0.3125,
+        0.2421875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        6,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "4": {
+      "codepoint": 52,
+      "rect_px": [
+        132,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.2578125,
+        0.0625,
+        0.3046875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.2578125,
+        0.3125,
+        0.3046875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        5,
+        10,
+        21,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "5": {
+      "codepoint": 53,
+      "rect_px": [
+        164,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.3203125,
+        0.0625,
+        0.3671875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.3203125,
+        0.3125,
+        0.3671875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        6,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "6": {
+      "codepoint": 54,
+      "rect_px": [
+        196,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.3828125,
+        0.0625,
+        0.4296875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.3828125,
+        0.3125,
+        0.4296875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        5,
+        10,
+        21,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "7": {
+      "codepoint": 55,
+      "rect_px": [
+        228,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.4453125,
+        0.0625,
+        0.4921875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.4453125,
+        0.3125,
+        0.4921875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        6,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "8": {
+      "codepoint": 56,
+      "rect_px": [
+        260,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.5078125,
+        0.0625,
+        0.5546875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.5078125,
+        0.3125,
+        0.5546875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        5,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    },
+    "9": {
+      "codepoint": 57,
+      "rect_px": [
+        292,
+        4,
+        24,
+        40
+      ],
+      "uv_top_left": [
+        0.5703125,
+        0.0625,
+        0.6171875,
+        0.6875
+      ],
+      "uv_bottom_left": [
+        0.5703125,
+        0.3125,
+        0.6171875,
+        0.9375
+      ],
+      "advance_px": 24,
+      "baseline_px_from_top": 30,
+      "quad_offset_from_pen_baseline_px": [
+        0,
+        -30
+      ],
+      "ink_bbox_px": [
+        5,
+        10,
+        20,
+        30
+      ],
+      "source_font_advance_px": 18.0
+    }
+  }
+}

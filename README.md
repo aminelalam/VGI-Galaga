@@ -103,6 +103,8 @@ La portada, diagramas, maqueta y tráiler descargado funcionan localmente. Los e
 
 ## 📁 Organización
 
+La interfaz editable de Blender, los sprites PNG/SVG, los atlas y sus comprobaciones están en [Recursos_Galaga3D](Recursos_Galaga3D/README.md). Incluye puntos, récord, vidas, oleada, vida del jefe, planos A/B y pausa. La integración con el juego C++ sigue pendiente.
+
 ```text
 Entrega_Amin_VGI/
 ├── Resumen_Amin_VGI.pdf              # Tu parte en una página

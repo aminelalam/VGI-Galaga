@@ -1,0 +1,11 @@
+# Texto HUD y composición limpia
+
+`preview_hud_limpio.png` es una composición de producto a 1280 × 720 con puntos, récord, oleada, tres vidas, jefe 24/24, plano A cercano, pausa y controles. No contiene notas editoriales, mira ni modelos 3D. Conserva la preview previa y el resto de componentes.
+
+`atlas_digitos.png` y `atlas_digitos.json` contienen las diez cifras ASCII **0..9**, también exportadas como `digito_0.png` … `digito_9.png`. Se renderiza **Bitstream Vera Sans**, tamaño 28 px, desde `fonts/Vera.ttf`, incluida en el pack. La fuente libre se distribuye junto con `fonts/bitstream-vera-license.txt`. Cada glifo ocupa una celda RGBA transparente de **24 × 40 px**, con avance fijo **24 px** y baseline **30 px desde arriba**. El quad empieza en `(pen_x, baseline_y - 30)`; incrementar `pen_x` en 24. El ejemplo **012500** usa las seis celdas a 1:1, tamaño **144 × 40**, sin reescalar. `preview_digitos_1a1.png` permite comprobar su lectura.
+
+La metadata incluye avance original de la fuente, bounding box visible, offset respecto a la baseline, rectángulo en píxeles y UV superiores e inferiores explícitas. PNG conserva filas con origen arriba a la izquierda. UV `uv_top_left`: cargar filas sin invertir y usar v mínima arriba. UV `uv_bottom_left`: invertir filas al cargar y usar v máxima arriba. El atlas de cifras mide 512 × 64; los rectángulos excluyen márgenes de 8 px y extrusión de 2 px. Usar alpha recto, filtrado lineal y evitar mipmaps del atlas sin ampliar márgenes.
+
+`etiqueta_*.png` aporta etiquetas de puntos, récord, oleada, vidas, jefe, planos, pausa y controles, en **Bitstream Vera Sans Bold** 14 px, desde `fonts/VeraBd.ttf`. `etiquetas_hud.json` recoge tamaños, baseline, archivo de fuente y licencia. Solo contienen texto estático; puntos y vidas provienen del estado de la partida.
+
+Regenerar con `scripts/generar_texto_hud.py`, tras generar_hud.py. Requiere Python, Pillow y las dos fuentes locales Bitstream Vera incluidas en `fonts/`; no usa fuentes del sistema ni rutas absolutas. Las rutas de fuentes y licencia en la metadata son relativas a la carpeta del JSON. `validacion_texto_hud.json` comprueba transparencia, atlas, UV, montaje del ejemplo a 1:1 y conservación de preview_hud.png. No implementa la lógica del juego ni modifica las reglas.
