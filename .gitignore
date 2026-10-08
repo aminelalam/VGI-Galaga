@@ -1,0 +1,23 @@
+# Archivos temporales de Office
+~$*
+*.tmp
+*.bak
+
+# Compilación local de Visual Studio
+.vs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.obj
+*.pdb
+*.ilk
+*.log
+*.user
+*.suo
+
+# Cachés y archivos del sistema
+__pycache__/
+.DS_Store
+Thumbs.db
+Desktop.ini

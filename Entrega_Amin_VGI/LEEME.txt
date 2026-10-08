@@ -1,0 +1,18 @@
+AMIN · VGI · GALAGA 3D
+
+EMPIEZA POR INICIO.html (doble clic).
+El dossier completo está en Dossier_Amin_Galaga3D.pdf.
+El texto se puede editar en Dossier_editable.md.
+Guion_reunion.md contiene la preparación y las decisiones para el grupo.
+
+No hace falta instalar nada. Mantén la carpeta completa para conservar imágenes y vídeo.
+El dossier, la maqueta y el tráiler WebM son locales. Los enlaces externos requieren internet.
+Si el navegador no abre WebM, usa el enlace original en el apartado de vídeos.
+
+La maqueta usa Canvas, reglas simplificadas y partidas abreviadas. No es la implementación de VGI.
+El entrenamiento evita pérdida de vidas; puede desactivarse antes de reiniciar.
+La implementación C++/MFC/OpenGL y sus pruebas siguen pendientes: no se aportó el repositorio.
+
+Fuentes, atribuciones y objetivos pendientes figuran en el dossier y en CREDITOS.md.
+
+AMPLIACIÓN 8 OCTUBRE: abrir Gestion_y_diseno/Diseno_tecnico_Galaga3D_Amin.docx (también PDF). Dos Excel: 01_Gestion_integral_Galaga3D.xlsx reúne requisitos, tareas, pruebas, calendario y equipo; 03_Diseno_detallado_Amin.xlsx conserva la configuración técnica. Guía de uso en Gestion_y_diseno/LEEME.md.
