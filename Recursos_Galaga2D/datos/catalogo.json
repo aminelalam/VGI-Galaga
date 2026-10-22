@@ -1,0 +1,889 @@
+{
+  "version": 1,
+  "descripcion": "Recursos para probar combate, mejoras de disparo y esquiva en 2D",
+  "numero_sprites": 35,
+  "familias": {
+    "naves": 4,
+    "enemigos": 4,
+    "escenario": 1,
+    "disparos": 10,
+    "mejoras": 5,
+    "efectos": 8,
+    "avisos": 3
+  },
+  "atlas": "atlas/galaga_2d.png",
+  "datos_atlas": "atlas/galaga_2d.json",
+  "tamano_atlas": [
+    1024,
+    512
+  ],
+  "pivot": "Píxeles desde arriba a la izquierda de cada PNG, antes de recortar",
+  "alpha": "recto, no premultiplicado",
+  "animaciones": {
+    "impacto": {
+      "frames": [
+        "impacto_00",
+        "impacto_01",
+        "impacto_02"
+      ],
+      "fps": 16,
+      "loop": false
+    },
+    "explosion": {
+      "frames": [
+        "explosion_00",
+        "explosion_01",
+        "explosion_02",
+        "explosion_03"
+      ],
+      "fps": 12,
+      "loop": false
+    }
+  },
+  "patrones_disparo": {
+    "normal": {
+      "sprite": "aliado_normal",
+      "salidas": [
+        {
+          "offset_x": 0,
+          "angulo_grados": 0
+        }
+      ]
+    },
+    "doble": {
+      "sprite": "aliado_normal",
+      "salidas": [
+        {
+          "offset_x": -10,
+          "angulo_grados": 0
+        },
+        {
+          "offset_x": 10,
+          "angulo_grados": 0
+        }
+      ]
+    },
+    "abanico": {
+      "sprite": "aliado_normal",
+      "salidas": [
+        {
+          "offset_x": 0,
+          "angulo_grados": -15
+        },
+        {
+          "offset_x": 0,
+          "angulo_grados": 0
+        },
+        {
+          "offset_x": 0,
+          "angulo_grados": 15
+        }
+      ]
+    }
+  },
+  "coordenadas_patrones": {
+    "offset_x": "píxeles al tamaño original; aplicar la misma escala que a los sprites",
+    "angulo_grados": "cero hacia arriba; positivo en sentido horario en pantalla"
+  },
+  "sprites": [
+    {
+      "id": "nave_flecha",
+      "archivo": "sprites/naves/nave_flecha.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "nave_flecha",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        23,
+        23,
+        106,
+        105
+      ],
+      "sha256": "84f1b1b833e0295f0c888cdeb907659166d29eca4d0877569377cea55c274866"
+    },
+    {
+      "id": "nave_delta",
+      "archivo": "sprites/naves/nave_delta.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "nave_delta",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        23,
+        23,
+        105,
+        105
+      ],
+      "sha256": "8a3ab270b64b0a79220f46f34f9c3c2c0d9770eeda9d842f32e4523d454e227b"
+    },
+    {
+      "id": "nave_doble_motor",
+      "archivo": "sprites/naves/nave_doble_motor.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "nave_doble_motor",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        26,
+        26,
+        102,
+        102
+      ],
+      "sha256": "15542477db56207e02afcba329744fd4f5e1ef49fadaff4f14b4be3ad6ed9a9a"
+    },
+    {
+      "id": "enemigo_abeja",
+      "archivo": "sprites/enemigos/enemigo_abeja.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "enemigo_abeja",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        26,
+        39,
+        102,
+        88
+      ],
+      "sha256": "fedea01a2b5edc8dc85b55d76b51c3a605f554bd2a53d5c54a46cf7c377679e4"
+    },
+    {
+      "id": "enemigo_escarabajo",
+      "archivo": "sprites/enemigos/enemigo_escarabajo.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "enemigo_escarabajo",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        26,
+        34,
+        101,
+        94
+      ],
+      "sha256": "e88f29c0dd4c211b87abd7ccae3fc09648d858e5850f037003e918b865d94a29"
+    },
+    {
+      "id": "jefe_acorazado",
+      "archivo": "sprites/enemigos/jefe_acorazado.png",
+      "tamano": [
+        256,
+        128
+      ],
+      "pivot": [
+        128.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "ACORAZADO",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        31,
+        28,
+        225,
+        99
+      ],
+      "sha256": "e86375bbd8e2996aeb208ba6f9b05dab814e0fed74b7fae85fc073cc003d048a"
+    },
+    {
+      "id": "nave_prototipo",
+      "archivo": "sprites/naves/nave_prototipo.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/blender/prototips.blend",
+      "modelo": "InvaderShip",
+      "fuente_sha256": "21d1cab143e0317cffe6d8d0b7204bfa21f03cf016e02425a8073f3c1cc80bb2",
+      "bbox_alpha": [
+        31,
+        44,
+        96,
+        84
+      ],
+      "sha256": "cb91f830be6ef1c00860d40849328dc325c25e7bbb2e8c9c4793333f1c3220bb"
+    },
+    {
+      "id": "enemigo_prototipo",
+      "archivo": "sprites/enemigos/enemigo_prototipo.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/blender/prototips.blend",
+      "modelo": "InvaderEnemy",
+      "fuente_sha256": "21d1cab143e0317cffe6d8d0b7204bfa21f03cf016e02425a8073f3c1cc80bb2",
+      "bbox_alpha": [
+        37,
+        44,
+        92,
+        84
+      ],
+      "sha256": "fae2bb63db7e8349f375e454c4785fc05e7a7b4fa691906638ca862b286ff150"
+    },
+    {
+      "id": "bunker",
+      "archivo": "sprites/escenario/bunker.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "escenario",
+      "pixeles_por_unidad": 48,
+      "orientacion": null,
+      "fuente": "../Recursos_Galaga3D/blender/prototips.blend",
+      "modelo": "Bunker_1",
+      "fuente_sha256": "21d1cab143e0317cffe6d8d0b7204bfa21f03cf016e02425a8073f3c1cc80bb2",
+      "bbox_alpha": [
+        37,
+        44,
+        92,
+        84
+      ],
+      "sha256": "5a6790aba52dfe87b10d2c563905a2b3c41202cf052701ae4302531175d5b96d"
+    },
+    {
+      "id": "aliado_normal",
+      "archivo": "sprites/disparos/aliado_normal.png",
+      "svg": "vector/disparos/aliado_normal.svg",
+      "tamano": [
+        16,
+        48
+      ],
+      "pivot": [
+        8.0,
+        24.0
+      ],
+      "bbox_alpha": [
+        5,
+        6,
+        11,
+        43
+      ],
+      "familia": "disparos",
+      "orientacion": "arriba"
+    },
+    {
+      "id": "aliado_perforante",
+      "archivo": "sprites/disparos/aliado_perforante.png",
+      "svg": "vector/disparos/aliado_perforante.svg",
+      "tamano": [
+        24,
+        128
+      ],
+      "pivot": [
+        12.0,
+        64.0
+      ],
+      "bbox_alpha": [
+        6,
+        0,
+        18,
+        128
+      ],
+      "familia": "disparos",
+      "orientacion": "arriba",
+      "repetible_y": true,
+      "uso": "Repetir en vertical. Dibujar aliado_laser_punta en el extremo; no estirar las puntas."
+    },
+    {
+      "id": "aliado_laser_punta",
+      "archivo": "sprites/disparos/aliado_laser_punta.png",
+      "svg": "vector/disparos/aliado_laser_punta.svg",
+      "tamano": [
+        24,
+        32
+      ],
+      "pivot": [
+        12.0,
+        16.0
+      ],
+      "bbox_alpha": [
+        6,
+        7,
+        18,
+        32
+      ],
+      "familia": "disparos",
+      "orientacion": "arriba",
+      "bordes_sin_margen": [
+        "inferior"
+      ],
+      "uso": "Punta superior; borde inferior sin margen para unirlo al tramo repetible."
+    },
+    {
+      "id": "aliado_plasma",
+      "archivo": "sprites/disparos/aliado_plasma.png",
+      "svg": "vector/disparos/aliado_plasma.svg",
+      "tamano": [
+        32,
+        32
+      ],
+      "pivot": [
+        16.0,
+        16.0
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        27,
+        27
+      ],
+      "familia": "disparos",
+      "orientacion": "arriba"
+    },
+    {
+      "id": "especial_misil",
+      "archivo": "sprites/disparos/especial_misil.png",
+      "svg": "vector/disparos/especial_misil.svg",
+      "tamano": [
+        32,
+        64
+      ],
+      "pivot": [
+        16.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        5,
+        7,
+        27,
+        58
+      ],
+      "familia": "disparos",
+      "orientacion": "arriba"
+    },
+    {
+      "id": "enemigo_orbe",
+      "archivo": "sprites/disparos/enemigo_orbe.png",
+      "svg": "vector/disparos/enemigo_orbe.svg",
+      "tamano": [
+        24,
+        24
+      ],
+      "pivot": [
+        12.0,
+        12.0
+      ],
+      "bbox_alpha": [
+        5,
+        5,
+        19,
+        19
+      ],
+      "familia": "disparos",
+      "orientacion": "abajo"
+    },
+    {
+      "id": "enemigo_rombo",
+      "archivo": "sprites/disparos/enemigo_rombo.png",
+      "svg": "vector/disparos/enemigo_rombo.svg",
+      "tamano": [
+        24,
+        24
+      ],
+      "pivot": [
+        12.0,
+        12.0
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        19,
+        19
+      ],
+      "familia": "disparos",
+      "orientacion": "abajo"
+    },
+    {
+      "id": "enemigo_aguja",
+      "archivo": "sprites/disparos/enemigo_aguja.png",
+      "svg": "vector/disparos/enemigo_aguja.svg",
+      "tamano": [
+        16,
+        48
+      ],
+      "pivot": [
+        8.0,
+        24.0
+      ],
+      "bbox_alpha": [
+        5,
+        6,
+        11,
+        42
+      ],
+      "familia": "disparos",
+      "orientacion": "abajo"
+    },
+    {
+      "id": "enemigo_laser",
+      "archivo": "sprites/disparos/enemigo_laser.png",
+      "svg": "vector/disparos/enemigo_laser.svg",
+      "tamano": [
+        24,
+        128
+      ],
+      "pivot": [
+        12.0,
+        64.0
+      ],
+      "bbox_alpha": [
+        6,
+        0,
+        18,
+        128
+      ],
+      "familia": "disparos",
+      "orientacion": "abajo",
+      "repetible_y": true,
+      "uso": "Repetir en vertical y unir enemigo_laser_punta al extremo inferior. Aparece despues del aviso_linea; el aviso no es una bala."
+    },
+    {
+      "id": "enemigo_laser_punta",
+      "archivo": "sprites/disparos/enemigo_laser_punta.png",
+      "svg": "vector/disparos/enemigo_laser_punta.svg",
+      "tamano": [
+        24,
+        32
+      ],
+      "pivot": [
+        12.0,
+        16.0
+      ],
+      "bbox_alpha": [
+        6,
+        0,
+        18,
+        26
+      ],
+      "familia": "disparos",
+      "orientacion": "abajo",
+      "bordes_sin_margen": [
+        "superior"
+      ],
+      "uso": "Punta inferior; borde superior sin margen para unirlo al tramo repetible."
+    },
+    {
+      "id": "mejora_doble",
+      "archivo": "sprites/mejoras/mejora_doble.png",
+      "svg": "vector/mejoras/mejora_doble.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "familia": "mejoras",
+      "orientacion": "sin direccion",
+      "simbolo": "Dos flechas paralelas"
+    },
+    {
+      "id": "mejora_abanico",
+      "archivo": "sprites/mejoras/mejora_abanico.png",
+      "svg": "vector/mejoras/mejora_abanico.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "familia": "mejoras",
+      "orientacion": "sin direccion",
+      "simbolo": "Tres flechas divergentes"
+    },
+    {
+      "id": "mejora_laser",
+      "archivo": "sprites/mejoras/mejora_laser.png",
+      "svg": "vector/mejoras/mejora_laser.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "familia": "mejoras",
+      "orientacion": "sin direccion",
+      "simbolo": "Haz atravesando dos barras"
+    },
+    {
+      "id": "mejora_escudo",
+      "archivo": "sprites/mejoras/mejora_escudo.png",
+      "svg": "vector/mejoras/mejora_escudo.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "familia": "mejoras",
+      "orientacion": "sin direccion",
+      "simbolo": "Escudo con cruz"
+    },
+    {
+      "id": "mejora_energia",
+      "archivo": "sprites/mejoras/mejora_energia.png",
+      "svg": "vector/mejoras/mejora_energia.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "familia": "mejoras",
+      "orientacion": "sin direccion",
+      "simbolo": "Rayo"
+    },
+    {
+      "id": "impacto_00",
+      "archivo": "sprites/efectos/impacto_00.png",
+      "svg": "vector/efectos/impacto_00.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        20,
+        19,
+        45,
+        45
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "fotograma": 0
+    },
+    {
+      "id": "impacto_01",
+      "archivo": "sprites/efectos/impacto_01.png",
+      "svg": "vector/efectos/impacto_01.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        16,
+        17,
+        48,
+        48
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "fotograma": 1
+    },
+    {
+      "id": "impacto_02",
+      "archivo": "sprites/efectos/impacto_02.png",
+      "svg": "vector/efectos/impacto_02.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        10,
+        11,
+        54,
+        54
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "fotograma": 2
+    },
+    {
+      "id": "explosion_00",
+      "archivo": "sprites/efectos/explosion_00.png",
+      "svg": "vector/efectos/explosion_00.svg",
+      "tamano": [
+        96,
+        96
+      ],
+      "pivot": [
+        48.0,
+        48.0
+      ],
+      "bbox_alpha": [
+        33,
+        33,
+        63,
+        63
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "fotograma": 0
+    },
+    {
+      "id": "explosion_01",
+      "archivo": "sprites/efectos/explosion_01.png",
+      "svg": "vector/efectos/explosion_01.svg",
+      "tamano": [
+        96,
+        96
+      ],
+      "pivot": [
+        48.0,
+        48.0
+      ],
+      "bbox_alpha": [
+        24,
+        24,
+        73,
+        73
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "fotograma": 1
+    },
+    {
+      "id": "explosion_02",
+      "archivo": "sprites/efectos/explosion_02.png",
+      "svg": "vector/efectos/explosion_02.svg",
+      "tamano": [
+        96,
+        96
+      ],
+      "pivot": [
+        48.0,
+        48.0
+      ],
+      "bbox_alpha": [
+        15,
+        15,
+        82,
+        82
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "fotograma": 2
+    },
+    {
+      "id": "explosion_03",
+      "archivo": "sprites/efectos/explosion_03.png",
+      "svg": "vector/efectos/explosion_03.svg",
+      "tamano": [
+        96,
+        96
+      ],
+      "pivot": [
+        48.0,
+        48.0
+      ],
+      "bbox_alpha": [
+        7,
+        7,
+        90,
+        90
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "fotograma": 3
+    },
+    {
+      "id": "escudo_activo",
+      "archivo": "sprites/efectos/escudo_activo.png",
+      "svg": "vector/efectos/escudo_activo.svg",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "bbox_alpha": [
+        8,
+        8,
+        120,
+        120
+      ],
+      "familia": "efectos",
+      "orientacion": "sin direccion",
+      "uso": "Superponer centrado en la nave. El centro permanece transparente."
+    },
+    {
+      "id": "aviso_peligro",
+      "archivo": "sprites/avisos/aviso_peligro.png",
+      "svg": "vector/avisos/aviso_peligro.svg",
+      "tamano": [
+        64,
+        64
+      ],
+      "pivot": [
+        32.0,
+        32.0
+      ],
+      "bbox_alpha": [
+        7,
+        8,
+        58,
+        54
+      ],
+      "familia": "avisos",
+      "orientacion": "sin direccion",
+      "uso": "Aviso visual previo; no representa una colision."
+    },
+    {
+      "id": "aviso_linea",
+      "archivo": "sprites/avisos/aviso_linea.png",
+      "svg": "vector/avisos/aviso_linea.svg",
+      "tamano": [
+        32,
+        128
+      ],
+      "pivot": [
+        16.0,
+        64.0
+      ],
+      "bbox_alpha": [
+        6,
+        7,
+        26,
+        120
+      ],
+      "familia": "avisos",
+      "orientacion": "abajo",
+      "uso": "Colocar sobre la columna que recibira el ataque; no indica una zona segura."
+    },
+    {
+      "id": "aviso_zona",
+      "archivo": "sprites/avisos/aviso_zona.png",
+      "svg": "vector/avisos/aviso_zona.svg",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "bbox_alpha": [
+        7,
+        7,
+        121,
+        121
+      ],
+      "familia": "avisos",
+      "orientacion": "sin direccion",
+      "uso": "Marca el centro y contorno de una zona peligrosa antes del ataque."
+    }
+  ]
+}

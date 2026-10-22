@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="128" viewBox="0 0 32 128">
+<title>Aviso de columna de ataque</title>
+<polyline points="8,8 16,16 24,8" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="8,28 16,36 24,28" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="8,48 16,56 24,48" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="8,68 16,76 24,68" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="8,88 16,96 24,88" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="8,108 16,116 24,108" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="7,8 7,119" fill="none" stroke="#E98B3E" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="25,8 25,119" fill="none" stroke="#E98B3E" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

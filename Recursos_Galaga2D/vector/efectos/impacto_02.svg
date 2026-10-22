@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>Impacto 3</title>
+<polyline points="52,32 51.6157,35.9018 50.4776,39.6537 48.6294,43.1114 46.1421,46.1421 43.1114,48.6294 39.6537,50.4776 35.9018,51.6157 32,52 28.0982,51.6157 24.3463,50.4776 20.8886,48.6294 17.8579,46.1421 15.3706,43.1114 13.5224,39.6537 12.3843,35.9018 12,32 12.3843,28.0982 13.5224,24.3463 15.3706,20.8886 17.8579,17.8579 20.8886,15.3706 24.3463,13.5224 28.0982,12.3843 32,12 35.9018,12.3843 39.6537,13.5224 43.1114,15.3706 46.1421,17.8579 48.6294,20.8886 50.4776,24.3463 51.6157,28.0982 52,32" fill="none" stroke="#90D0DD" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="32,22 32,17" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="42,32 47,32" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="32,42 32,47" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="22,32 17,32" fill="none" stroke="#EAC64B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

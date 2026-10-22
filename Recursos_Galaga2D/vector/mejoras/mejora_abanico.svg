@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>Mejora de disparo en abanico</title>
+<polygon points="16,7 48,7 57,16 57,48 48,57 16,57 7,48 7,16" fill="#10131C"/>
+<polyline points="17,9 47,9 55,17 55,47 47,55 17,55 9,47 9,17 17,9" fill="none" stroke="#63AF70" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="32,46 32,22" fill="none" stroke="#F3EEDB" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="29,42 19,23" fill="none" stroke="#63AF70" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="35,42 45,23" fill="none" stroke="#63AF70" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="32,16 27,23 37,23" fill="#F3EEDB"/>
+<polygon points="17,18 16,26 23,22" fill="#63AF70"/>
+<polygon points="47,18 41,22 48,26" fill="#63AF70"/>
+</svg>

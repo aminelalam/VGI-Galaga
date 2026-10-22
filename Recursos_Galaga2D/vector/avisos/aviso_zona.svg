@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Aviso de zona peligrosa</title>
+<polyline points="115,64 114.02,73.9496 111.118,83.5169 106.405,92.3341 100.062,100.062 92.3341,106.405 83.5169,111.118 73.9496,114.02 64,115 54.0504,114.02 44.4831,111.118 35.6659,106.405 27.9376,100.062 21.595,92.3341 16.8821,83.5169 13.98,73.9496 13,64 13.98,54.0504 16.8821,44.4831 21.595,35.6659 27.9376,27.9376 35.6659,21.595 44.4831,16.8821 54.0504,13.98 64,13 73.9496,13.98 83.5169,16.8821 92.3341,21.595 100.062,27.9376 106.405,35.6659 111.118,44.4831 114.02,54.0504 115,64" fill="none" stroke="#EAC64B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="106,64 119,64" fill="none" stroke="#E98B3E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="64,106 64,119" fill="none" stroke="#E98B3E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="22,64 9,64" fill="none" stroke="#E98B3E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="64,22 64,9" fill="none" stroke="#E98B3E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="53,53 75,75" fill="none" stroke="#EAC64B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="75,53 53,75" fill="none" stroke="#EAC64B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

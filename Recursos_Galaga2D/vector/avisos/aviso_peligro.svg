@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>Aviso de peligro</title>
+<polygon points="32,8 57,53 7,53" fill="#10131C"/>
+<polyline points="32,10 55,51 9,51 32,10" fill="none" stroke="#EAC64B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="30,25 34,25 34,38 30,38" fill="#F3EEDB"/>
+<polygon points="30,43 34,43 34,47 30,47" fill="#F3EEDB"/>
+</svg>

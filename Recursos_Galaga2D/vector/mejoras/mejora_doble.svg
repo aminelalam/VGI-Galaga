@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>Mejora de disparo doble</title>
+<polygon points="16,7 48,7 57,16 57,48 48,57 16,57 7,48 7,16" fill="#10131C"/>
+<polyline points="17,9 47,9 55,17 55,47 47,55 17,55 9,47 9,17 17,9" fill="none" stroke="#3B7DDD" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="23,22.4 27,28 24.6,28 24.6,41.6 21.4,41.6 21.4,28 19,28" fill="#90D0DD"/>
+<polygon points="41,22.4 45,28 42.6,28 42.6,41.6 39.4,41.6 39.4,28 37,28" fill="#F3EEDB"/>
+</svg>

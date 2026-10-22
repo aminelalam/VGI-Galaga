@@ -1,0 +1,540 @@
+{
+  "resultado": "PASS",
+  "numero_sprites": 35,
+  "svg_revisados": 26,
+  "atlas": [
+    1024,
+    512
+  ],
+  "alpha": "RGBA recto con fondo transparente",
+  "pixeles_atlas_identicos": true,
+  "errores": [],
+  "sprites": [
+    {
+      "id": "nave_flecha",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        23,
+        23,
+        106,
+        105
+      ],
+      "sha256": "84f1b1b833e0295f0c888cdeb907659166d29eca4d0877569377cea55c274866",
+      "resultado": "PASS"
+    },
+    {
+      "id": "nave_delta",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        23,
+        23,
+        105,
+        105
+      ],
+      "sha256": "8a3ab270b64b0a79220f46f34f9c3c2c0d9770eeda9d842f32e4523d454e227b",
+      "resultado": "PASS"
+    },
+    {
+      "id": "nave_doble_motor",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        26,
+        26,
+        102,
+        102
+      ],
+      "sha256": "15542477db56207e02afcba329744fd4f5e1ef49fadaff4f14b4be3ad6ed9a9a",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_abeja",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        26,
+        39,
+        102,
+        88
+      ],
+      "sha256": "fedea01a2b5edc8dc85b55d76b51c3a605f554bd2a53d5c54a46cf7c377679e4",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_escarabajo",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        26,
+        34,
+        101,
+        94
+      ],
+      "sha256": "e88f29c0dd4c211b87abd7ccae3fc09648d858e5850f037003e918b865d94a29",
+      "resultado": "PASS"
+    },
+    {
+      "id": "jefe_acorazado",
+      "tamano": [
+        256,
+        128
+      ],
+      "bbox_alpha": [
+        31,
+        28,
+        225,
+        99
+      ],
+      "sha256": "e86375bbd8e2996aeb208ba6f9b05dab814e0fed74b7fae85fc073cc003d048a",
+      "resultado": "PASS"
+    },
+    {
+      "id": "nave_prototipo",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        31,
+        44,
+        96,
+        84
+      ],
+      "sha256": "cb91f830be6ef1c00860d40849328dc325c25e7bbb2e8c9c4793333f1c3220bb",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_prototipo",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        37,
+        44,
+        92,
+        84
+      ],
+      "sha256": "fae2bb63db7e8349f375e454c4785fc05e7a7b4fa691906638ca862b286ff150",
+      "resultado": "PASS"
+    },
+    {
+      "id": "bunker",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        37,
+        44,
+        92,
+        84
+      ],
+      "sha256": "5a6790aba52dfe87b10d2c563905a2b3c41202cf052701ae4302531175d5b96d",
+      "resultado": "PASS"
+    },
+    {
+      "id": "aliado_normal",
+      "tamano": [
+        16,
+        48
+      ],
+      "bbox_alpha": [
+        5,
+        6,
+        11,
+        43
+      ],
+      "sha256": "8b11f712dea360615f9b781eddaad82a75c87d1c47bbca870a6a842b7b5085bf",
+      "resultado": "PASS"
+    },
+    {
+      "id": "aliado_perforante",
+      "tamano": [
+        24,
+        128
+      ],
+      "bbox_alpha": [
+        6,
+        0,
+        18,
+        128
+      ],
+      "sha256": "bd43ad7ee1f5a12cdb0104523acc1bce9160aadd4fdbe2a76fd68b722e4cc4d6",
+      "resultado": "PASS"
+    },
+    {
+      "id": "aliado_laser_punta",
+      "tamano": [
+        24,
+        32
+      ],
+      "bbox_alpha": [
+        6,
+        7,
+        18,
+        32
+      ],
+      "sha256": "f23aa69a064c18605ab8e440c5075e8b5d0ee465b950628af97cb9876a42d9c1",
+      "resultado": "PASS"
+    },
+    {
+      "id": "aliado_plasma",
+      "tamano": [
+        32,
+        32
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        27,
+        27
+      ],
+      "sha256": "75c0def7c1cdf1ffce6fa90e027e81a727b66416b97363db7e491138922649ba",
+      "resultado": "PASS"
+    },
+    {
+      "id": "especial_misil",
+      "tamano": [
+        32,
+        64
+      ],
+      "bbox_alpha": [
+        5,
+        7,
+        27,
+        58
+      ],
+      "sha256": "259419c99b56edcc335901dde8c4f4ba5e7c4b249a8b83cb29922ba54ce73069",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_orbe",
+      "tamano": [
+        24,
+        24
+      ],
+      "bbox_alpha": [
+        5,
+        5,
+        19,
+        19
+      ],
+      "sha256": "1fd6c1ad13e1b8fcd14fdde3e50fb0e8edd8331afcce47871fa508607168a213",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_rombo",
+      "tamano": [
+        24,
+        24
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        19,
+        19
+      ],
+      "sha256": "6ca224fdd8be30ce61419336f77fc8fe455c6c53ae7fe115219c44995a251378",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_aguja",
+      "tamano": [
+        16,
+        48
+      ],
+      "bbox_alpha": [
+        5,
+        6,
+        11,
+        42
+      ],
+      "sha256": "298a5aa06ec622d9c036bb0b2242e039d2cefced36c442dd4999ce3e01b15a04",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_laser",
+      "tamano": [
+        24,
+        128
+      ],
+      "bbox_alpha": [
+        6,
+        0,
+        18,
+        128
+      ],
+      "sha256": "b10d214e8951a2f4eea2390f829ec993d896f34f2731d947dfd3e19e3727e63f",
+      "resultado": "PASS"
+    },
+    {
+      "id": "enemigo_laser_punta",
+      "tamano": [
+        24,
+        32
+      ],
+      "bbox_alpha": [
+        6,
+        0,
+        18,
+        26
+      ],
+      "sha256": "4adada5f7a4aa8763bccc5c153c519c509573d7377a41df9eb4679229fe2f2b3",
+      "resultado": "PASS"
+    },
+    {
+      "id": "mejora_doble",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "sha256": "554f9a3b2f6789f1453d8aa3b08ce0efb36dbf78d9025cb69a4753f82d123a60",
+      "resultado": "PASS"
+    },
+    {
+      "id": "mejora_abanico",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "sha256": "8c12fb799d8b848a74103954dee3228ebb3e58e43928da442d0e6e2ed8c13b6b",
+      "resultado": "PASS"
+    },
+    {
+      "id": "mejora_laser",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "sha256": "e0eb267445d991a6ef45a9edab309afb879a277183ad651b819bc7a92fbe3bc5",
+      "resultado": "PASS"
+    },
+    {
+      "id": "mejora_escudo",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "sha256": "8b4784404f2644c54bcb257f1ebdadc094ea9cc51fa233d4e9a3e69f56072194",
+      "resultado": "PASS"
+    },
+    {
+      "id": "mejora_energia",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        6,
+        6,
+        58,
+        58
+      ],
+      "sha256": "7b64be9bd3547dc9c040033da38a965999baba0f869be00c2fd969d893e530bb",
+      "resultado": "PASS"
+    },
+    {
+      "id": "impacto_00",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        20,
+        19,
+        45,
+        45
+      ],
+      "sha256": "2198a0047fad7a2fc9a7af2f5ef06a36a15cb64cb896d3870030a33ebfee7569",
+      "resultado": "PASS"
+    },
+    {
+      "id": "impacto_01",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        16,
+        17,
+        48,
+        48
+      ],
+      "sha256": "0f82bb793b9b555f816d691d325a4803688a509692e829e5a127b099efb31e69",
+      "resultado": "PASS"
+    },
+    {
+      "id": "impacto_02",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        10,
+        11,
+        54,
+        54
+      ],
+      "sha256": "ed2707383ba481b94ed46819feaa606ea21db492bc20f72e22ad5d6f084dfac7",
+      "resultado": "PASS"
+    },
+    {
+      "id": "explosion_00",
+      "tamano": [
+        96,
+        96
+      ],
+      "bbox_alpha": [
+        33,
+        33,
+        63,
+        63
+      ],
+      "sha256": "a2595c415ed57fe0bea7624b6294a1205956565df3dc4b0f50caded6851a8ad0",
+      "resultado": "PASS"
+    },
+    {
+      "id": "explosion_01",
+      "tamano": [
+        96,
+        96
+      ],
+      "bbox_alpha": [
+        24,
+        24,
+        73,
+        73
+      ],
+      "sha256": "6eef329555c72a7a00ab6f958f3dd429cc717f2d02d1a92735656c7284848ae6",
+      "resultado": "PASS"
+    },
+    {
+      "id": "explosion_02",
+      "tamano": [
+        96,
+        96
+      ],
+      "bbox_alpha": [
+        15,
+        15,
+        82,
+        82
+      ],
+      "sha256": "3382139f239add1264562feebf43289bb4d6b96ce157e664f7152849ab6a4410",
+      "resultado": "PASS"
+    },
+    {
+      "id": "explosion_03",
+      "tamano": [
+        96,
+        96
+      ],
+      "bbox_alpha": [
+        7,
+        7,
+        90,
+        90
+      ],
+      "sha256": "441628659f66504cb0ab2bc252af84d7dc223c10de0ea64e97830206d45dc0b0",
+      "resultado": "PASS"
+    },
+    {
+      "id": "escudo_activo",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        8,
+        8,
+        120,
+        120
+      ],
+      "sha256": "bd2b046781e2c1fcf509fc108c9d70f8634bf06255ec9a5b3e30cd4a74de6d87",
+      "resultado": "PASS"
+    },
+    {
+      "id": "aviso_peligro",
+      "tamano": [
+        64,
+        64
+      ],
+      "bbox_alpha": [
+        7,
+        8,
+        58,
+        54
+      ],
+      "sha256": "be356eaaed0432f8230e35ac8719706bfcfeeead1784339fb06cab39ed0e7a50",
+      "resultado": "PASS"
+    },
+    {
+      "id": "aviso_linea",
+      "tamano": [
+        32,
+        128
+      ],
+      "bbox_alpha": [
+        6,
+        7,
+        26,
+        120
+      ],
+      "sha256": "43bbe7bfe321e1443d2c44fa8da1b9665164a3d00a61bad6435942d0f4a9dff2",
+      "resultado": "PASS"
+    },
+    {
+      "id": "aviso_zona",
+      "tamano": [
+        128,
+        128
+      ],
+      "bbox_alpha": [
+        7,
+        7,
+        121,
+        121
+      ],
+      "sha256": "4253dae997b932d9ae608c38eda81fca463e4434d116fe6ce20db53c944bc549",
+      "resultado": "PASS"
+    }
+  ],
+  "alcance": "Comprobación de recursos gráficos; no prueba mecánicas de juego."
+}

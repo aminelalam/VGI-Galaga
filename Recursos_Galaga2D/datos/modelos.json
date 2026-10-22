@@ -1,0 +1,236 @@
+{
+  "version": 1,
+  "formato": "PNG RGBA8, alpha recto",
+  "camara": "ortografica",
+  "pixeles_por_unidad": 48,
+  "origen_bbox": "arriba_izquierda",
+  "bbox_formato": "[x_min,y_min,x_max_exclusivo,y_max_exclusivo]",
+  "fuentes_modificadas": false,
+  "sprites": [
+    {
+      "id": "nave_flecha",
+      "archivo": "sprites/naves/nave_flecha.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "nave_flecha",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        23,
+        23,
+        106,
+        105
+      ],
+      "sha256": "84f1b1b833e0295f0c888cdeb907659166d29eca4d0877569377cea55c274866"
+    },
+    {
+      "id": "nave_delta",
+      "archivo": "sprites/naves/nave_delta.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "nave_delta",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        23,
+        23,
+        105,
+        105
+      ],
+      "sha256": "8a3ab270b64b0a79220f46f34f9c3c2c0d9770eeda9d842f32e4523d454e227b"
+    },
+    {
+      "id": "nave_doble_motor",
+      "archivo": "sprites/naves/nave_doble_motor.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "nave_doble_motor",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        26,
+        26,
+        102,
+        102
+      ],
+      "sha256": "15542477db56207e02afcba329744fd4f5e1ef49fadaff4f14b4be3ad6ed9a9a"
+    },
+    {
+      "id": "enemigo_abeja",
+      "archivo": "sprites/enemigos/enemigo_abeja.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "enemigo_abeja",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        26,
+        39,
+        102,
+        88
+      ],
+      "sha256": "fedea01a2b5edc8dc85b55d76b51c3a605f554bd2a53d5c54a46cf7c377679e4"
+    },
+    {
+      "id": "enemigo_escarabajo",
+      "archivo": "sprites/enemigos/enemigo_escarabajo.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "enemigo_escarabajo",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        26,
+        34,
+        101,
+        94
+      ],
+      "sha256": "e88f29c0dd4c211b87abd7ccae3fc09648d858e5850f037003e918b865d94a29"
+    },
+    {
+      "id": "jefe_acorazado",
+      "archivo": "sprites/enemigos/jefe_acorazado.png",
+      "tamano": [
+        256,
+        128
+      ],
+      "pivot": [
+        128.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+      "modelo": "ACORAZADO",
+      "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+      "bbox_alpha": [
+        31,
+        28,
+        225,
+        99
+      ],
+      "sha256": "e86375bbd8e2996aeb208ba6f9b05dab814e0fed74b7fae85fc073cc003d048a"
+    },
+    {
+      "id": "nave_prototipo",
+      "archivo": "sprites/naves/nave_prototipo.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "naves",
+      "pixeles_por_unidad": 48,
+      "orientacion": "arriba",
+      "fuente": "../Recursos_Galaga3D/blender/prototips.blend",
+      "modelo": "InvaderShip",
+      "fuente_sha256": "21d1cab143e0317cffe6d8d0b7204bfa21f03cf016e02425a8073f3c1cc80bb2",
+      "bbox_alpha": [
+        31,
+        44,
+        96,
+        84
+      ],
+      "sha256": "cb91f830be6ef1c00860d40849328dc325c25e7bbb2e8c9c4793333f1c3220bb"
+    },
+    {
+      "id": "enemigo_prototipo",
+      "archivo": "sprites/enemigos/enemigo_prototipo.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "enemigos",
+      "pixeles_por_unidad": 48,
+      "orientacion": "abajo",
+      "fuente": "../Recursos_Galaga3D/blender/prototips.blend",
+      "modelo": "InvaderEnemy",
+      "fuente_sha256": "21d1cab143e0317cffe6d8d0b7204bfa21f03cf016e02425a8073f3c1cc80bb2",
+      "bbox_alpha": [
+        37,
+        44,
+        92,
+        84
+      ],
+      "sha256": "fae2bb63db7e8349f375e454c4785fc05e7a7b4fa691906638ca862b286ff150"
+    },
+    {
+      "id": "bunker",
+      "archivo": "sprites/escenario/bunker.png",
+      "tamano": [
+        128,
+        128
+      ],
+      "pivot": [
+        64.0,
+        64.0
+      ],
+      "familia": "escenario",
+      "pixeles_por_unidad": 48,
+      "orientacion": null,
+      "fuente": "../Recursos_Galaga3D/blender/prototips.blend",
+      "modelo": "Bunker_1",
+      "fuente_sha256": "21d1cab143e0317cffe6d8d0b7204bfa21f03cf016e02425a8073f3c1cc80bb2",
+      "bbox_alpha": [
+        37,
+        44,
+        92,
+        84
+      ],
+      "sha256": "5a6790aba52dfe87b10d2c563905a2b3c41202cf052701ae4302531175d5b96d"
+    }
+  ]
+}

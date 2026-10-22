@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>Mejora de laser perforante</title>
+<polygon points="16,7 48,7 57,16 57,48 48,57 16,57 7,48 7,16" fill="#10131C"/>
+<polyline points="17,9 47,9 55,17 55,47 47,55 17,55 9,47 9,17 17,9" fill="none" stroke="#9870B3" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="27,18 37,18 37,47 27,47" fill="#9870B3"/>
+<polygon points="30,18 34,18 34,47 30,47" fill="#F3EEDB"/>
+<polyline points="21,23 43,23" fill="none" stroke="#EAC64B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="21,41 43,41" fill="none" stroke="#EAC64B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
