@@ -1,5 +1,34 @@
 # Interfaz de Galaga 3D
 
+## Blender retro
+
+Dos versiones de los modelos y las pantallas en estilo arcade. Incluyen las naves FLECHA, DELTA y DOBLE MOTOR, enemigos, jefe y HUD. Las piezas son mallas editables, con letras de bloques y materiales de pocos colores.
+
+| Archivo | Uso |
+| --- | --- |
+| [Galaga3D_Retro_Estatica.blend](blender/Retro/Galaga3D_Retro_Estatica.blend) | Editar las siete pantallas sin animaciones. Se cambia de pantalla desde el selector de escenas de Blender. |
+| [Galaga3D_Retro_Animada.blend](blender/Retro/Galaga3D_Retro_Animada.blend) | Ver los modelos y disparos animados. La escena `08_DEMO_COMPLETA` recorre la presentación en 18 segundos. |
+
+Las siete pantallas son inicio, elección de nave, partida, pausa, jefe, victoria y derrota. Para abrir la animada con los botones activos, ejecutar desde la raíz del repositorio:
+
+```powershell
+& .\Recursos_Galaga3D\blender\Retro\Abrir_animada.ps1
+```
+
+También se puede abrir el `.blend` animado, seleccionar `INICIAR_INTERFAZ.py` en el Editor de texto y pulsar **Alt + P**. Después, colocar el ratón sobre la vista 3D. Los pasos y controles están en [LEEME.txt](blender/Retro/LEEME.txt).
+
+El HUD muestra puntos, récord, oleada, tres vidas, plano y recarga. El jefe tiene su barra de vida y aviso de ataque. La nave elegida se mantiene al cambiar entre partida, jefe y resultados.
+
+Se puede navegar con clics, **1/2/3**, **Enter** y **P**. **Espacio** reproduce o detiene la animación y **Esc** desactiva el controlador. A/D y E aparecen como ayuda del juego, pero no controlan este prototipo. Es una presentación visual: todavía no hay colisiones ni una partida completa.
+
+![Pantallas retro](previews/Retro/Todas_las_pantallas.png)
+
+[Demo animada](previews/Retro/Galaga_Retro_Demo.gif) · [Comprobaciones de los archivos](blender/Retro/comprobaciones.json)
+
+La animación de Blender dura 18 segundos a 30 FPS; el GIF la muestra a 5 FPS. En `scripts/` están el controlador y los scripts para reconstruir los modelos y renderizar las vistas previas. Los fotogramas intermedios y las copias `.blend1` se generan localmente.
+
+## Interfaz original
+
 Recursos visuales originales para la interfaz: puntos, récord, oleada, tres vidas, vida del jefe, planos A/B, recarga y pausa. Estilo futurista con cian y colores vivos. Resolución de referencia: **1280 × 720**.
 
 ![Interfaz](previews/interfaz_galaga.png)
@@ -56,8 +85,10 @@ blender --background Recursos_Galaga3D/blender/Galaga3D_Interfaz.blend --python-
 
 Los generadores reconstruyen sus recursos; conservar una copia de cualquier edición manual antes de ejecutarlos. Los verificadores no guardan cambios en el `.blend`; generan informes JSON y una imagen de prueba. `validacion_hud_final.json` y `validacion_blender_final.json` recogen la revisión final: archivos, transparencia, atlas, cifras, recortes, valores límite, planos, pausa y portabilidad de las fuentes y rutas.
 
+Para las versiones retro se utilizan `scripts/generar_retro_blender.py`, `scripts/verificar_retro_blender.py` y `scripts/verificar_botones_retro.py`. Estos verificadores generan sus informes en `previews/Retro/`. Revisan la estructura, animaciones y geometría de botones en segundo plano. Los clics y atajos se comprueban aparte en una ventana de Blender.
+
 ## Subir a GitHub
 
-Incluir **toda la carpeta `Recursos_Galaga3D/`**, con el `.blend`, `hud/`, `fonts/`, `previews/`, `scripts/`, los informes y este README. El `.blend` ocupa menos de 2 MB. Conservar `fonts/bitstream-vera-license.txt`; la licencia de Bitstream Vera está limitada a las fuentes.
+Incluir los archivos de Blender, recursos del HUD, fuentes, vistas previas finales y scripts. Las copias `.blend1` y los fotogramas intermedios no son necesarios. Conservar `fonts/bitstream-vera-license.txt`; la licencia de Bitstream Vera está limitada a las fuentes.
 
 Los gráficos se han generado para este proyecto y no contienen sprites de Namco. Las referencias al juego y al diseño están en la documentación del repositorio.

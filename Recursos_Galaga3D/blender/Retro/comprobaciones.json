@@ -1,0 +1,69 @@
+{
+  "fecha": "2026-10-22",
+  "blender": "5.2.2 LTS",
+  "resultado": "PASS",
+  "alcance": "Estructura, mallas, materiales, animaciones y acciones de interfaz comprobadas en Blender sin ventana. Los rayos comprueban la geometria de los botones.",
+  "versiones": [
+    {
+      "archivo": "Galaga3D_Retro_Estatica.blend",
+      "sha256": "6ce680c87162a73563906664fdfba0aaf727aa2646241b98490fb626e2d2fdbb",
+      "bytes": 1080294,
+      "resultado": "PASS",
+      "errores": 0,
+      "escenas": [
+        "01_INICIO",
+        "02_ELEGIR_NAVE",
+        "03_PARTIDA",
+        "04_PAUSA",
+        "05_JEFE",
+        "06_VICTORIA",
+        "07_DERROTA"
+      ],
+      "variantes_nave": [
+        0,
+        1,
+        2
+      ],
+      "animaciones": 0,
+      "botones": {
+        "resultado": "PASS",
+        "rayos": 300,
+        "errores": 0
+      }
+    },
+    {
+      "archivo": "Galaga3D_Retro_Animada.blend",
+      "sha256": "498cd87e1fffc4d8854d9d10d68a1752ea195619686dff5be269f6f3c9c093b5",
+      "bytes": 1091180,
+      "resultado": "PASS",
+      "errores": 0,
+      "escenas": [
+        "01_INICIO",
+        "02_ELEGIR_NAVE",
+        "03_PARTIDA",
+        "04_PAUSA",
+        "05_JEFE",
+        "06_VICTORIA",
+        "07_DERROTA",
+        "08_DEMO_COMPLETA"
+      ],
+      "variantes_nave": [
+        0,
+        1,
+        2
+      ],
+      "animaciones": 39,
+      "botones": {
+        "resultado": "PASS",
+        "rayos": 300,
+        "errores": 0
+      }
+    }
+  ],
+  "controlador_animado_coincide_con_script": true,
+  "archivos_blend_modificados": false,
+  "limites": [
+    "No se han repetido clics ni atajos en una ventana de Blender.",
+    "Estas pruebas no verifican una partida jugable ni la integracion con el juego."
+  ]
+}
