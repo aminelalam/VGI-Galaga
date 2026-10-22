@@ -17,6 +17,7 @@
 class CEntornVGIApp : public CWinAppEx
 {
 public:
+    int verificationExitCode = -1;
 	CEntornVGIApp() noexcept;
 
 

@@ -1,50 +1,16 @@
-# 🚀 Galaga 3D · VGI
+# Galaga 3D · VGI
 
-**Del arcade 2D a un juego con volumen y profundidad.**
+Demo nativa en C++/MFC/OpenGL: **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. Los modelos son sólidos; los enemigos siguen trayectorias con profundidad y las colisiones se calculan en XYZ.
 
-Proyecto del **grupo 3 de Visualización Gráfica Interactiva**. Este repositorio reúne la propuesta de diseño de Amin, la documentación y las herramientas de organización del equipo.
+Abre **`dist/Galaga3D/Galaga3D.exe`** para jugar o ejecuta **`build-demo.cmd`** para compilar, probar y preparar el paquete. La carpeta distribuida incluye un motor OpenGL local que evita el aviso de actualizar el controlador en este equipo.
 
-🎮 **3 oleadas + jefe** · 🧊 **Modelos 3D** · ↔️ **Control lateral** · 🛸 **Dos carriles de profundidad**
+**Controles:** 1/2/3 eligen nave; Enter empieza; A/D o flechas mueven; Espacio dispara; P pausa; R reinicia tras el resultado. Esc permite regresar a la selección desde pausa o resultados.
 
-![Propuesta de transformación del 2D al 3D](Entrega_Amin_VGI/Gestion_y_diseno/figuras/salto_2d_3d.png)
+[Instrucciones, arquitectura y verificación](DEMO_3D.md) · [Solución Visual Studio 2022](Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln)
 
-> 📌 **Estado:** diseño y materiales de gestión preparados. La implementación e integración del juego en C++/MFC/OpenGL/GLM y sus pruebas están pendientes. La maqueta del navegador permite explicar las reglas.
+La nueva acta se aplica con mallas cargadas una sola vez en VBO/VAO y una matriz `model` enviada al shader por instancia. El HUD sigue el aspecto arcade negro/amarillo de las fotos y las naves reinterpretan sus tres diseños con colores y siluetas de Galaga.
 
-## ⚡ Empieza aquí
-
-| Lo que necesitas | Abrir |
-| --- | --- |
-| 📄 Entender la parte de Amin en un minuto | [Resumen de una página](Entrega_Amin_VGI/Resumen_Amin_VGI.pdf) |
-| 📊 Organizar tareas, requisitos y pruebas | [Excel integral del equipo](Entrega_Amin_VGI/Gestion_y_diseno/01_Gestion_integral_Galaga3D.xlsx) |
-| 📘 Consultar el diseño técnico | [PDF](Entrega_Amin_VGI/Gestion_y_diseno/Diseno_tecnico_Galaga3D_Amin.pdf) · [Word editable](Entrega_Amin_VGI/Gestion_y_diseno/Diseno_tecnico_Galaga3D_Amin.docx) |
-| 🧩 Revisar parámetros, estados y oleadas | [Excel de diseño de Amin](Entrega_Amin_VGI/Gestion_y_diseno/03_Diseno_detallado_Amin.xlsx) |
-| 🗣️ Preparar la reunión | [Guion](Entrega_Amin_VGI/Guion_reunion.md) · [Trabajo del grupo](Entrega_Amin_VGI/Tareas_para_el_grupo.md) |
-| 🖥️ Ver la maqueta y los recursos | Descargar el repositorio y abrir `Entrega_Amin_VGI/INICIO.html` |
-
-## 🎮 La idea del juego
-
-El jugador mueve su nave lateralmente, dispara a las formaciones y esquiva los picados. La partida contiene **tres oleadas y un jefe final**.
-
-1. **P0 · Base jugable:** completar el ciclo de partida en un carril, con modelos volumétricos, iluminación y cámara fija.
-2. **P1 · Profundidad:** añadir dos carriles para decidir dónde atacar y esquivar.
-3. **P2 · Ampliación opcional:** rescate de una nave aliada y doble disparo, después de verificar P0 y P1.
-
-### 🛸 ¿Qué son los carriles A/B?
-
-**A está delante y B al fondo.** Ambos permiten moverse a izquierda y derecha. Cambiar de carril mueve la nave en profundidad.
-
-| Acción | Control propuesto |
-| --- | --- |
-| ↔️ Moverse lateralmente | Flechas izquierda/derecha o teclas **A/D** |
-| 💥 Disparar | **Espacio** |
-| 🔄 Cambiar entre carril A y B | **E** |
-| ⏸️ Pausar | **P** |
-
-La tecla **A** sirve para moverse a la izquierda. El **carril A** es el nombre de una posición de profundidad.
-
-**Bala A + enemigo A → impacto. Bala A + enemigo B → sin impacto.**
-
-![Esquema de los dos planos de combate](Entrega_Amin_VGI/recursos/04_planos_combate.png)
+La documentación de gestión que sigue recoge el diseño completo anterior: tres oleadas, jefe y planos A/B. **La demo actual usa una sola ronda y no permite cambiar de plano**, según la última decisión del usuario. Los PDF, actas y hojas de cálculo originales se conservan como documentación de referencia.
 
 ## 📊 Un Excel para mantener el proyecto
 
@@ -103,7 +69,7 @@ La portada, diagramas, maqueta y tráiler descargado funcionan localmente. Los e
 
 ## 📁 Organización
 
-La interfaz editable de Blender, los sprites PNG/SVG, los atlas y sus comprobaciones están en [Recursos_Galaga3D](Recursos_Galaga3D/README.md). Incluye puntos, récord, vidas, oleada, vida del jefe, planos A/B y pausa. La integración con el juego C++ sigue pendiente.
+La interfaz editable de Blender, los sprites PNG/SVG, los atlas y sus comprobaciones están en [Recursos_Galaga3D](Recursos_Galaga3D/README.md). Conservan la propuesta anterior, incluidos los planos A/B. La demo C++ tiene un HUD arcade propio y modelos sólidos basados en las fotos; su implementación está en `Entrega_Amin_VGI/entornsGrafics/EntornVGI`.
 
 ```text
 Entrega_Amin_VGI/
@@ -125,14 +91,13 @@ Entrega_Amin_VGI/
 └── recursos/                        # Acta, imágenes, diagramas y vídeo
 ```
 
-## 🧭 Próximos pasos
+## 🧭 Estado de la implementación
 
-- [ ] Contrastar alcance y criterios con la rúbrica y el anexo completo.
-- [ ] Acordar reglas, fechas, disponibilidad y reparto de tareas.
-- [ ] Integrar el ciclo P0 en la plantilla de VGI.
-- [ ] Incorporar los dos carriles P1 y comprobar su lectura visual.
-- [ ] Ejecutar los casos de prueba y guardar evidencias de la build.
-- [ ] Evaluar P2 cuando la base y la profundidad estén verificadas.
+- [x] Integrar una ronda completa en la plantilla de VGI.
+- [x] Crear tres naves y enemigos con volumen, VAO/VBO y shaders.
+- [x] Mantener controles laterales y trayectorias enemigas en 3D.
+- [x] Ejecutar pruebas de lógica y de render, con capturas.
+- [ ] Ampliar a las tres oleadas y jefe del diseño completo, si se solicita.
 
 ## 🎨 Fuentes y créditos
 

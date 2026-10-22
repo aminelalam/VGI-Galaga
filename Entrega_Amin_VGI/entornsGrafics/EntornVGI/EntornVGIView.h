@@ -8,6 +8,10 @@
 #pragma once
 
 #include "MainFrm.h"
+#include "Game3D.h"
+#include "Renderer3D.h"
+#include <array>
+#include <chrono>
 
 // Entorn VGI : Constants de l'aplicació entorn VGI
 #include "constants.h"
@@ -38,6 +42,20 @@ protected: // Crear sólo a partir de serialización
 
 // Atributos
 public:
+    galaga::Game3D game;
+    galaga::Renderer3D gameRenderer;
+    bool demoMode = true, gameRendererReady = false;
+    std::array<bool,256> gameKeys{};
+    std::chrono::steady_clock::time_point gameClock = std::chrono::steady_clock::now();
+    double gameAccumulator = 0;
+    void ClearGameInput();
+    void GameKeyDown(UINT key, UINT flags);
+    void GameTick();
+    bool VerifyDemoRendering();
+    afx_msg void OnGameDemo();
+    afx_msg void OnGameEnvironment();
+    afx_msg void OnKillFocus(CWnd* next);
+    virtual BOOL PreTranslateMessage(MSG* message) override;
 	CEntornVGIDoc* GetDocument() const;
 
 //-------------- Entorn VGI: Variables globals de CPractivaView

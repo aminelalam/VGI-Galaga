@@ -25,6 +25,7 @@
 //
 
 #include "pch.h"
+#include <fstream>
 //#include "framework.h"
 
 // Se pueden definir SHARED_HANDLERS en un proyecto ATL implementando controladores de vista previa, miniatura
@@ -49,6 +50,9 @@
 IMPLEMENT_DYNCREATE(CEntornVGIView, CView)
 
 BEGIN_MESSAGE_MAP(CEntornVGIView, CView)
+    ON_COMMAND(ID_GAME_DEMO, &CEntornVGIView::OnGameDemo)
+    ON_COMMAND(ID_GAME_ENVIRONMENT, &CEntornVGIView::OnGameEnvironment)
+    ON_WM_KILLFOCUS()
 	// Comandos de impresión estándar
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
@@ -225,7 +229,7 @@ CEntornVGIView::CEntornVGIView() noexcept
 
 // -------- Entorn VGI: Inicialització de les variables globals de CEntornVGIView --------------
 	
-	//m_hRC = NULL;	m_hrc = NULL;	m_pDC = NULL;	saveParent = NULL;
+	m_hRC = NULL; m_hrc = NULL; m_pDC = NULL; saveParent = NULL;
 	
 	int i = 0;
 
@@ -482,7 +486,7 @@ CEntornVGIView::CEntornVGIView() noexcept
 
 // VGI: OBJECTE --> Corba B-Spline i Bezier
 	npts_T = 0;
-	for (i = 0; i < MAX_PATCH_CORBA; i = i++)
+	for (i = 0; i < MAX_PATCH_CORBA; ++i)
 	{	PC_t[i].x = 0.0;
 		PC_t[i].y = 0.0;
 		PC_t[i].z = 0.0;
@@ -555,8 +559,8 @@ animaR = false;		sw_robot = false;
 	pos_RF[2] = 0.0;		pos_RF[3] = 0.0;		pos_RF[4] = 0.0;
 	pos_RF[5] = 0.0;
 
-	for (i = 0; i < MAX_KEYFRAMES; i = i++)
-		for (j = 0; j < 6; j = j++)		keyf_R[i][j] = 0.0f;
+	for (i = 0; i < MAX_KEYFRAMES; ++i)
+		for (j = 0; j < 6; ++j)		keyf_R[i][j] = 0.0f;
 	np_In = 0;				num_frame = 0;			incr_frame = 1.0;
 */
 
@@ -658,175 +662,49 @@ CEntornVGIDoc* CEntornVGIView::GetDocument() const // La versión de no depuraci
 
 int CEntornVGIView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if (CView::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
-// TODO:  Agregue aquí su código de creación especializado
-
-// Entorn VGI: Creació del context OpenGL
-
-	m_pDC = new CClientDC(this);
-
-	PIXELFORMATDESCRIPTOR pfd;
-	memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 32;
-	pfd.cDepthBits = 24;
-	pfd.iLayerType = PFD_MAIN_PLANE;
-
-	// Entorn VGI: Format del pixel que millor s'ajusti al descrit en pfd
-		//int nPixelFormat = ChoosePixelFormat(pDC->m_hDC, &pfd);
-	int nPixelFormat = ChoosePixelFormat(m_pDC->GetSafeHdc(), &pfd);
-
-	if (!nPixelFormat)
-	{
-		::MessageBoxW(NULL, L"Error en SetPixelFormat", L"Error", MB_OK | MB_ICONERROR);
-		PostQuitMessage(0);		// This sends a message telling the program to quit
-		return false;
-	}
-
-	// Activació format pixel per al contexte dispositiu
-		//BOOL bResult = SetPixelFormat(pDC->m_hDC, nPixelFormat, &pfd);
-	BOOL bResult = SetPixelFormat(m_pDC->GetSafeHdc(), nPixelFormat, &pfd);
-
-	if (!bResult)
-	{
-		::MessageBoxW(NULL, L"Error en SetPixelFormat", L"Error", MB_OK | MB_ICONERROR);
-		PostQuitMessage(0);		// This sends a message telling the program to quit
-		return false;
-	}
-
-	// Entorn VGI: Creació contexte generació OpenGL
-		// m_hRC=wglCreateContext(m_hDC);
-	m_hRC = wglCreateContext(m_pDC->GetSafeHdc());
-	if (!m_hRC)
-	{
-		::MessageBoxW(NULL, L"Error en GL Rendering Context", L"Error", MB_OK | MB_ICONERROR);
-		PostQuitMessage(0);		// This sends a message telling the program to quit
-		return false;
-	}
-
-	// OPENGL 2.0 - OPENGL 3.0 **********************************************************
-		// --- OpenGL 3.x ---
-	HGLRC tempContext = wglCreateContext(m_pDC->GetSafeHdc());
-	wglMakeCurrent(m_pDC->GetSafeHdc(), tempContext);
-
-	//Get access to modern OpenGL functionality from this old style context.
-	glewExperimental = GL_TRUE;
-	if (GLEW_OK != glewInit())
-	{
-		AfxMessageBox(_T("GLEW could not be initialized!"));
-		return FALSE;
-	}
-
-	//InitAPI();
-
-	int major, minor;
-	// Xifra Alta de la versió (per a 4.6, major=4)
-	// Xifra baixa de la versió (per a 4.6, minor=6)
-	GetGLVersion(&major, &minor);
-
-	if (major < 3 || (major == 3 && minor < 2))
-		AfxMessageBox(_T("INFO: OpenGL 3.2 is not supported!. Exit\n"));
-	//	else 
-	//		AfxMessageBox(_T("OpenGL 3.2 is supported!. Proceed"));
-
-	//	if (glewIsExtensionSupported("GLEW_ARB_vertex_shader"))
-	//	AfxMessageBox(_T("INFO: GLEW_ARB_vertex_shader supported, proceeding\n"));
-	//	else AfxMessageBox(_T("INFO: GLEW_ARB_vertex_shader NOT supported, proceeding\n"));
-	//
-	//	if (glewIsExtensionSupported("GLEW_ARB_fragment_shader"))
-	//	AfxMessageBox(_T("INFO: GLEW_ARB_fragment_shader supported, proceeding\n"));
-	//	else AfxMessageBox(_T("INFO: GLEW_ARB_fragment_shader NOT supported, proceeding\n"));
-	//
-	if (glewIsSupported("GL_VERSION_4_3")) //(GLEW_VERSION_4_3)
-	{
-	} //AfxMessageBox(_T("INFO: OpenGL 4.3 supported!. Proceed\n"));
-	else
-	{
-		AfxMessageBox(_T("INFO: GLEW OpenGL 4.3 not supported!. Exit\n"));
-		//return EXIT_FAILURE;
-	}
-
-	int attribs[] =
-	{
-		WGL_CONTEXT_MAJOR_VERSION_ARB, major,
-		WGL_CONTEXT_MINOR_VERSION_ARB, minor,
-		WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB | WGL_CONTEXT_DEBUG_BIT_ARB,
-		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB, //0x9126 , 0x00000001,
-		0
-	};
-
-	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
-	wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-	if (wglCreateContextAttribsARB != NULL)
-	{
-		m_hrc = wglCreateContextAttribsARB(m_pDC->GetSafeHdc(), 0, attribs);
-	}
-
-	wglMakeCurrent(m_pDC->GetSafeHdc(), m_hrc);
-
-	// Entorn VGI: Inicialització de funcions de shaders per a OpenGL 4.6
-	InitAPI();
-
-	wglMakeCurrent(NULL, NULL);
-	wglDeleteContext(tempContext);
-
-	if (!m_hrc)
-	{
-		AfxMessageBox(_T("INFO: Context OpenGL is not created!"));
-		return false;
-	}
-
-	// Entorn VGI: Activació el contexte OpenGL
-	wglMakeCurrent(m_pDC->GetSafeHdc(), m_hRC);
-
-	// ------------ - Entorn VGI : Enable OpenGL debug context if context allows for DEBUG CONTEXT (GL 4.6)
-	if (GLEW_VERSION_4_6)
-	{
-		GLint flags;
-		glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-		{
-			glEnable(GL_DEBUG_OUTPUT);
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); // makes sure errors are displayed synchronously
-			glDebugMessageCallback((GLDEBUGPROC)wglGetProcAddress("glDebugOutput"), nullptr);
-			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-		}
-	}
-
-	// ------------ - Entorn VGI : To verify that the driver supports at least one shader binary format (GL4.6)
-	GLboolean shader_compiler = 0;
-	glGetBooleanv(GL_SHADER_COMPILER, &shader_compiler);
-	if (shader_compiler == GL_FALSE) {
-		AfxMessageBox(_T("INFO: Shader compilation NOT supported"));
-		//exit(EXIT_FAILURE);
-	}
-
-	GLint program_formats = 0;
-	glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &program_formats);
-	if (program_formats < 1) {
-		AfxMessageBox(_T("INFO: Program binary loading NOT supported.\n"));
-		//exit(EXIT_FAILURE);
-	}
-
-	GLint shader_formats = 0;
-	glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &shader_formats);
-	if (shader_formats < 1) {	//AfxMessageBox(_T("INFO: Shader binary loading NOT supported.\n"));
-		//exit(EXIT_FAILURE);
-	}
-
-	// Entorn VGI: Desactivació el contexte OpenGL. Permet la coexistencia d'altres contextes de generació
-	wglMakeCurrent(m_pDC->GetSafeHdc(), NULL);
-
-	return 0;
-	//return true;
+    if(CView::OnCreate(lpCreateStruct)==-1)return -1;
+    std::ofstream trace("context.log");trace << "OnCreate" << std::endl;
+    m_pDC=new CClientDC(this);
+    PIXELFORMATDESCRIPTOR pfd{};
+    pfd.nSize=sizeof(pfd);pfd.nVersion=1;
+    pfd.dwFlags=PFD_DOUBLEBUFFER|PFD_SUPPORT_OPENGL|PFD_DRAW_TO_WINDOW;
+    pfd.iPixelType=PFD_TYPE_RGBA;pfd.cColorBits=32;pfd.cDepthBits=24;
+    int format=ChoosePixelFormat(m_pDC->GetSafeHdc(),&pfd);
+    if(!format||!SetPixelFormat(m_pDC->GetSafeHdc(),format,&pfd))return -1;
+    trace << "Pixel format " << format << std::endl;
+    HGLRC temporary=wglCreateContext(m_pDC->GetSafeHdc());
+    if(!temporary||!wglMakeCurrent(m_pDC->GetSafeHdc(),temporary)) {
+        if(temporary)wglDeleteContext(temporary);return -1;
+    }
+    trace << "Legacy context ready" << std::endl;
+    glewExperimental=GL_TRUE;
+    if(glewInit()!=GLEW_OK){wglMakeCurrent(nullptr,nullptr);wglDeleteContext(temporary);return -1;}
+    auto create=(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+    // Preserve the teaching shaders on 4.6 hardware; the demo itself needs only 3.3.
+    if(create)for(int version : {46,33}) {
+        int attributes[]={WGL_CONTEXT_MAJOR_VERSION_ARB,version/10,WGL_CONTEXT_MINOR_VERSION_ARB,version%10,
+            WGL_CONTEXT_PROFILE_MASK_ARB,WGL_CONTEXT_CORE_PROFILE_BIT_ARB,0};
+        m_hRC=create(m_pDC->GetSafeHdc(),nullptr,attributes);if(m_hRC)break;
+    }
+    if(m_hRC) {
+        wglMakeCurrent(nullptr,nullptr);wglDeleteContext(temporary);
+        if(!wglMakeCurrent(m_pDC->GetSafeHdc(),m_hRC))return -1;
+    } else {
+        // Initialization below checks 3.3 and reports a missing app-local runtime.
+        m_hRC=temporary;
+    }
+    trace << "OpenGL " << glGetString(GL_VERSION) << " / " << glGetString(GL_RENDERER) << std::endl;
+    m_hrc=m_hRC;
+    if(glewInit()!=GLEW_OK)return -1;
+    for(int i=0;i<16 && glGetError()!=GL_NO_ERROR;++i){}
+    if(GLEW_VERSION_3_3)InitAPI();
+    try {gameRenderer.initialize();gameRendererReady=true;trace << "Renderer ready" << std::endl;}
+    catch(const std::exception& e) {CString message(e.what());AfxMessageBox(message);return -1;}
+    game.bestScore=AfxGetApp()->GetProfileInt(L"Game",L"BestScore",0);
+    ClearGameInput();SetTimer(45003,16,nullptr);
+    wglMakeCurrent(nullptr,nullptr);
+    return 0;
 }
-
-
 
 void CEntornVGIView::InitAPI()
 {
@@ -963,14 +841,17 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 
 void CEntornVGIView::OnDestroy()
 {
-	CView::OnDestroy();
-
-// TODO: Agregue aquí su código de controlador de mensajes
-	CDC* pDC = GetDC();
-	ReleaseDC(pDC);
+    KillTimer(45003);
+    if(CString(GetCommandLineW()).Find(L"/verify-render")<0)
+        AfxGetApp()->WriteProfileInt(L"Game",L"BestScore",std::max(game.bestScore,game.score));
+    if(m_hRC) {
+        wglMakeCurrent(m_pDC->GetSafeHdc(),m_hRC);
+        gameRenderer.release();gameRendererReady=false;
+        wglMakeCurrent(nullptr,nullptr);wglDeleteContext(m_hRC);m_hRC=nullptr;m_hrc=nullptr;
+    }
+    delete m_pDC;m_pDC=nullptr;
+    CView::OnDestroy();
 }
-
-
 
 void CEntornVGIView::OnSize(UINT nType, int cx, int cy)
 {
@@ -1013,6 +894,15 @@ void CEntornVGIView::OnDraw(CDC* /*pDC*/)
 void CEntornVGIView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
+    if(demoMode) {
+        if(gameRendererReady) {
+            wglMakeCurrent(m_pDC->GetSafeHdc(),m_hRC);
+            gameRenderer.draw(game,w,h);
+            SwapBuffers(m_pDC->GetSafeHdc());
+            wglMakeCurrent(nullptr,nullptr);
+        }
+        return;
+    }
 // TODO: Agregue aquí su código de controlador de mensajes
 // No llama a CView::OnPaint() para mensajes de pintura
 	GLdouble vpv[3] = { 0.0, 0.0, 1.0 };
@@ -1546,6 +1436,7 @@ void CEntornVGIView::double2CString(double varf)
 //    - nFlags: Flags d'interrupció activats.
 void CEntornVGIView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+    if(demoMode){GameKeyDown(nChar,nFlags);return;}
 // TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
 	const double incr = 0.025f;
 	double modul = 0;
@@ -1587,6 +1478,7 @@ void CEntornVGIView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CEntornVGIView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+    if(demoMode){if(nChar<gameKeys.size())gameKeys[nChar]=false;return;}
 // TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
 
 	CView::OnKeyUp(nChar, nRepCnt, nFlags);
@@ -3797,6 +3689,7 @@ BOOL CEntornVGIView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 /* ------------------------------------------------------------------------- */
 void CEntornVGIView::OnTimer(UINT_PTR nIDEvent)
 {
+    if(nIDEvent==45003){GameTick();return;}
 // TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
 	if (anima) {
 		// Codi de tractament de l'animació quan transcorren els ms. del crono.
@@ -6244,7 +6137,7 @@ void CEntornVGIView::OnShadersPBinaryRead()
 			AfxMessageBox(_T("GLSL_Error.LINK was not opened"));
 			//fprintf(stderr, "%s \n", "GLSL_Error.LINK was not opened");
 		}
-		for (int i = 0; i <= maxLength; i = i++) fprintf(fd, "%c", errorLog[i]);
+		for (int i = 0; i <= maxLength; ++i) fprintf(fd, "%c", errorLog[i]);
 		fclose(fd);
 		glDeleteProgram(shader_BinProgramID);		// Don't leak the program.
 	}
@@ -6428,7 +6321,7 @@ int CEntornVGIView::llegir_ptsC(char* nomf)
 	FILE* fd;
 
 	// Inicialitzar vector punts de control de la corba spline
-	for (i = 0; i < MAX_PATCH_CORBA; i = i++)
+	for (i = 0; i < MAX_PATCH_CORBA; ++i)
 	{
 		PC_t[i].x = 0.0;
 		PC_t[i].y = 0.0;
@@ -6449,7 +6342,7 @@ int CEntornVGIView::llegir_ptsC(char* nomf)
 	fscanf(fd, "%d \n", &i);
 	if (i == 0) return false;
 	else {
-		for (j = 0; j < i; j = j++)
+		for (j = 0; j < i; ++j)
 		{	//fscanf(fd, "%f", &corbaSpline[j].x);
 			//fscanf(fd, "%f", &corbaSpline[j].y);
 			//fscanf(fd, "%f \n", &corbaSpline[j].z);

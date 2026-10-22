@@ -21,3 +21,12 @@ __pycache__/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Demo build products
+build/
+bin/
+lib/
+dist/
+
+# MVP local: no publicar en GitHub
+/MVP/

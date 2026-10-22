@@ -10,6 +10,7 @@
 #include "MainFrm.h"
 
 #include "ChildFrm.h"
+#include <fstream>
 #include "EntornVGIDoc.h"
 #include "EntornVGIView.h"
 
@@ -64,6 +65,8 @@ CEntornVGIApp theApp;
 
 BOOL CEntornVGIApp::InitInstance()
 {
+    SetCurrentDirectoryW(galaga::Renderer2D::executableDirectory().c_str());
+    std::ofstream startup("startup.log");startup << "InitInstance" << std::endl;
 	// Windows XP requiere InitCommonControlsEx() si un manifiesto de
 	// aplicación especifica el uso de ComCtl32.dll versión 6 o posterior para habilitar
 	// estilos visuales.  De lo contrario, se generará un error al crear ventanas.
@@ -75,6 +78,7 @@ BOOL CEntornVGIApp::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinAppEx::InitInstance();
+    startup << "MFC initialized" << std::endl;
 
 
 	// Inicializar bibliotecas OLE
@@ -98,7 +102,7 @@ BOOL CEntornVGIApp::InitInstance()
 	// Cambie la clave del Registro en la que se almacena la configuración
 	// TODO: debe modificar esta cadena para que contenga información correcta
 	// como el nombre de su compañía u organización
-	SetRegistryKey(_T("Aplicaciones generadas con el Asistente para aplicaciones local"));
+	SetRegistryKey(_T("VGI Galaga3D Demo"));
 	LoadStdProfileSettings(4);  // Cargar opciones de archivo INI estándar (incluidas las de la lista MRU)
 
 
@@ -124,18 +128,21 @@ BOOL CEntornVGIApp::InitInstance()
 	AddDocTemplate(pDocTemplate);
 
 	// Crear ventana de marco principal MDI
-	CMainFrame* pMainFrame = new CMainFrame;
+	startup << "Creating frame" << std::endl;
+    CMainFrame* pMainFrame = new CMainFrame;
 	if (!pMainFrame || !pMainFrame->LoadFrame(IDR_MAINFRAME))
 	{
 		delete pMainFrame;
 		return FALSE;
 	}
 	m_pMainWnd = pMainFrame;
+    startup << "Frame ready" << std::endl;
 
 
 	// Analizar línea de comandos para comandos Shell estándar, DDE, Archivo Abrir
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
+    startup << "Shell command " << cmdInfo.m_nShellCommand << std::endl;
 
 
 
@@ -144,7 +151,23 @@ BOOL CEntornVGIApp::InitInstance()
 	if (!ProcessShellCommand(cmdInfo))
 		return FALSE;
 	// La ventana principal se ha inicializado; mostrarla y actualizarla
-	pMainFrame->ShowWindow(m_nCmdShow);
+	startup << "Document created" << std::endl;
+    pMainFrame->SetDemoLayout(true);
+    if(CString(GetCommandLineW()).Find(L"/verify-render")>=0) {
+        auto child=pMainFrame->MDIGetActive();
+        auto view=child?DYNAMIC_DOWNCAST(CEntornVGIView,child->GetActiveView()):nullptr;
+        startup << "View " << (view?"ready":"missing") << std::endl;
+        bool passed=view && view->VerifyDemoRendering();
+        startup << "Verification " << passed << std::endl;
+        verificationExitCode=passed?0:1;
+        pMainFrame->DestroyWindow();
+        return FALSE;
+    }
+    pMainFrame->SetTitle(L"Galaga 3D");
+    if(auto child=pMainFrame->MDIGetActive())if(auto doc=child->GetActiveDocument())doc->SetTitle(L"Galaga 3D");
+    pMainFrame->ShowWindow(m_nCmdShow);
+    pMainFrame->SetWindowPos(nullptr,0,0,1320,840,SWP_NOMOVE|SWP_NOZORDER);
+    if(auto child=pMainFrame->MDIGetActive()){child->MDIMaximize();if(auto view=child->GetActiveView())view->SetFocus();}
 	pMainFrame->UpdateWindow();
 
 	return TRUE;
@@ -155,7 +178,8 @@ int CEntornVGIApp::ExitInstance()
 	//TODO: controlar recursos adicionales que se hayan podido agregar
 	AfxOleTerm(FALSE);
 
-	return CWinAppEx::ExitInstance();
+	int result=CWinAppEx::ExitInstance();
+    return verificationExitCode>=0?verificationExitCode:result;
 }
 
 // Controladores de mensajes de CEntornVGIApp

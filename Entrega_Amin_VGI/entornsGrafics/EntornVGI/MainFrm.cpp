@@ -441,3 +441,14 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 	CMDIFrameWndEx::OnSettingChange(uFlags, lpszSection);
 	m_wndOutput.UpdateFonts();
 }
+
+void CMainFrame::SetDemoLayout(bool demo)
+{
+    ShowPane(&m_wndFileView,!demo,FALSE,FALSE);
+    ShowPane(&m_wndClassView,!demo,FALSE,FALSE);
+    ShowPane(&m_wndOutput,!demo,FALSE,FALSE);
+    ShowPane(&m_wndProperties,!demo,FALSE,FALSE);
+    ShowPane(&m_wndToolBar,!demo,FALSE,FALSE);
+    ShowPane(&m_wndStatusBar,!demo,FALSE,FALSE);
+    RecalcLayout();
+}

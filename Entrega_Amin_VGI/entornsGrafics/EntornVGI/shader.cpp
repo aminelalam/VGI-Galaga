@@ -93,7 +93,7 @@ GLuint Shader::loadFileShaders(std::string file_Vert, std::string file_Frag)
 			//fprintf(stderr, "%s \n", "GLSL_Error.VERT was not opened");
 			return GL_FALSE;
 		}
-		for (int i = 0; i <= maxLength; i = i++)
+		for (int i = 0; i < maxLength; ++i)
 		{
 			fprintf(fd, "%c", errorLog[i]);
 			fprintf(stderr, "%c", errorLog[i]);
@@ -125,7 +125,7 @@ GLuint Shader::loadFileShaders(std::string file_Vert, std::string file_Frag)
 			//fprintf(stderr, "%s \n", "GLSL_Error.FRAG was not opened");
 			return GL_FALSE;
 		}
-		for (int i = 0; i <= maxLength; i = i++)
+		for (int i = 0; i < maxLength; ++i)
 		{	fprintf(fd, "%c", errorLog[i]);
 			fprintf(stderr, "%c", errorLog[i]);
 		}
@@ -169,7 +169,7 @@ GLuint Shader::loadFileShaders(std::string file_Vert, std::string file_Frag)
 			//fprintf(stderr, "%s \n", "GLSL_Error.LINK was not opened");
 			return GL_FALSE;
 		}
-		for (int i = 0; i <= maxLength; i = i++) fprintf(fd, "%c", errorLog[i]);
+		for (int i = 0; i < maxLength; ++i) fprintf(fd, "%c", errorLog[i]);
 		fclose(fd);
 
 		glDeleteShader(v);		// Don't leak the shader.
@@ -251,7 +251,7 @@ GLuint Shader::loadFileShadersG(std::string file_Vert, std::string file_Frag, st
 			//fprintf(stderr, "%s \n", "GLSL_Error.VERT was not opened");
 			return GL_FALSE;
 		}
-		for (int i = 0; i <= maxLength; i = i++)
+		for (int i = 0; i < maxLength; ++i)
 		{
 			fprintf(fd, "%c", errorLog[i]);
 			fprintf(stderr, "%c", errorLog[i]);
@@ -287,7 +287,7 @@ GLuint Shader::loadFileShadersG(std::string file_Vert, std::string file_Frag, st
 			//fprintf(stderr, "%s \n", "GLSL_Error.FRAG was not opened");
 			return GL_FALSE;
 		}
-		for (int i = 0; i <= maxLength; i = i++)
+		for (int i = 0; i < maxLength; ++i)
 		{
 			fprintf(fd, "%c", errorLog[i]);
 			fprintf(stderr, "%c", errorLog[i]);
@@ -332,7 +332,7 @@ GLuint Shader::loadFileShadersG(std::string file_Vert, std::string file_Frag, st
 				//fprintf(stderr, "%s \n", "GLSL_Error.GEOM was not opened");
 				return GL_FALSE;
 			}
-			for (int i = 0; i <= maxLength; i = i++)
+			for (int i = 0; i < maxLength; ++i)
 			{
 				fprintf(fd, "%c", errorLog[i]);
 				fprintf(stderr, "%c", errorLog[i]);
@@ -383,7 +383,7 @@ GLuint Shader::loadFileShadersG(std::string file_Vert, std::string file_Frag, st
 			//fprintf(stderr, "%s \n", "GLSL_Error.LINK was not opened");
 			return GL_FALSE;
 		}
-		for (int i = 0; i <= maxLength; i = i++) fprintf(fd, "%c", errorLog[i]);
+		for (int i = 0; i < maxLength; ++i) fprintf(fd, "%c", errorLog[i]);
 		fclose(fd);
 
 		glDeleteShader(v);		// Don't leak the shader.

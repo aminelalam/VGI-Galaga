@@ -13,6 +13,7 @@ class CMainFrame : public CMDIFrameWndEx
 	DECLARE_DYNAMIC(CMainFrame)
 public:
 	CMainFrame() noexcept;
+    void SetDemoLayout(bool demo);
 
 // Atributos
 public:

@@ -219,3 +219,6 @@
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
+
+#define ID_GAME_DEMO 45001
+#define ID_GAME_ENVIRONMENT 45002
