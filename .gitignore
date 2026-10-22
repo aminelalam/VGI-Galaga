@@ -30,3 +30,7 @@ dist/
 
 # MVP local: no publicar en GitHub
 /MVP/
+
+# Copias de Blender y fotogramas intermedios
+Recursos_Galaga3D/blender/Retro/*.blend[0-9]
+Recursos_Galaga3D/previews/Retro/frames/

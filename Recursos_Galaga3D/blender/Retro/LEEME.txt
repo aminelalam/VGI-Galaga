@@ -1,0 +1,93 @@
+GALAGA 3D RETRO
+
+DOS VERSIONES
+
+Galaga3D_Retro_Estatica.blend
+  Para ver y editar el diseño sin animaciones.
+  Hay siete escenas para consultar:
+  inicio, elegir nave, partida, pausa, jefe, victoria y derrota.
+  Selecciona otra escena en el desplegable superior de Blender.
+  Numpad 0: cámara. F12: render. No hay acciones ni scripts interactivos.
+
+Galaga3D_Retro_Animada.blend
+  El mismo diseño con naves, enemigos, disparos, picado y avisos animados.
+  La escena 08_DEMO_COMPLETA recorre inicio, selección, partida, jefe
+  y victoria en 18 segundos. Elige esa escena y pulsa Espacio sobre
+  la vista 3D para reproducirla. Funciona con keyframes de Blender,
+  sin activar scripts ni instalar complementos.
+
+INICIAR PARTIDA Y ELEGIR NAVE CON CLICS
+
+La forma más directa es ejecutar Abrir_animada.ps1 con PowerShell.
+Desde la raíz del repositorio:
+
+  & .\Recursos_Galaga3D\blender\Retro\Abrir_animada.ps1
+
+El lanzador busca Blender instalado en Program Files, abre una ventana
+nueva con la versión animada y ejecuta el controlador incluido.
+Al activarlo se muestra el inicio y comienza la animación de la escena.
+
+También puedes abrir el .blend animado, cambiar un área al Editor
+de texto, seleccionar INICIAR_INTERFAZ.py y pulsar Alt+P.
+Abrir el .blend directamente no ejecuta ese texto por sí solo.
+Vuelve a la vista 3D y coloca el ratón sobre ella. F3 > Activar
+interfaz retro permite activarlo otra vez. En la barra lateral N
+aparece la pestaña Galaga con botones de navegación y selección.
+
+  Clic izquierdo: usar los botones dibujados en la vista 3D.
+  1, 2, 3: elegir nave; el marco amarillo indica la selección.
+  Enter: avanzar a selección o confirmar la nave.
+  P: pausa desde partida o jefe; continuar desde pausa.
+  Espacio: reproducir o detener las animaciones.
+  Esc: desactivar clics y atajos; Blender permanece abierto.
+
+Los atajos del controlador se aplican con el ratón sobre la vista 3D.
+A/D y E, impresos en el HUD como controles del juego, no mueven la
+nave ni cambian el plano en este prototipo. Espacio controla la
+reproducción de Blender; los disparos visibles están animados.
+
+Las tres naves son FLECHA, DELTA y DOBLE MOTOR. Cambia el modelo,
+no las reglas del proyecto. La selección se conserva en las pantallas
+de partida, jefe, victoria y derrota.
+
+RECORRIDO DE LA INTERFAZ Y HUD
+
+  INICIAR PARTIDA o ELEGIR NAVE abre la selección.
+  Elegir una nave y pulsar CONFIRMAR muestra la partida.
+  Partida: puntos, récord, oleada, tres vidas, plano A y recarga lista.
+  JEFE: modelo del jefe, vida 18/24, aviso de ataque, plano B y
+  recarga parcial animada.
+  PAUSA detiene la presentación. CONTINUAR regresa a la partida o
+  al jefe, según la pantalla desde la que se haya pausado.
+  VICTORIA y DERROTA muestran el resultado con la nave elegida.
+  NUEVA PARTIDA o REINTENTAR vuelve a elegir nave; MENU vuelve al inicio.
+
+Las pantallas animadas se reproducen al entrar mediante el controlador;
+la pausa permanece inmóvil. Los botones JEFE, VICTORIA y DERROTA
+permiten consultar esos estados sin completar una partida.
+
+La entrega es un prototipo visual de Blender con navegación de interfaz
+y animaciones; no implementa colisiones ni una partida jugable completa.
+
+EDITAR
+
+Naves y enemigos: Empty raíz con piezas de malla como hijos.
+Colores: materiales Retro_blue, Retro_red, Retro_green, etc.
+Letras: mallas de bloques de 5 x 7, con texto guardado en la propiedad
+'texto'. Las colecciones se organizan por pantalla.
+
+Se han reutilizado las mallas de los iconos de vida del archivo
+Galaga3D_Interfaz.blend original. Ese archivo se conserva intacto.
+Los modelos y la tipografía de bloques son geometría editable;
+no hay imágenes de fondo ni texturas descargadas.
+
+Las vistas previas y la animación GIF están en ../../previews/Retro/.
+  Todas_las_pantallas.png: las siete pantallas en una imagen.
+  Galaga_Retro_Demo.gif: 18 segundos, 90 imágenes a 5 FPS.
+  03_PARTIDA_1024x768.png: encuadre 4:3 con el campo y HUD completos.
+
+comprobaciones.json recoge la revisión de los archivos incluidos.
+Los scripts verificar_retro_blender.py y verificar_botones_retro.py
+generan informes en previews/Retro al ejecutarlos. Revisan la estructura,
+las animaciones y la geometría de los botones en segundo plano.
+Los clics y atajos se comprueban aparte en la ventana de Blender.
