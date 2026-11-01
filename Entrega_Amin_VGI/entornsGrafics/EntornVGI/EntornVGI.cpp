@@ -132,6 +132,7 @@ BOOL CEntornVGIApp::InitInstance()
     CMainFrame* pMainFrame = new CMainFrame;
 	if (!pMainFrame || !pMainFrame->LoadFrame(IDR_MAINFRAME))
 	{
+		startup << "LoadFrame failed, Win32 error " << GetLastError() << std::endl;
 		delete pMainFrame;
 		return FALSE;
 	}

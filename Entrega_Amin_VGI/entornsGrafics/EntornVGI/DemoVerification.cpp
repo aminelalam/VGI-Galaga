@@ -32,14 +32,20 @@ bool CEntornVGIView::VerifyDemoRendering() {
             glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,depth);
             if(glCheckFramebufferStatus(GL_FRAMEBUFFER)!=GL_FRAMEBUFFER_COMPLETE)throw std::runtime_error("incomplete framebuffer");
         };
+        target(64,64);
+        if(!gameRenderer.verifyLighting(report))throw std::runtime_error("GL-6 lighting verification failed");
         auto capture=[&](const char* name,int width,int height,bool gallery=false,float angle=0.f) {
             target(width,height);
+            if(!gallery && game.phase==galaga::Phase::Playing && !gameRenderer.verifyFraming(game,report))
+                throw std::runtime_error("gameplay framing is unreadable or clipped");
             if(gallery)gameRenderer.modelGallery(width,height,angle);else gameRenderer.draw(game,width,height);
             glFinish();
             auto error=glGetError();if(error!=GL_NO_ERROR)throw std::runtime_error("OpenGL error "+std::to_string(error));
             std::vector<unsigned char> data(size_t(width)*height*4),flipped(data.size());
             glReadPixels(0,0,width,height,GL_RGBA,GL_UNSIGNED_BYTE,data.data());
             for(int y=0;y<height;++y)memcpy(flipped.data()+size_t(y)*width*4,data.data()+size_t(height-1-y)*width*4,size_t(width)*4);
+            // Captures represent an opaque window, including blended HUD glyphs.
+            for(size_t pixel=3;pixel<flipped.size();pixel+=4)flipped[pixel]=255;
             if(!gallery&&width==1280&&height==720&&game.phase==galaga::Phase::Playing){
                 size_t visibleFooter=0;
                 for(int y=640;y<710;++y)for(int x=25;x<1230;++x){const auto* p=flipped.data()+(size_t(y)*width+x)*4;if(std::max({p[0],p[1],p[2]})>150)++visibleFooter;}
@@ -61,11 +67,24 @@ bool CEntornVGIView::VerifyDemoRendering() {
         key(VK_RETURN);if(game.phase!=galaga::Phase::Playing||game.selectedShip!=2)throw std::runtime_error("Enter did not preserve selected ship");
         for(int i=0;i<390;++i)game.update({});
         capture("03-combat",1280,720);capture("04-combat-4x3",1024,768);
-        // A natural dive in XYZ, with no camera- or depth-mode input.
-        bool flight=false;
-        for(int i=0;i<500&&!flight;++i){game.update({});for(const auto& e:game.enemies)flight|=e.alive&&e.phase==galaga::EnemyPhase::Diving&&e.z>.8f;}
-        if(!flight)throw std::runtime_error("no real depth trajectory observed");
-        capture("05-depth-flight",1280,720);
+        game.player.x=-7.68f;capture("04-left-limit",1280,720);
+        game.player.x=7.68f;capture("04-right-limit",1280,720);game.player.x=0;
+        bool hasNear=false,hasFar=false;
+        for(const auto& e:game.enemies){hasNear|=e.z>2;hasFar|=e.z<-2;}
+        if(!hasNear||!hasFar)throw std::runtime_error("missing persistent enemy depth levels");
+        auto still=capture("05-depth-levels",1280,720);
+        if(still!=capture("05-static-repeat",1280,720))throw std::runtime_error("static scene changed without simulation");
+        auto savedGame=game;
+        game.reset();game.player.x=game.enemies[2].pos.x+.5f;
+        if(!game.aimTarget())throw std::runtime_error("missing aim target at lateral margin");
+        capture("11-target-marker",1280,720);
+        game.update({false,false,true});
+        for(int step=0;step<20;++step)game.update({});
+        capture("12-shot-in-flight",1280,720);
+        for(int step=0;step<50;++step)game.update({});
+        if(game.kills!=1)throw std::runtime_error("marked target was not hit");
+        capture("13-confirmed-hit",1280,720);
+        game=savedGame;
         key('P');float time=game.time;for(int i=0;i<180;++i)game.update({false,true,true});
         if(game.time!=time||game.phase!=galaga::Phase::Paused)throw std::runtime_error("pause integration failed");
         capture("06-pause",1280,720);key('P');

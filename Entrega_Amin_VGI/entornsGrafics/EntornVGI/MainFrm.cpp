@@ -7,6 +7,7 @@
 #include "EntornVGI.h"
 
 #include "MainFrm.h"
+#include <fstream>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -65,9 +66,11 @@ CMainFrame::~CMainFrame()
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+    std::ofstream frameLog("frame.log");frameLog<<"OnCreate"<<std::endl;
 	if (CMDIFrameWndEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	frameLog<<"Base ready"<<std::endl;
 	BOOL bNameValid;
 
 	CMDITabInfo mdiTabParams;
@@ -84,6 +87,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // no se pudo crear
 	}
 
+	frameLog<<"Menu ready"<<std::endl;
 	m_wndMenuBar.SetPaneStyle(m_wndMenuBar.GetPaneStyle() | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY);
 
 	// Impedir que la barra de menús obtenga el foco al activarse
@@ -96,6 +100,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // No se pudo crear
 	}
 
+	frameLog<<"Toolbar ready"<<std::endl;
 	CString strToolBarName;
 	bNameValid = strToolBarName.LoadString(IDS_TOOLBAR_STANDARD);
 	ASSERT(bNameValid);
@@ -114,6 +119,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("No se pudo crear la barra de estado\n");
 		return -1;      // no se pudo crear
 	}
+	frameLog<<"Status ready"<<std::endl;
 	m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
 
 	// TODO: Elimine estas cinco líneas si no desea que la barra de herramientas y la barra de menús se puedan acoplar
@@ -139,6 +145,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
+	frameLog<<"Docking ready"<<std::endl;
 	m_wndFileView.EnableDocking(CBRS_ALIGN_ANY);
 	m_wndClassView.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndFileView);
@@ -151,6 +158,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// establecer el administrador y el estilo visuales en función de un valor persistente
 	OnApplicationLook(theApp.m_nAppLook);
+    frameLog<<"Visual style ready"<<std::endl;
 
 	// Habilitar cuadro de diálogo de administración mejorada de ventanas
 	EnableWindowsDialog(ID_WINDOW_MANAGER, ID_WINDOW_MANAGER, TRUE);
@@ -202,6 +210,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Cambia el orden del nombre de documento y el nombre de aplicación en la barra de título de la ventana. Esto
 	// mejora el uso de la barra de tareas porque el nombre del documento está visible con la miniatura.
 	ModifyStyle(0, FWS_PREFIXTITLE);
+    frameLog<<"OnCreate complete"<<std::endl;
 
 	return 0;
 }

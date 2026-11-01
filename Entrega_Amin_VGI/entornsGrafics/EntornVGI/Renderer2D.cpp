@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Renderer2D.h"
+#include <gl/SOIL2.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -63,8 +64,15 @@ void main(){outColor=texture(image,texCoord)*tint;})";
     for(int i=0;glyphs[i];++i){unsigned ch=unsigned(glyphs[i]);int x=(ch%16)*8,y=(ch/16)*8;
         for(int r=0;r<7;++r)for(int c=0;c<5;++c)if(rows[i][r]&(1<<(4-c))){auto p=((y+r)*128+x+c)*4;atlas[p]=atlas[p+1]=atlas[p+2]=atlas[p+3]=255;}}
     texture(font,128,64,atlas.data());glBindVertexArray(0);
+    const wchar_t* names[]={L"etiqueta_puntos",L"etiqueta_record",L"etiqueta_vidas",L"vida_nave",
+        L"etiqueta_control_mover",L"etiqueta_control_disparar",L"etiqueta_control_pausa"};
+    for(int i=0;i<7;++i){
+        auto path=executableDirectory()/L"Recursos_Galaga3D"/L"hud"/(std::wstring(names[i])+L".png");
+        projectHud[i]=SOIL_load_OGL_texture(path.string().c_str(),SOIL_LOAD_RGBA,SOIL_CREATE_NEW_ID,0);
+        if(!projectHud[i])throw std::runtime_error("Falta un PNG del HUD del proyecto.");
+    }
 }
-void Renderer2D::release(){if(font)glDeleteTextures(1,&font);if(white)glDeleteTextures(1,&white);if(vbo)glDeleteBuffers(1,&vbo);if(vao)glDeleteVertexArrays(1,&vao);if(program)glDeleteProgram(program);font=white=vbo=vao=program=0;}
+void Renderer2D::release(){glDeleteTextures(7,projectHud);if(font)glDeleteTextures(1,&font);if(white)glDeleteTextures(1,&white);if(vbo)glDeleteBuffers(1,&vbo);if(vao)glDeleteVertexArrays(1,&vao);if(program)glDeleteProgram(program);font=white=vbo=vao=program=0;}
 void Renderer2D::begin(int width,int height){
     glDisable(GL_SCISSOR_TEST);glDisable(GL_DEPTH_TEST);glDepthMask(GL_TRUE);glDisable(GL_CULL_FACE);glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     float s=std::min(width/1280.f,height/720.f);int vw=int(1280*s),vh=int(720*s);glViewport((width-vw)/2,(height-vh)/2,vw,vh);
@@ -87,19 +95,21 @@ void Renderer2D::flush(unsigned int texture){
 void Renderer2D::quad(float x,float y,float w,float h,Color c,float u1,float v1,float u2,float v2){
     Vertex a{x,y,u1,v1,c.r,c.g,c.b,c.a},b{x+w,y,u2,v1,c.r,c.g,c.b,c.a},d{x,y+h,u1,v2,c.r,c.g,c.b,c.a},e{x+w,y+h,u2,v2,c.r,c.g,c.b,c.a};vertices.insert(vertices.end(),{a,b,e,a,e,d});
 }
+void Renderer2D::image(unsigned int texture,float x,float y,float w,float h){
+    flush();quad(x,y,w,h,{1,1,1,1});flush(texture);
+}
 void Renderer2D::border(float x,float y,float w,float h,Color c){quad(x,y,w,2,c);quad(x,y+h-2,w,2,c);quad(x,y,2,h,c);quad(x+w-2,y,2,h,c);}
 void Renderer2D::text(const std::string& value,float x,float y,int height,Color c,bool center){
     flush();float unit=height/7.f,advance=unit*6;if(center)x-=(value.size()*advance-unit)*.5f;
     for(unsigned char ch:value){if(ch>='a'&&ch<='z')ch-=32;if(ch>127)ch=' ';float u=float((ch%16)*8)/128,v=float((ch/16)*8)/64;quad(x,y,unit*5,float(height),c,u,v,u+5.f/128,v+7.f/64);x+=advance;}flush(font);
 }
 void Renderer2D::background(const Game3D& g,int width,int height){
-    begin(width,height);glClearColor(.005f,.007f,.015f,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    quad(0,0,1280,720,{.003f,.004f,.011f});
-    for(int i=0;i<140;++i){float x=float((i*137+71)%1260+10),y=std::fmod(i*79.f+g.time*(i%3+1)*3,720.f);Color c=i%5==0?Color{.35f,.5f,1,.6f}:i%7==0?Color{1,.3f,.25f,.6f}:Color{.8f,.85f,.9f,.45f};quad(x,y,i%4?1.3f:2.f,i%4?1.3f:2.f,c);}
+    begin(width,height);glClearColor(0,0,0,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    quad(0,0,1280,720,{0,0,0});
     if(g.phase==Phase::Menu){for(int i=0;i<3;++i){float x=215+i*300.f;bool selected=i==g.selectedShip;quad(x,257,250,242,selected?Color{.043f,.055f,.083f,.94f}:Color{.022f,.029f,.045f,.9f});border(x,257,250,242,selected?Color{1,.8f,.18f}:Color{.16f,.20f,.27f});if(selected)quad(x,257,250,4,{1,.8f,.18f});}}
     finish();
 }
-void Renderer2D::overlay(const Game3D& g,int width,int height){
+void Renderer2D::overlay(const Game3D& g,int width,int height,Vec2 targetScreen,float targetRadius){
     begin(width,height);
     const Color whiteC{.91f,.94f,1},yellow{1,.83f,.16f},red{1,.22f,.28f},blue{.3f,.7f,1},muted{.44f,.51f,.63f};
     const char* ships[]={"FLECHA","DELTA","DOBLE MOTOR"};
@@ -112,18 +122,31 @@ void Renderer2D::overlay(const Game3D& g,int width,int height){
         text("A/D MOVER   ESPACIO DISPARAR   P PAUSA",640,643,12,whiteC,true);
         text("UNA RONDA - 18 ENEMIGOS - 3 VIDAS",640,682,11,muted,true);
     }else{
-        quad(0,0,1280,99,{.003f,.004f,.011f,.94f});
-        text("1UP",65,25,16,red);text(std::to_string(g.score),65,55,24,whiteC);
-        text("HIGH SCORE",640,25,16,red,true);text(std::to_string(std::max(g.score,g.bestScore)),640,55,24,whiteC,true);
-        text("RONDA",1120,25,14,muted,true);text("01 / 01",1120,56,20,yellow,true);
-        text(ships[g.selectedShip],65,127,12,muted);
-        text("ENEMIGOS",1120,134,11,muted,true);text(std::to_string(g.remaining()),1120,162,22,whiteC,true);
-        text("COMBO",1120,245,11,muted,true);text("X"+std::to_string(g.multiplier),1120,275,24,yellow,true);
-        quad(0,622,1280,98,{.003f,.004f,.011f,.94f});
-        text("VIDAS",65,647,12,muted);text(std::to_string(g.lives),65,675,20,yellow);
-        for(int i=0;i<g.lives;++i){float x=102+i*26.f;quad(x+8,670,4,20,whiteC);quad(x,680,20,5,whiteC);quad(x,677,3,13,red);quad(x+17,677,3,13,red);}
-        text("A/D MOVER   ESPACIO DISPARAR   P PAUSA",760,659,12,whiteC,true);
-        if(g.invulnerable>0&&g.respawn==0&&g.phase==Phase::Playing)text("ESCUDO",640,607,10,blue,true);
+        quad(0,0,1280,94,{0,0,0,.95f});
+        image(projectHud[0],55,18,103.5f,36);text(std::to_string(g.score),55,57,22,whiteC);
+        image(projectHud[1],300,18,105,36);text(std::to_string(std::max(g.score,g.bestScore)),300,57,22,whiteC);
+        text("ENEMIGOS",640,27,12,muted,true);text(std::to_string(g.remaining()),640,57,22,whiteC,true);
+        text("COMBO",915,27,12,muted,true);text("X"+std::to_string(g.multiplier),915,57,22,yellow,true);
+        text("RONDA",1150,27,12,muted,true);text("01 / 01",1150,57,20,yellow,true);
+        text(ships[g.selectedShip],55,109,10,muted);
+        text(targetRadius>0?"OBJETIVO FIJADO":"ALINEA LA NAVE CON UN ENEMIGO",640,109,10,targetRadius>0?yellow:muted,true);
+        if (targetRadius > 0) {
+            for (float side : {-1.f,1.f}) {
+                const float x = targetScreen.x + side * targetRadius;
+                for (float end : {-1.f,1.f}) {
+                    const float y = targetScreen.y + end * targetRadius;
+                    quad(x-(side>0?8:0),y,8,2,yellow);
+                    quad(x,y-(end>0?8:0),2,8,yellow);
+                }
+            }
+        }
+        quad(0,642,1280,78,{0,0,0,.95f});
+        image(projectHud[2],65,638,79.5f,36);
+        for(int i=0;i<g.lives;++i)image(projectHud[3],155+i*35.f,652,32,32);
+        image(projectHud[4],475,649,165,36);
+        image(projectHud[5],660,649,244.5f,36);
+        image(projectHud[6],930,649,115.5f,36);
+        if(g.invulnerable>0&&g.respawn==0&&g.phase==Phase::Playing)text("ESCUDO",330,675,10,blue,true);
         if(g.phase==Phase::Paused||g.phase==Phase::Victory||g.phase==Phase::Defeat){
             quad(0,100,1280,522,{0,0,.015f,.73f});quad(360,240,560,252,{.025f,.035f,.06f,.96f});border(360,240,560,252,{.24f,.3f,.4f});
             text(g.phase==Phase::Paused?"PAUSA":g.phase==Phase::Victory?"RONDA SUPERADA":"GAME OVER",640,278,30,g.phase==Phase::Defeat?red:yellow,true);

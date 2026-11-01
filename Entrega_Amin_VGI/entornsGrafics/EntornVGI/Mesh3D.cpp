@@ -193,7 +193,7 @@ Vertices boss() {
 
 Vertices projectile(bool hostile) {
     Vertices out;
-    const Color color = hostile ? red : yellow;
+    const Color color = hostile ? Color(1.f,.22f,.08f,1.f) : Color(.25f,.85f,1.f,1.f);
     hull(out, {{0.f,.25f}, {-.045f,.14f}, {-.045f,-.21f}, {0.f,-.25f},
                {.045f,-.21f}, {.045f,.14f}}, -.04f, .04f, color, .7f);
     box(out, {0.f,0.f,.043f}, {.016f,.17f,.012f}, white);

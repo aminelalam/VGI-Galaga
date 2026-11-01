@@ -16,14 +16,21 @@ foreach ($folder in @($cache, $runtime, $licenses)) {
     New-Item -ItemType Directory -Path $folder -Force | Out-Null
 }
 
+function Get-LocalSha256([string]$Path) {
+    $stream = [IO.File]::OpenRead($Path)
+    $hash = [Security.Cryptography.SHA256]::Create()
+    try { return [BitConverter]::ToString($hash.ComputeHash($stream)).Replace('-', '').ToLowerInvariant() }
+    finally { $hash.Dispose(); $stream.Dispose() }
+}
+
 function Get-VerifiedFile([string]$Url, [string]$Path, [string]$Sha256) {
     if ((Test-Path -LiteralPath $Path) -and
-        (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash -eq $Sha256) { return }
+        (Get-LocalSha256 $Path) -eq $Sha256) { return }
     $temporary = "$Path.download"
     Write-Output "Descargando $Url"
     try {
         Invoke-WebRequest -UseBasicParsing -Uri $Url -OutFile $temporary
-        if ((Get-FileHash -LiteralPath $temporary -Algorithm SHA256).Hash -ne $Sha256) {
+        if ((Get-LocalSha256 $temporary) -ne $Sha256) {
             throw "El SHA256 no coincide: $Url"
         }
         Move-Item -LiteralPath $temporary -Destination $Path -Force
@@ -34,13 +41,13 @@ function Get-VerifiedFile([string]$Url, [string]$Path, [string]$Sha256) {
 
 $dll = Join-Path $runtime 'opengl32.dll'
 if (!(Test-Path -LiteralPath $dll) -or
-    (Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash -ne $dllSha256) {
+    (Get-LocalSha256 $dll) -ne $dllSha256) {
     $archive = Join-Path $cache "mesa-llvmpipe-x64-$version.7z"
     Get-VerifiedFile "https://github.com/mmozeiko/build-mesa/releases/download/$version/mesa-llvmpipe-x64-$version.7z" `
         $archive 'd1b713ca2a7fba47a50c058099f13c435ddb76a16a422c334e4d787f9755a31d'
     & tar.exe -xf $archive -C $runtime opengl32.dll
     if ($LASTEXITCODE -ne 0) { throw 'No se ha podido extraer Mesa con tar.exe.' }
-    if ((Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash -ne $dllSha256) {
+    if ((Get-LocalSha256 $dll) -ne $dllSha256) {
         throw 'El SHA256 de opengl32.dll no coincide con la version fijada.'
     }
 }
@@ -63,7 +70,7 @@ if ($Deploy) {
         New-Item -ItemType Directory -Path $destination -Force | Out-Null
         $target = Join-Path $destination 'opengl32.dll'
         if (!(Test-Path -LiteralPath $target) -or
-            (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $dllSha256) {
+            (Get-LocalSha256 $target) -ne $dllSha256) {
             Copy-Item -LiteralPath $dll -Destination $target -Force
         }
     }

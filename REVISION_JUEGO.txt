@@ -1,0 +1,116 @@
+REVISION DE DISENO Y FUNCIONAMIENTO
+VGI Galaga · 1 de noviembre de 2026
+
+Alcance de la revisión
+
+Se inventariaron 63 archivos de código y shaders en EntornVGI, unas 29.700 líneas. La revisión funcional detallada cubre Game3D, GameView3D, Renderer3D, Renderer2D, Mesh3D, los shaders del juego, las pruebas y los puntos de integración de EntornVGIView, EntornVGI y MainFrm. El código docente de modelado y visualización general se revisó por su relación con esos puntos de integración. Las bibliotecas de terceros y cada ruta del editor docente requieren una auditoría independiente para certificar todo su comportamiento.
+
+Se contrastaron las actas 2, 3 y 4, el GDD y el plan de pruebas del repositorio con las decisiones posteriores del usuario. El alcance actual es una ronda básica, cámara en tercera persona, movimiento lateral, formación estática a distintas profundidades, disparos, IA sencilla y HUD del proyecto. Las decisiones recientes sobre cámara y ausencia de animaciones gobiernan esta demo.
+
+La guía docente relaciona el proyecto con transformaciones 3D, modelado, iluminación, texturas y shaders. La aplicación utiliza la estructura MFC de EntornVGI, VAO/VBO estáticos, matrices model/view/projection y colisiones en coordenadas del mundo. Mesa LLVMpipe realiza el rasterizado en CPU en este equipo.
+
+Referencia visual
+
+El manual oficial de Galaga presenta el movimiento lateral, el disparo, las formaciones y los indicadores de puntos, récord, vidas y fase. Se han usado esos principios de lectura para revisar la adaptación en tercera persona. El tamaño en pantalla se evalúa sobre la captura del ejecutable.
+https://www.nintendo.co.jp/clv/manuals/en/pdf/CLV-P-NABNE_en.pdf
+https://www.namcogames.com/game_detail.php?gid=27
+
+Problemas encontrados y correcciones
+
+1. El objetivo se seleccionaba con un margen lateral de 0,55, mientras el radio de impacto era 0,46 y la bala mantenía su X. Era posible aceptar un objetivo y fallar sistemáticamente junto a su borde. La selección se comparte ahora entre el disparo y la marca visible. El proyectil apunta al centro del objetivo seleccionado en XYZ al emitirse. Su trayectoria queda fijada al salir.
+
+2. La ayuda de apuntado anterior era invisible. El jugador podía interpretar una coincidencia en pantalla como un impacto a otra distancia. Una marca amarilla señala el enemigo seleccionado. Tras destruirlo se selecciona el siguiente enemigo alineado. Se conservan las colisiones por barrido en el mundo.
+
+3. Los modelos eran pequeños respecto al HUD y la formación ocupaba una zona reducida. La cámara conserva la posición detrás de la nave, con un campo de visión más estrecho. Los modelos enemigos aumentan de tamaño y su radio de contacto se ajusta conjuntamente. La formación conserva sus distancias reales y ocupa la zona superior del combate.
+
+4. La orientación dibujada de una bala omitía parte de su velocidad. El modelo se orienta ahora con el vector XYZ completo. La velocidad total permanece constante. El disparo aliado usa cian y el hostil naranja rojizo, ambos con buena visibilidad sobre negro.
+
+5. Los disparos fallados continuaban detrás del jugador y crecían al acercarse a la cámara. Se retiran después de cruzar la franja del jugador. Una bala ya caducada tampoco puede producir un nuevo impacto.
+
+6. Las pruebas anteriores podían aprobar sin detectar un fallo de encuadre ni el error del margen de apuntado. Se añaden casos de margen positivo y negativo en las tres profundidades, cambios de objetivo, velocidad, bajas simultáneas, caducidad y paso detrás del jugador. La comprobación gráfica mide el tamaño de los objetivos, el ancho de la formación y los límites de pantalla, además de capturar la marca, el proyectil y el impacto.
+
+Decisiones de diseño adoptadas
+
+La ayuda de apuntado solo acepta enemigos dentro de un margen lateral. Entre ellos elige el más cercano hacia delante. Dirige el tiro en X, Y y Z al centro marcado, sin seguimiento posterior. Es una adaptación para que el control lateral pueda alcanzar enemigos a diferentes alturas y distancias. El jugador puede comprobar esta decisión mediante la marca amarilla antes de disparar.
+
+La comprobación de encuadre utiliza el lienzo de referencia de 1280 por 720. Exige un ancho mínimo proyectado de 34 píxeles por objetivo y 400 para la formación. Comprueba también que la nave quede dentro del área jugable en los extremos. Son criterios de esta demo que deben revisarse con las capturas y la experiencia del jugador.
+
+Estado de requisitos
+
+Verificado en esta revisión
+- Movimiento lateral, límites, selección de nave, pausa, reinicio y finales.
+- Formación estática, tres niveles, blancos alcanzables y disparos con cadencia.
+- Contacto XYZ, protección, puntuación única, tiro fuera de margen y caducidad.
+- VAO/VBO, matrices, profundidad, recursos HUD y capturas del ejecutable.
+
+Pendiente del proyecto completo
+- Tres oleadas y jefe.
+- Doble, triple, misil y otras armas del GDD.
+- Monedas, cajas, skins, audio y modo de esquiva en primera persona.
+- Picados incluidos en pruebas antiguas, excluidos de esta demo por la petición posterior de formación estática.
+
+Incidencia abierta
+
+Se observó un fallo intermitente durante la creación de la ventana MFC, antes del renderizado. Se amplió el registro de arranque con el resultado de LoadFrame y etapas del marco. Las seis aperturas consecutivas del paquete realizadas después pasaron. La causa raíz sigue sin aislarse y esos reintentos no permiten darla por corregida.
+
+Validación y límites
+
+Las 58 comprobaciones de simulación incluyen una partida ganada usando únicamente entradas laterales y disparo, y una derrota natural al permanecer inmóvil. La verificación gráfica ejecuta los manejadores MFC y dibuja con el contexto OpenGL real. Se inspeccionan capturas del centro, los extremos, 4:3, apuntado e impacto. Queda pendiente la valoración de una sesión manual por el jugador.
+
+Skill instalada
+
+game-design-review está en C:/Users/amine/.codex/skills/game-design-review. Su referencia de VGI conserva restricciones, hallazgos y criterios de revisión. Se invoca con $game-design-review y debe revisar evidencia funcional y visual antes de emitir un veredicto.
+
+CONTRASTE CON VGI TEORIA I PROBLEMES
+Revisión del 1 de noviembre de 2026
+
+Material contrastado
+
+La carpeta indicada contiene 30 PDF y 2.919 páginas, incluyendo 850 páginas de la especificación OpenGL 4.6. Se indexó el texto de todos los documentos y se contrastaron en detalle los apartados aplicables a esta demo. Las páginas citadas a continuación corresponden a las páginas de los PDF.
+
+El archivo LLEGEIX-ME.txt delimita esta colección a teoría, seminarios y problemas o exámenes. Los entornos y enunciados de prácticas quedan fuera de la colección. Este contraste establece la correspondencia técnica con los contenidos. La aceptación de una entrega concreta depende también de su enunciado y rúbrica.
+
+Correspondencia entre contenidos e implementación
+
+1. Shaders y flujo de datos
+GL-2 describe compilación, enlace y comunicación entre shaders. Renderer3D carga y compila el vertex shader y el fragment shader, verifica sus errores y enlaza el programa. Las variables in/out transportan posición, normal y color. Los uniform comunican las matrices y los parámetros de la escena. El contexto verificado es OpenGL 4.6 Core y los shaders utilizan su subconjunto compatible GLSL 330.
+
+2. Geometría, VBO y VAO
+GL-3, páginas 7, 10, 28-38 y 160. Mesh3D carga triángulos, normales, coordenadas UV y colores en un VBO estático y configura un VAO. El dibujo reutiliza la malla. La llamada glDrawArrays es la variante presentada en la página 7. El curso también presenta EBO e instancing como otras posibilidades. La demo usa mallas poligonales originales con volumen y normales por cara.
+
+3. Transformaciones, cámara y perspectiva
+GL-4, páginas 13-15, 25-30, 56 y 58. Renderer3D compone traslación, rotación y escala, calcula lookAt y perspective y pasa las matrices mediante glUniformMatrix4fv. El vertex shader aplica projection * view * model. El viewport se ajusta a una región 16:9 con bandas cuando cambia la proporción de ventana. La cámara en tercera persona es una elección de diseño dentro de estos métodos.
+
+4. Ocultaciones
+GL-5, páginas 5-9 y 14-19. Los triángulos mantienen recorrido CCW, se descartan caras posteriores y se activa el depth test con GL_LESS y escritura de profundidad. Se limpia el buffer de profundidad al empezar el frame. El HUD se dibuja después de la geometría en coordenadas de pantalla.
+
+5. Normales
+GL-6, páginas 25 y 27-28, permite cálculos en coordenadas de mundo o de cámara. Esta demo usa coordenadas de mundo para posición, luz, observador y normales. Renderer3D calcula la inversa transpuesta de la parte lineal de model y la envía como uniform mat3. El shader normaliza el vector antes de calcular la luz.
+
+6. Iluminación y materiales
+GL-6, páginas 6, 12-13, 18, 30, 37-38 y 49-52. Se adaptó el shader a los términos separados de emisión, ambiente, difusión Lambert y reflexión especular Phong. El brillo se calcula con reflect(-L,N), producto con V y exponente shininess. Se suman los términos y se limita el resultado. La fuente direccional usa w=0. Las estructuras Light y Material reciben sus valores desde C++.
+
+El shader anterior usaba el vector intermedio de Blinn y mezclaba el resultado iluminado con el color mediante emission. Era una aproximación simplificada. La revisión sigue ahora la formulación reflect/pow y la suma de componentes mostradas en GL-6. Para las naves se utiliza material reflectante. Para las balas se utiliza material emisivo. Los coeficientes concretos son valores de diseño de la demo.
+
+7. Texturas y transparencia
+GL-7, páginas 5-10 y 18-20, describe objetos textura, sampler2D y carga mediante SOIL. Renderer2D carga los PNG del proyecto mediante SOIL2 y los dibuja con UV y sampler. La mezcla alfa del HUD utiliza GL_SRC_ALPHA y GL_ONE_MINUS_SRC_ALPHA, tal como aparece en GL-6, página 48. Las texturas se aplican al HUD y los modelos usan colores y materiales.
+
+8. Orientación y movimiento
+VGI-7, páginas 36 y 46-58, incluye ángulos de Euler y cuaterniones. La orientación de las balas mediante glm::rotation pertenece a esas técnicas. Su posición se actualiza con velocidad por tiempo. La simulación a paso fijo es una decisión de implementación para que movimiento y cadencia sean reproducibles.
+
+9. Colisiones
+VGI-7, páginas 128-135, presenta envolventes, incluida la esfera y el criterio basado en distancia entre centros. Game3D usa volúmenes esféricos y amplía la comprobación al recorrido entre pasos para detectar balas rápidas. El barrido temporal es una adaptación del proyecto a partir de esa geometría. El radio de contacto se ajusta a la escala visual de las naves.
+
+10. Organización del videojuego e IA
+VGI-8, páginas 79 y 86, distingue motor gráfico, gameplay, estados, interfaz y colisiones. La demo separa Game3D, Renderer3D, Renderer2D y la entrada MFC. VGI-G, páginas 11-15, trata dificultad justa y coste limitado. La IA actual selecciona un enemigo vivo, apunta una vez y respeta un temporizador de disparo. Es un comportamiento reactivo básico.
+
+11. Temas adicionales del programa
+La colección también desarrolla fractales, curvas y superficies, morphing, iluminación global, sombras, normal mapping, HDR, bloom, realidad virtual y aumentada. Estos temas amplían el programa de la asignatura. Su aplicación a la entrega se concretará con el enunciado práctico. La versión básica solicitada utiliza las técnicas descritas en los puntos anteriores.
+
+Verificación de la adaptación
+
+La compilación ejecuta las 58 pruebas del juego. Se añadieron seis comprobaciones del fragment shader en un framebuffer real de 64 por 64 píxeles. Se aíslan ambiente, difusión frontal, cara sin iluminación directa, reflejo Phong, emisión y suma de componentes. El color leído se compara con el resultado esperado de cada término. Se conserva la comprobación del encuadre, profundidad, recursos, entradas MFC y capturas.
+
+Límites de la conformidad
+
+El uso de Mesa LLVMpipe permite ejecutar el pipeline OpenGL con rasterización por CPU en este equipo. Una demostración de aceleración sobre GPU física requiere un controlador y hardware compatibles. La guía docente, páginas 11-12, restringe el uso de IA en programación y exige transparencia sobre su utilización. Esa condición académica sigue siendo relevante para esta implementación asistida.

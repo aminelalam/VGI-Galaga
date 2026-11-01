@@ -1,88 +1,54 @@
-# Galaga 3D — demo de una ronda
+# Galaga 3D basico en EntornVGI
 
-Abre **`dist/Galaga3D/Galaga3D.exe`**. Conserva la carpeta completa junto al ejecutable: contiene el motor OpenGL y los shaders.
+Abre **dist/Galaga3D/Galaga3D.exe** y conserva toda la carpeta junto al ejecutable.
 
-La demo utiliza modelos sólidos, cámara en perspectiva, iluminación y profundidad real. Tu nave se mueve **solo de izquierda a derecha**, con Y y Z fijos. Los enemigos entran, atacan y regresan por trayectorias XYZ continuas. No hay cambio entre planos.
+## Juego
 
-## Controles
+Una ronda, 18 enemigos y tres vidas. La nave solo se mueve en X; Y y Z permanecen fijos. Los enemigos son mallas solidas inmoviles en tres profundidades reales: Z=-2.5, Z=0 y Z=2.5. La camara en tercera persona se situa detras de la nave y la sigue lateralmente. El fondo es negro liso. Las tres filas tienen seis columnas uniformes, separadas en distancia y altura. La perspectiva, la iluminacion y el depth buffer muestran el volumen. No hay entradas, picados, particulas, parpadeos ni animacion del fondo.
 
-| Acción | Tecla |
-| --- | --- |
-| Elegir Flecha, Delta o Doble Motor | 1, 2, 3 |
-| Empezar | Enter |
-| Mover horizontalmente | A/D o flechas |
-| Disparar | Espacio, se puede mantener |
-| Pausar / continuar | P |
-| Pausar o volver a elegir nave desde pausa/resultados | Esc |
-| Repetir después de victoria o derrota | R |
+Alinea tu nave horizontalmente con el objetivo. La marca amarilla indica el enemigo seleccionado. El disparo apunta a su centro en XYZ al salir y conserva esa trayectoria. Si no hay marca, sale hacia delante. Los enemigos disparan de uno en uno hacia tu posicion al emitir el tiro. Las balas aliadas son cian y las hostiles naranja rojizo. Los proyectiles hostiles se retiran tras pasar al jugador.
 
-Una ronda con 18 enemigos, tres vidas, disparos con cadencia, entrada en formación, picados y retorno. Las tres naves comparten reglas. Ganas al eliminar la formación; pierdes al agotar las vidas. Cambiar de ventana pausa la partida.
+La camara usa un campo de vision de 38 grados y una formacion con modelos ampliados, con el radio de contacto ajustado a su escala. El HUD y el tiro comparten la misma seleccion de objetivo. La revision funcional y los limites de validacion se recogen en REVISION_JUEGO.txt.
 
-Las bajas consecutivas dan ×2 desde la tercera y ×3 desde la sexta. Un disparo fallado o recibir daño rompe la racha. El récord se guarda al cerrar normalmente la aplicación.
+Enter inicia; A/D o flechas mueven; Espacio dispara; P pausa. En el menu, 1/2/3 eligen Flecha, Delta o Doble Motor. R reinicia desde un resultado. Esc pausa o vuelve al menu desde pausa/resultados. Perder el foco pausa la simulacion.
 
-## Compilar
+Ganas al eliminar los 18 enemigos y pierdes al agotar tres vidas. Se mantienen los puntos, combo y record de la base. Los PNG originales de Recursos_Galaga3D/hud se utilizan para puntos, record, vidas e instrucciones; la escena usa modelos 3D, no sprites de naves.
 
-Requiere Windows x64 y Visual Studio 2022 con **Desarrollo para el escritorio con C++**, **MFC v143** y Windows SDK.
+## Estructura y contenidos de VGI
 
-Ejecuta `build-demo.cmd` desde la raíz. Descarga el motor Mesa verificado por SHA256 si falta, compila Release, ejecuta las pruebas, verifica el render y prepara `dist/Galaga3D`. La descarga inicial requiere conexión; la carpeta distribuida funciona sin conexión. El script no modifica la política de PowerShell del sistema.
+Se conserva la solucion **Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln**, el proyecto **EntornVGI/EntornVGI.vcxproj**, las ventanas MFC, los mensajes de teclado y el contexto OpenGL de la plantilla. El menu Juego permite regresar al entorno docente. No es el MVP aparte.
 
-También puedes abrir `Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln` y elegir **Release | x64**. Ejecuta previamente `scripts/setup-mesa.ps1 -Deploy` mediante PowerShell con la política limitada al proceso, tal como hace `build-demo.cmd`.
+- Game3D.h/.cpp: simulacion a 60 Hz, entrada lateral, formacion estatica, disparos y colisiones por barrido de esferas en XYZ.
+- GameView3D.cpp: entrada y ciclo de actualizacion mediante MFC.
+- Mesh3D.h/.cpp: mallas trianguladas, normales, colores y VAO/VBO estaticos.
+- Renderer3D.h/.cpp: perspectiva, camara GLM y matrices model/view/projection.
+- shaders/galaga3d.vert y galaga3d.frag: transformaciones e iluminacion Phong con estructuras Light y Material, segun GL-6.
+- Renderer2D.h/.cpp: texturas PNG del HUD y mezcla alfa en pantalla.
+- DemoVerification.cpp: comprobacion del render real, buffers, HUD y capturas.
 
-```bat
-build-demo.cmd -Configuration Debug -Verify
+Cada malla se carga una vez con GL_STATIC_DRAW. Cada instancia reutiliza el VAO y envia model y la matriz normal al shader. El HUD usa un buffer dinamico independiente. Las colisiones usan coordenadas del mundo, no posiciones de pantalla: coincidir visualmente a distinta profundidad no basta para impactar.
+
+Corresponde a los bloques de transformaciones y modelado 3D, ocultaciones, iluminacion, texturas y shaders de la Guia Docent VGI aportada. GL-3 explica VBO/VAO y GL-4 explica lookAt, perspectiva y matrices. Se reviso tambien el acta 4 del repositorio; las ampliaciones de skins, cajas y modos no forman parte de esta version basica.
+
+## Compilar y comprobar
+
+Windows x64, Visual Studio 2022, C++ de escritorio, MFC v143 y Windows SDK.
+
+```
 build-demo.cmd -Configuration Release -Verify -Package
+build-demo.cmd -Configuration Debug -Verify
 ```
 
-El ejecutable compilado queda en `Entrega_Amin_VGI/entornsGrafics/bin/x64/<configuración>/Galaga3D.exe`.
+La primera orden prepara dist/Galaga3D. Los ejecutables de desarrollo quedan en Entrega_Amin_VGI/entornsGrafics/bin/x64/Release o Debug. La solucion incluye pruebas de logica y copia los recursos del proyecto automaticamente.
 
-## Controlador gráfico
+Las pruebas comprueban las tres profundidades, formacion inmovil, limites, pausa, direccion XYZ, impactos, reinicio y partidas completas. Un piloto de prueba gana usando solo movimiento y disparo; un jugador quieto pierde naturalmente. La verificacion grafica comprueba shaders, VAO/VBO, depth buffer, recursos HUD, captura 16:9 y 4:3 y reutilizacion de mallas sin nuevas cargas. Resultados en bin/x64/<configuracion>/verification. No sustituyen una sesion manual del jugador.
 
-En este equipo, el proveedor del sistema devolvía **GDI Generic / OpenGL 1.1**. Se incluye **Mesa LLVMpipe 26.2.5** como `opengl32.dll` local. Ejecuta OpenGL moderno y shaders en CPU sin instalar ni actualizar controladores. Se ha verificado un contexto **OpenGL 4.6 Core Profile**; la demo necesita 3.3.
+Se incluye Mesa LLVMpipe local porque el controlador del sistema proporcionaba OpenGL 1.1. Permite ejecutar shaders sin cambiar el controlador; en este equipo el rasterizado se realiza en CPU. Es necesario conservar opengl32.dll. Origen, hashes y licencias en third_party/mesa.
 
-No copies únicamente el EXE ni retires esa DLL. Origen, hashes y licencias: `Entrega_Amin_VGI/entornsGrafics/third_party/mesa/`. Los mensajes técnicos de arranque quedan en `startup.log` y `context.log` junto al ejecutable.
+## Transparencia del uso de IA
 
-## Código y decisiones
+La adaptacion de Game3D, Renderer3D, Renderer2D y las pruebas, asi como esta documentacion y el ajuste del script de compilacion, se han realizado con asistencia de Codex. La guia docente aportada restringe expresamente el uso de IA en programacion. Esta implementacion asistida no debe presentarse como codigo escrito de forma independiente ni como cumplimiento de esa restriccion. El equipo debe contrastar su uso con el profesor.
 
-| Archivo, bajo EntornVGI | Responsabilidad |
-| --- | --- |
-| `Game3D.h/.cpp` | Simulación a 60 Hz, entrada lateral, estados, colisiones por barrido de esferas XYZ, puntuación |
-| `GameView3D.cpp` | Teclas MFC, pausa al perder foco, reloj y reinicios |
-| `Mesh3D.h/.cpp` | Modelos originales triangulados, normales por cara, colores y VAO/VBO |
-| `Renderer3D.h/.cpp` | Cámara, luz, instancias y matrices |
-| `shaders/galaga3d.vert` | Transformación `projection * view * model * position` |
-| `shaders/galaga3d.frag` | Ambiente, Lambert y especular |
-| `Renderer2D.h/.cpp` | Únicamente HUD: atlas pixel original y paneles, sin naves ni enemigos |
-| `DemoVerification.cpp` | Verificación del pipeline real en FBO con profundidad y capturas |
+El contraste con VGI - Teoria i Problemes, sus paginas de referencia y seis pruebas de los terminos de iluminacion se recogen en REVISION_JUEGO.txt.
 
-`ModelLibrary::initialize()` realiza nueve cargas estáticas de geometría: tres naves, tres insectos, dos proyectiles y una partícula. El tercer insecto es un modelo reservado para ampliar el juego; no añade un jefe a esta ronda. Son 1.524 triángulos en total.
-
-Cada malla tiene un VAO y un VBO intercalado con atributos **0 posición, 1 normal, 2 UV, 3 color**. Se sube una sola vez con `GL_STATIC_DRAW`. Durante el dibujo, `Renderer3D::instance()` envía `model` mediante `glUniformMatrix4fv(..., GL_FALSE, glm::value_ptr(model))`, envía la matriz normal inversa transpuesta y reutiliza el VAO. El HUD actualiza su propio VBO dinámico por pasada. Los buffers se liberan con el contexto todavía activo.
-
-Se conserva la base MFC/OpenGL de la asignatura. El menú **Juego** permite volver al entorno docente, que requiere OpenGL 4.6; la demo usa sus propios shaders 330.
-
-## Documentación aplicada
-
-Se revisaron las dos actas, el diseño técnico, los ocho PDF docentes (640 páginas), las siete fotos nuevas y los recursos/modelos del repositorio.
-
-- **Acta nueva, reunión 3**: carga de modelos una vez, VAO/VBO y matriz model por instancia. Archivo `docuemntacion/acta-ABP-continuacio (1).pdf`.
-- **GL-3, pp. 47, 68, 70 y 138–139**: ciclo de carga/dibujo/liberación y atributos.
-- **GL-4, pp. 13–14 y 57–59**: orden T·R·S, matrices GLM y uniforms.
-- **VGI-6, pp. 9–30 y 48–65**: iluminación y normales.
-- **Fotos**: Flecha, Delta y Doble Motor, menú negro, títulos amarillos y estilo arcade. La referencia Galaga aporta las alas de insecto, ojos, colores y formación.
-- `prototips.blend` contiene prototipos voxel de Space Invaders, no las naves de las fotos. Las mallas de esta demo se han construido expresamente en C++.
-
-La decisión más reciente del usuario elimina los planos A/B del diseño anterior. La demo mantiene una sola ronda; las tres oleadas, jefe, audio y propuestas de primera persona del proyecto completo quedan fuera de esta entrega.
-
-## Validación reproducible
-
-`build-demo.cmd` ejecuta las pruebas de lógica y `Galaga3D.exe /verify-render`:
-
-- **50 pruebas de lógica**: controles laterales, trayectorias continuas en Z, colisiones XYZ, protección, cadencia, selección, combos, pausa y reinicios.
-- Un piloto que solo utiliza controles normales completa la ronda con 18 bajas; un jugador inmóvil pierde las tres vidas naturalmente.
-- Inspección de buffers reales: tamaño, uso estático, VAO y atributos, programa enlazado y uniforms activos.
-- Diez capturas de menú, selección, combate, formato 4:3, picado, pausa, resultados preparados y modelos girados.
-- Comprobación de píxeles de profundidad, HUD visible y geometría sin volver a cargarse durante 60 fotogramas.
-
-Los resultados gráficos quedan en `bin/x64/<configuración>/verification/`. Las pantallas de victoria/derrota etiquetadas `fixture` son estados preparados para comprobar su presentación; las victorias y derrotas completas se comprueban aparte mediante la simulación.
-
-El render se ha verificado automáticamente con el contexto real; no se ha realizado una sesión manual de juego.
+La asistencia permite relacionar rapidamente matrices, buffers y reglas, pero el alumnado debe comprender las transformaciones, la deteccion de impactos, las limitaciones del apuntado automatico y el uso de Mesa antes de explicar o evaluar el resultado.

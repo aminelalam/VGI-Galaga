@@ -20,6 +20,9 @@ struct Bullet {
     Vec2 pos, previous;
     float ttl = 3.5f;
     float z = 0, previousZ = 0, velocityZ = 0;
+    float velocityX = 0;
+    float velocityY = 0;
+    float forwardSpeed() const;
 };
 struct Spark { Vec2 pos; float age = 0; bool player = false; float z = 0; };
 
@@ -27,6 +30,11 @@ struct Spark { Vec2 pos; float age = 0; bool player = false; float z = 0; };
 class Game3D {
 public:
     static constexpr float Step = 1.0f / 60.0f;
+    static constexpr float EnemyScale = 1.45f;
+    static constexpr float EnemyHitRadius = .76f;
+    static constexpr float AimTolerance = .65f;
+    static constexpr float PlayerShotSpeed = 24.f;
+    static constexpr float EnemyShotSpeed = 7.f;
     Phase phase = Phase::Menu;
     Vec2 player{0, -4}, previousPlayer{0, -4};
     int lives = 3, score = 0, shots = 0, kills = 0;
@@ -41,6 +49,7 @@ public:
     void pause();
     void update(const Input& input, float dt = Step);
     int remaining() const;
+    const Enemy* aimTarget() const;
     static float hitTime(Vec2 a0, Vec2 a1, Vec2 b0, Vec2 b1, float radius);
     static float hitTime3D(Vec2 a0, Vec2 a1, float za0, float za1,
         Vec2 b0, Vec2 b1, float zb0, float zb1, float radius);

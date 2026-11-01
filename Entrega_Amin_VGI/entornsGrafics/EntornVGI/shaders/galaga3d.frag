@@ -4,15 +4,41 @@ in vec3 worldNormal;
 in vec4 vertexColor;
 uniform vec3 eye;
 uniform vec4 tint;
-uniform float emission;
+
+// GL-6, pp. 18, 38 and 49-52. Lighting is evaluated in world coordinates.
+struct Light {
+    vec4 position; // w=0 for the directional light used by this scene.
+    vec3 diffuse;
+    vec3 specular;
+};
+struct Material {
+    vec3 emission;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+uniform Light light;
+uniform Material material;
+uniform vec3 ambientLight;
 out vec4 outColor;
 void main() {
     vec3 n = normalize(worldNormal);
-    vec3 light = normalize(vec3(-0.45, 0.7, 1.1));
+    vec3 lightDirection = normalize(light.position.xyz - worldPosition * light.position.w);
     vec3 viewDirection = normalize(eye - worldPosition);
-    float diffuse = max(dot(n, light), 0.0);
-    float specular = pow(max(dot(n, normalize(light + viewDirection)), 0.0), 32.0);
     vec3 base = vertexColor.rgb * tint.rgb;
-    vec3 lit = base * (0.37 + 0.63 * diffuse) + vec3(0.16 * specular);
-    outColor = vec4(mix(lit, base, clamp(emission, 0.0, 1.0)), vertexColor.a * tint.a);
+
+    vec3 emissive = material.emission * base;
+    vec3 ambient = material.ambient * base * ambientLight;
+    float cosine = max(dot(n, lightDirection), 0.0);
+    vec3 diffuse = material.diffuse * base * light.diffuse * cosine;
+
+    vec3 specular = vec3(0.0);
+    if (cosine > 0.0) {
+        vec3 reflected = reflect(-lightDirection, n);
+        float highlight = pow(max(dot(reflected, viewDirection), 0.0), material.shininess);
+        specular = material.specular * base * light.specular * highlight;
+    }
+    outColor = vec4(clamp(emissive + ambient + diffuse + specular, 0.0, 1.0),
+                    vertexColor.a * tint.a);
 }

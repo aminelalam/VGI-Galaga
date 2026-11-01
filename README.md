@@ -1,12 +1,14 @@
 # Galaga 3D · VGI
 
-Demo nativa en C++/MFC/OpenGL: **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. Los modelos son sólidos; los enemigos siguen trayectorias con profundidad y las colisiones se calculan en XYZ.
+Demo nativa en C++/MFC/OpenGL con **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. La cámara está detrás de la nave. Los enemigos mantienen una formación estática a distintas distancias y alturas, y los disparos y las colisiones se calculan en XYZ.
 
 Abre **`dist/Galaga3D/Galaga3D.exe`** para jugar o ejecuta **`build-demo.cmd`** para compilar, probar y preparar el paquete. La carpeta distribuida incluye un motor OpenGL local que evita el aviso de actualizar el controlador en este equipo.
 
 **Controles:** 1/2/3 eligen nave; Enter empieza; A/D o flechas mueven; Espacio dispara; P pausa; R reinicia tras el resultado. Esc permite regresar a la selección desde pausa o resultados.
 
 [Instrucciones, arquitectura y verificación](DEMO_3D.md) · [Solución Visual Studio 2022](Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln)
+
+[Guía completa del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Explica el funcionamiento con lenguaje sencillo, ejemplos numéricos, una referencia de funciones y listados de código numerados. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt).
 
 La nueva acta se aplica con mallas cargadas una sola vez en VBO/VAO y una matriz `model` enviada al shader por instancia. El HUD sigue el aspecto arcade negro/amarillo de las fotos y las naves reinterpretan sus tres diseños con colores y siluetas de Galaga.
 
