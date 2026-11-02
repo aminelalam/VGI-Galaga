@@ -6,13 +6,13 @@ Abre **dist/Galaga3D/Galaga3D.exe** y conserva toda la carpeta junto al ejecutab
 
 Una ronda, 18 enemigos y tres vidas. La nave solo se mueve en X; Y y Z permanecen fijos. Los enemigos son mallas solidas inmoviles en tres profundidades reales: Z=-2.5, Z=0 y Z=2.5. La camara en tercera persona se situa detras de la nave y la sigue lateralmente. El fondo es negro liso. Las tres filas tienen seis columnas uniformes, separadas en distancia y altura. La perspectiva, la iluminacion y el depth buffer muestran el volumen. No hay entradas, picados, particulas, parpadeos ni animacion del fondo.
 
-Alinea tu nave horizontalmente con el objetivo. La marca amarilla indica el enemigo seleccionado. El disparo apunta a su centro en XYZ al salir y conserva esa trayectoria. Si no hay marca, sale hacia delante. Los enemigos disparan de uno en uno hacia tu posicion al emitir el tiro. Las balas aliadas son cian y las hostiles naranja rojizo. Los proyectiles hostiles se retiran tras pasar al jugador.
+Alinea tu nave horizontalmente con un enemigo. El disparo selecciona el enemigo mas cercano dentro del margen lateral y apunta a su centro en XYZ al salir. Conserva esa trayectoria durante el vuelo. Cuando ningun enemigo queda dentro del margen, sale hacia delante. Los enemigos disparan de uno en uno hacia tu posicion al emitir el tiro. Las balas aliadas son cian y las hostiles naranja rojizo. Los proyectiles hostiles se retiran tras pasar al jugador.
 
-La camara usa un campo de vision de 38 grados y una formacion con modelos ampliados, con el radio de contacto ajustado a su escala. El HUD y el tiro comparten la misma seleccion de objetivo. La revision funcional y los limites de validacion se recogen en REVISION_JUEGO.txt.
+La camara usa un campo de vision de 38 grados y una formacion con modelos ampliados, con el radio de contacto ajustado a su escala. Durante la partida, el HUD muestra unicamente PUNTOS y la puntuacion en la esquina superior izquierda. La revision funcional y los limites de validacion se recogen en REVISION_JUEGO.txt.
 
 Enter inicia; A/D o flechas mueven; Espacio dispara; P pausa. En el menu, 1/2/3 eligen Flecha, Delta o Doble Motor. R reinicia desde un resultado. Esc pausa o vuelve al menu desde pausa/resultados. Perder el foco pausa la simulacion.
 
-Ganas al eliminar los 18 enemigos y pierdes al agotar tres vidas. Se mantienen los puntos, combo y record de la base. Los PNG originales de Recursos_Galaga3D/hud se utilizan para puntos, record, vidas e instrucciones; la escena usa modelos 3D, no sprites de naves.
+Ganas al eliminar los 18 enemigos y pierdes al agotar tres vidas. El combo interviene en el calculo de puntos y el record se guarda internamente. El HUD utiliza la etiqueta original Recursos_Galaga3D/hud/etiqueta_puntos.png. La seleccion de nave, la pausa y los resultados tienen sus propias pantallas con instrucciones.
 
 ## Estructura y contenidos de VGI
 

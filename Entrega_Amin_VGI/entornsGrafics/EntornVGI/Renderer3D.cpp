@@ -115,18 +115,7 @@ void Renderer3D::draw(const Game3D& g,int width,int height){
             instance(models.ships[g.selectedShip],transform({g.player.x,g.player.y,0}));
     }
     glBindVertexArray(0);
-    Vec2 targetScreen{-1,-1};
-    float targetRadius = 0;
-    if (g.phase == Phase::Playing && g.respawn == 0) {
-        if (const Enemy* target = g.aimTarget()) {
-            const glm::vec4 clip = projection * view * glm::vec4(target->pos.x,target->pos.y,target->z,1);
-            if (clip.w > 0) {
-                targetScreen = {(clip.x/clip.w+1)*640,(1-clip.y/clip.w)*360};
-                targetRadius = 360 * projection[1][1] * Game3D::EnemyHitRadius / clip.w + 5;
-            }
-        }
-    }
-    hud.overlay(g,width,height,targetScreen,targetRadius);
+    hud.overlay(g,width,height);
 }
 bool Renderer3D::verifyGpu(std::ostream& report) const{
     GLint linked=0;glGetProgramiv(program,GL_LINK_STATUS,&linked);

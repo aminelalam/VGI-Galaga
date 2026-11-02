@@ -1,3 +1,7 @@
+ACTUALIZACION DEL HUD · 2 de noviembre de 2026
+
+La version actual muestra unicamente PUNTOS y la puntuacion durante la partida, segun la peticion del usuario. Se ha retirado el marcador visual del objetivo y los demas elementos del HUD de combate. La seleccion de nave, la pausa y los resultados tienen pantallas propias. La comprobacion grafica verifica la presencia de la puntuacion. El informe del 1 de noviembre y el PDF describen el HUD anterior.
+
 REVISION DE DISENO Y FUNCIONAMIENTO
 VGI Galaga · 1 de noviembre de 2026
 

@@ -64,15 +64,11 @@ void main(){outColor=texture(image,texCoord)*tint;})";
     for(int i=0;glyphs[i];++i){unsigned ch=unsigned(glyphs[i]);int x=(ch%16)*8,y=(ch/16)*8;
         for(int r=0;r<7;++r)for(int c=0;c<5;++c)if(rows[i][r]&(1<<(4-c))){auto p=((y+r)*128+x+c)*4;atlas[p]=atlas[p+1]=atlas[p+2]=atlas[p+3]=255;}}
     texture(font,128,64,atlas.data());glBindVertexArray(0);
-    const wchar_t* names[]={L"etiqueta_puntos",L"etiqueta_record",L"etiqueta_vidas",L"vida_nave",
-        L"etiqueta_control_mover",L"etiqueta_control_disparar",L"etiqueta_control_pausa"};
-    for(int i=0;i<7;++i){
-        auto path=executableDirectory()/L"Recursos_Galaga3D"/L"hud"/(std::wstring(names[i])+L".png");
-        projectHud[i]=SOIL_load_OGL_texture(path.string().c_str(),SOIL_LOAD_RGBA,SOIL_CREATE_NEW_ID,0);
-        if(!projectHud[i])throw std::runtime_error("Falta un PNG del HUD del proyecto.");
-    }
+    const auto path=executableDirectory()/L"Recursos_Galaga3D"/L"hud"/L"etiqueta_puntos.png";
+    scoreLabel=SOIL_load_OGL_texture(path.string().c_str(),SOIL_LOAD_RGBA,SOIL_CREATE_NEW_ID,0);
+    if(!scoreLabel)throw std::runtime_error("Falta la etiqueta de puntos del proyecto.");
 }
-void Renderer2D::release(){glDeleteTextures(7,projectHud);if(font)glDeleteTextures(1,&font);if(white)glDeleteTextures(1,&white);if(vbo)glDeleteBuffers(1,&vbo);if(vao)glDeleteVertexArrays(1,&vao);if(program)glDeleteProgram(program);font=white=vbo=vao=program=0;}
+void Renderer2D::release(){if(scoreLabel)glDeleteTextures(1,&scoreLabel);if(font)glDeleteTextures(1,&font);if(white)glDeleteTextures(1,&white);if(vbo)glDeleteBuffers(1,&vbo);if(vao)glDeleteVertexArrays(1,&vao);if(program)glDeleteProgram(program);scoreLabel=font=white=vbo=vao=program=0;}
 void Renderer2D::begin(int width,int height){
     glDisable(GL_SCISSOR_TEST);glDisable(GL_DEPTH_TEST);glDepthMask(GL_TRUE);glDisable(GL_CULL_FACE);glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     float s=std::min(width/1280.f,height/720.f);int vw=int(1280*s),vh=int(720*s);glViewport((width-vw)/2,(height-vh)/2,vw,vh);
@@ -109,7 +105,7 @@ void Renderer2D::background(const Game3D& g,int width,int height){
     if(g.phase==Phase::Menu){for(int i=0;i<3;++i){float x=215+i*300.f;bool selected=i==g.selectedShip;quad(x,257,250,242,selected?Color{.043f,.055f,.083f,.94f}:Color{.022f,.029f,.045f,.9f});border(x,257,250,242,selected?Color{1,.8f,.18f}:Color{.16f,.20f,.27f});if(selected)quad(x,257,250,4,{1,.8f,.18f});}}
     finish();
 }
-void Renderer2D::overlay(const Game3D& g,int width,int height,Vec2 targetScreen,float targetRadius){
+void Renderer2D::overlay(const Game3D& g,int width,int height){
     begin(width,height);
     const Color whiteC{.91f,.94f,1},yellow{1,.83f,.16f},red{1,.22f,.28f},blue{.3f,.7f,1},muted{.44f,.51f,.63f};
     const char* ships[]={"FLECHA","DELTA","DOBLE MOTOR"};
@@ -122,31 +118,8 @@ void Renderer2D::overlay(const Game3D& g,int width,int height,Vec2 targetScreen,
         text("A/D MOVER   ESPACIO DISPARAR   P PAUSA",640,643,12,whiteC,true);
         text("UNA RONDA - 18 ENEMIGOS - 3 VIDAS",640,682,11,muted,true);
     }else{
-        quad(0,0,1280,94,{0,0,0,.95f});
-        image(projectHud[0],55,18,103.5f,36);text(std::to_string(g.score),55,57,22,whiteC);
-        image(projectHud[1],300,18,105,36);text(std::to_string(std::max(g.score,g.bestScore)),300,57,22,whiteC);
-        text("ENEMIGOS",640,27,12,muted,true);text(std::to_string(g.remaining()),640,57,22,whiteC,true);
-        text("COMBO",915,27,12,muted,true);text("X"+std::to_string(g.multiplier),915,57,22,yellow,true);
-        text("RONDA",1150,27,12,muted,true);text("01 / 01",1150,57,20,yellow,true);
-        text(ships[g.selectedShip],55,109,10,muted);
-        text(targetRadius>0?"OBJETIVO FIJADO":"ALINEA LA NAVE CON UN ENEMIGO",640,109,10,targetRadius>0?yellow:muted,true);
-        if (targetRadius > 0) {
-            for (float side : {-1.f,1.f}) {
-                const float x = targetScreen.x + side * targetRadius;
-                for (float end : {-1.f,1.f}) {
-                    const float y = targetScreen.y + end * targetRadius;
-                    quad(x-(side>0?8:0),y,8,2,yellow);
-                    quad(x,y-(end>0?8:0),2,8,yellow);
-                }
-            }
-        }
-        quad(0,642,1280,78,{0,0,0,.95f});
-        image(projectHud[2],65,638,79.5f,36);
-        for(int i=0;i<g.lives;++i)image(projectHud[3],155+i*35.f,652,32,32);
-        image(projectHud[4],475,649,165,36);
-        image(projectHud[5],660,649,244.5f,36);
-        image(projectHud[6],930,649,115.5f,36);
-        if(g.invulnerable>0&&g.respawn==0&&g.phase==Phase::Playing)text("ESCUDO",330,675,10,blue,true);
+        image(scoreLabel,55,18,103.5f,36);
+        text(std::to_string(g.score),55,57,22,whiteC);
         if(g.phase==Phase::Paused||g.phase==Phase::Victory||g.phase==Phase::Defeat){
             quad(0,100,1280,522,{0,0,.015f,.73f});quad(360,240,560,252,{.025f,.035f,.06f,.96f});border(360,240,560,252,{.24f,.3f,.4f});
             text(g.phase==Phase::Paused?"PAUSA":g.phase==Phase::Victory?"RONDA SUPERADA":"GAME OVER",640,278,30,g.phase==Phase::Defeat?red:yellow,true);

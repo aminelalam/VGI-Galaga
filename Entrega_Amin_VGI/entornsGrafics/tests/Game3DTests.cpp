@@ -40,17 +40,17 @@ int main(){try{
   for (float offset : {-.64f,.50f,.64f}) {
    g.reset();g.enemies.resize(1);
    auto& enemy=g.enemies[0];enemy.pos=enemy.previous={offset,14};enemy.z=enemy.previousZ=depth;
-   check(g.aimTarget()==&enemy,"target marker and fire share acquisition at margin");
+   check(g.aimTarget()==&enemy,"firing acquires target at lateral margin");
    g.update({false,false,true});
    auto shot=g.bullets[0];
    float speed=std::sqrt(shot.velocityX*shot.velocityX+shot.forwardSpeed()*shot.forwardSpeed()+shot.velocityZ*shot.velocityZ);
    check(std::abs(speed-Game3D::PlayerShotSpeed)<.001f,"constant shot speed in XYZ");
    g.player.x=-5; ticks(g,100);
-   check(g.kills==1,"off-centre marked shot hits every depth after player moves");
+   check(g.kills==1,"off-centre aligned shot hits every depth after player moves");
   }
  }
  g.reset();g.enemies.resize(1);g.enemies[0].pos=g.enemies[0].previous={1.1f,4};g.enemies[0].z=g.enemies[0].previousZ=0;
- check(g.aimTarget()==nullptr,"outside capture margin has no target marker");
+ check(g.aimTarget()==nullptr,"outside capture margin has no acquired target");
  g.update({false,false,true});ticks(g,30);check(g.kills==0,"real near miss does not kill");
  g.reset();g.player.x=g.enemies[0].pos.x;
  check(g.aimTarget()==&g.enemies[0],"front row is targeted first");

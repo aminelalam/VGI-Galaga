@@ -1,6 +1,6 @@
 # Galaga 3D · VGI
 
-Demo nativa en C++/MFC/OpenGL con **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. La cámara está detrás de la nave. Los enemigos mantienen una formación estática a distintas distancias y alturas, y los disparos y las colisiones se calculan en XYZ.
+Demo nativa en C++/MFC/OpenGL con **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. La cámara está detrás de la nave. Los enemigos mantienen una formación estática a distintas distancias y alturas, y los disparos y las colisiones se calculan en XYZ. **Durante la partida, el HUD muestra únicamente PUNTOS y la puntuación.**
 
 Abre **`dist/Galaga3D/Galaga3D.exe`** para jugar o ejecuta **`build-demo.cmd`** para compilar, probar y preparar el paquete. La carpeta distribuida incluye un motor OpenGL local que evita el aviso de actualizar el controlador en este equipo.
 
@@ -8,9 +8,9 @@ Abre **`dist/Galaga3D/Galaga3D.exe`** para jugar o ejecuta **`build-demo.cmd`** 
 
 [Instrucciones, arquitectura y verificación](DEMO_3D.md) · [Solución Visual Studio 2022](Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln)
 
-[Guía completa del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Explica el funcionamiento con lenguaje sencillo, ejemplos numéricos, una referencia de funciones y listados de código numerados. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt).
+[Guía completa del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Documenta la revisión del 1 de noviembre de 2026 con lenguaje sencillo, ejemplos numéricos, una referencia de funciones y listados de código numerados. El HUD se simplificó el 2 de noviembre para mostrar solo los puntos durante la partida. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt).
 
-La nueva acta se aplica con mallas cargadas una sola vez en VBO/VAO y una matriz `model` enviada al shader por instancia. El HUD sigue el aspecto arcade negro/amarillo de las fotos y las naves reinterpretan sus tres diseños con colores y siluetas de Galaga.
+La nueva acta se aplica con mallas cargadas una sola vez en VBO/VAO y una matriz `model` enviada al shader por instancia. El HUD utiliza la etiqueta de puntos del proyecto y las naves reinterpretan sus tres diseños con colores y siluetas de Galaga.
 
 La documentación de gestión que sigue recoge el diseño completo anterior: tres oleadas, jefe y planos A/B. **La demo actual usa una sola ronda y no permite cambiar de plano**, según la última decisión del usuario. Los PDF, actas y hojas de cálculo originales se conservan como documentación de referencia.
 

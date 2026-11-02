@@ -47,9 +47,9 @@ bool CEntornVGIView::VerifyDemoRendering() {
             // Captures represent an opaque window, including blended HUD glyphs.
             for(size_t pixel=3;pixel<flipped.size();pixel+=4)flipped[pixel]=255;
             if(!gallery&&width==1280&&height==720&&game.phase==galaga::Phase::Playing){
-                size_t visibleFooter=0;
-                for(int y=640;y<710;++y)for(int x=25;x<1230;++x){const auto* p=flipped.data()+(size_t(y)*width+x)*4;if(std::max({p[0],p[1],p[2]})>150)++visibleFooter;}
-                if(visibleFooter<1500)throw std::runtime_error("HUD controls or lives missing from framebuffer");
+                size_t visibleScore=0;
+                for(int y=18;y<80;++y)for(int x=55;x<260;++x){const auto* p=flipped.data()+(size_t(y)*width+x)*4;if(std::max({p[0],p[1],p[2]})>150)++visibleScore;}
+                if(visibleScore<300)throw std::runtime_error("HUD score missing from framebuffer");
             }
             if(!SOIL_save_image((folder/(std::string(name)+".png")).string().c_str(),SOIL_SAVE_TYPE_PNG,width,height,4,flipped.data()))throw std::runtime_error("could not write PNG");
             std::vector<float> z(size_t(width)*height);glReadPixels(0,0,width,height,GL_DEPTH_COMPONENT,GL_FLOAT,z.data());
@@ -77,12 +77,12 @@ bool CEntornVGIView::VerifyDemoRendering() {
         auto savedGame=game;
         game.reset();game.player.x=game.enemies[2].pos.x+.5f;
         if(!game.aimTarget())throw std::runtime_error("missing aim target at lateral margin");
-        capture("11-target-marker",1280,720);
+        capture("11-aligned-shot",1280,720);
         game.update({false,false,true});
         for(int step=0;step<20;++step)game.update({});
         capture("12-shot-in-flight",1280,720);
         for(int step=0;step<50;++step)game.update({});
-        if(game.kills!=1)throw std::runtime_error("marked target was not hit");
+        if(game.kills!=1)throw std::runtime_error("selected target was not hit");
         capture("13-confirmed-hit",1280,720);
         game=savedGame;
         key('P');float time=game.time;for(int i=0;i<180;++i)game.update({false,true,true});

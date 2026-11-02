@@ -10,14 +10,14 @@ public:
     void initialize();
     void release();
     void background(const Game3D&,int width,int height);
-    void overlay(const Game3D&,int width,int height,Vec2 targetScreen={-1,-1},float targetRadius=0);
+    void overlay(const Game3D&,int width,int height);
     static std::filesystem::path executableDirectory();
 private:
     struct Vertex {float x,y,u,v,r,g,b,a;};
     struct Color {float r,g,b,a=1;};
     struct Batch {unsigned int texture;int first,count;};
     unsigned int program=0,vao=0,vbo=0,white=0,font=0;
-    unsigned int projectHud[7]{};
+    unsigned int scoreLabel=0;
     std::vector<Vertex> vertices;
     std::vector<Batch> batches;
     int pendingStart=0;
