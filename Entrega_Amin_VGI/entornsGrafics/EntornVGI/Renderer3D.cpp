@@ -46,7 +46,7 @@ void Renderer3D::initialize(){
         lightDiffuseLocation=uniform("light.diffuse");
         lightSpecularLocation=uniform("light.specular");
         ambientLightLocation=uniform("ambientLight");
-        models.initialize();hud.initialize();
+        models.initialize(Renderer2D::executableDirectory()/L"Recursos_Galaga3D"/L"modelos");hud.initialize();
     }catch(...){if(v)glDeleteShader(v);if(f)glDeleteShader(f);release();throw;}
 }
 void Renderer3D::release(){hud.release();models.release();if(program)glDeleteProgram(program);program=0;}
@@ -99,6 +99,7 @@ void Renderer3D::draw(const Game3D& g,int width,int height){
             instance(models.ships[i],model);
         }
     }else{
+        instance(models.scenery,glm::mat4(1));
         for(const auto& e:g.enemies)if(e.alive&&e.timer>=0){
             auto model=transform({e.pos.x,e.pos.y,e.z},glm::vec3(Game3D::EnemyScale));
             // A fixed pitch keeps the silhouette readable from the chase camera.
@@ -119,7 +120,7 @@ void Renderer3D::draw(const Game3D& g,int width,int height){
 }
 bool Renderer3D::verifyGpu(std::ostream& report) const{
     GLint linked=0;glGetProgramiv(program,GL_LINK_STATUS,&linked);
-    bool ok=linked&&models.verifyGpu()&&models.uploadCount()==9&&modelLocation>=0&&viewLocation>=0&&projectionLocation>=0;
+    bool ok=linked&&models.verifyGpu()&&models.uploadCount()==10&&modelLocation>=0&&viewLocation>=0&&projectionLocation>=0;
     report<<(ok?"PASS ":"FAIL ")<<"3D GPU meshes: "<<models.uploadCount()<<" static uploads, "<<models.vertexCount()/3
           <<" triangles; VAO attributes 0/1/2/3; model/view/projection uniforms active\n";
     return ok;
@@ -184,7 +185,8 @@ bool Renderer3D::verifyFraming(const Game3D& game,std::ostream& report) {
         formationRight=std::max(formationRight,right.x);
         readable &= screen.y>145 && screen.y<480 && left.x>20 && right.x<1260;
     }
-    for(float x:{-.65f,.65f})for(float y:{-.72f,.72f})for(float z:{-.26f,.26f}) {
+    const auto& ship = models.ships[game.selectedShip];
+    for(float x:{ship.minimum().x,ship.maximum().x})for(float y:{ship.minimum().y,ship.maximum().y})for(float z:{ship.minimum().z,ship.maximum().z}) {
         const auto corner=project(glm::vec3(game.player.x+x,game.player.y+y,z));
         readable &= corner.x>12 && corner.x<1268 && corner.y>480 && corner.y<640;
     }
@@ -193,14 +195,16 @@ bool Renderer3D::verifyFraming(const Game3D& game,std::ostream& report) {
           <<"; smallest target "<<minimumWidth<<"px; formation width "<<formationRight-formationLeft<<"px\n";
     return readable;
 }
-void Renderer3D::modelGallery(int width,int height,float angle){
-    Game3D menu;hud.background(menu,width,height);camera(true);begin3D();
+void Renderer3D::modelGallery(int width,int height,float angle,bool wireframe){
+    Game3D gallery;gallery.phase=Phase::Playing;hud.background(gallery,width,height);camera(true);begin3D();
+    glPolygonMode(GL_FRONT_AND_BACK,wireframe?GL_LINE:GL_FILL);
     for(int i=0;i<6;++i){
         auto model=glm::translate(glm::mat4(1),glm::vec3((i%3-1)*3.4f,i<3?1.5f:-1.5f,0));
         model=glm::rotate(model,glm::radians(-24.f),glm::vec3(1,0,0));
         model=glm::rotate(model,angle,glm::vec3(0,1,0));model=glm::scale(model,glm::vec3(1.6f));
         instance(i<3?models.ships[i]:models.enemies[i-3],model);
     }
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     glBindVertexArray(0);glUseProgram(0);
 }
 }

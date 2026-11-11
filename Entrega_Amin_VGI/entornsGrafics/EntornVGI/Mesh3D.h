@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <cstddef>
+#include <filesystem>
 #include <vector>
 
 namespace galaga {
@@ -19,6 +20,7 @@ public:
     Mesh3D(const Mesh3D&) = delete;
     Mesh3D& operator=(const Mesh3D&) = delete;
     void upload(const std::vector<MeshVertex>& vertices);
+    void loadObj(const std::filesystem::path& path);
     void draw() const;
     // Inspects actual GPU storage and all four VAO attributes; restores bindings.
     bool verifyGpu() const;
@@ -26,17 +28,21 @@ public:
     void release();
     std::size_t vertexCount() const { return count; }
     bool valid() const { return vao != 0 && vbo != 0 && count != 0; }
+    glm::vec3 minimum() const { return lower; }
+    glm::vec3 maximum() const { return upper; }
 private:
     unsigned int vao = 0, vbo = 0;
     std::size_t count = 0;
+    glm::vec3 lower{0}, upper{0};
 };
 
 class ModelLibrary {
 public:
     Mesh3D ships[3];       // Flecha, Delta, Doble Motor; noses point to +Y.
-    Mesh3D enemies[3];     // Abeja, Mariposa, Jefe; heads point to -Y.
+    Mesh3D enemies[3];     // Abeja, Escarabajo, Jefe; heads point to -Y.
+    Mesh3D scenery;
     Mesh3D shot, enemyShot, particle;
-    void initialize();
+    void initialize(const std::filesystem::path& folder);
     void release();
     bool verifyGpu() const;
     unsigned int uploadCount() const { return uploads; }

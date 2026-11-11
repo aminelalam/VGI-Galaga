@@ -285,6 +285,7 @@
   <ItemGroup>
     <DemoAssets Include="$(ProjectDir)..\..\..\Recursos_Galaga3D\hud\*.png"><DemoFolder>hud</DemoFolder></DemoAssets>
     <DemoAssets Include="$(ProjectDir)..\..\..\Recursos_Galaga3D\fonts\*"><DemoFolder>fonts</DemoFolder></DemoAssets>
+    <DemoAssets Include="$(ProjectDir)..\..\..\Recursos_Galaga3D\modelos\*.obj;$(ProjectDir)..\..\..\Recursos_Galaga3D\modelos\*.mtl"><DemoFolder>modelos</DemoFolder></DemoAssets>
     <MesaRuntime Include="$(ProjectDir)..\third_party\mesa\bin\opengl32.dll" Condition="Exists('$(ProjectDir)..\third_party\mesa\bin\opengl32.dll')"/>
     <TeachingShaders Include="$(ProjectDir)shaders\*"/>
     <TeachingTextures Include="$(ProjectDir)textures\**\*"/>

@@ -10,6 +10,7 @@
 x64/
 x86/
 *.obj
+!Recursos_Galaga3D/modelos/*.obj
 *.pdb
 *.ilk
 *.log
@@ -34,3 +35,4 @@ dist/
 # Copias de Blender y fotogramas intermedios
 Recursos_Galaga3D/blender/Retro/*.blend[0-9]
 Recursos_Galaga3D/previews/Retro/frames/
+Recursos_Galaga3D/blender/Mallas_Galaga3D.blend[0-9]

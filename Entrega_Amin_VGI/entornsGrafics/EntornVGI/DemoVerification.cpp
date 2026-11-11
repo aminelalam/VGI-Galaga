@@ -34,11 +34,11 @@ bool CEntornVGIView::VerifyDemoRendering() {
         };
         target(64,64);
         if(!gameRenderer.verifyLighting(report))throw std::runtime_error("GL-6 lighting verification failed");
-        auto capture=[&](const char* name,int width,int height,bool gallery=false,float angle=0.f) {
+        auto capture=[&](const char* name,int width,int height,bool gallery=false,float angle=0.f,bool wireframe=false) {
             target(width,height);
             if(!gallery && game.phase==galaga::Phase::Playing && !gameRenderer.verifyFraming(game,report))
                 throw std::runtime_error("gameplay framing is unreadable or clipped");
-            if(gallery)gameRenderer.modelGallery(width,height,angle);else gameRenderer.draw(game,width,height);
+            if(gallery)gameRenderer.modelGallery(width,height,angle,wireframe);else gameRenderer.draw(game,width,height);
             glFinish();
             auto error=glGetError();if(error!=GL_NO_ERROR)throw std::runtime_error("OpenGL error "+std::to_string(error));
             std::vector<unsigned char> data(size_t(width)*height*4),flipped(data.size());
@@ -101,6 +101,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         auto front=capture("09-models-front",1280,720,true,.25f);
         auto side=capture("10-models-side",1280,720,true,1.05f);
         if(front==side)throw std::runtime_error("model matrix rotation did not alter rendering");
+        capture("14-models-wireframe",1280,720,true,.25f,true);
         report<<"PASS model matrix: rotated solid meshes produce different frames\n";
         game.reset();for(int i=0;i<390;++i)game.update({});
         target(1280,720);

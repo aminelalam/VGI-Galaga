@@ -2,7 +2,11 @@
 #include "Mesh3D.h"
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 #include <limits>
+#include <locale>
+#include <map>
+#include <sstream>
 #include <stdexcept>
 #include <type_traits>
 
@@ -12,11 +16,115 @@ using V2 = glm::vec2;
 using V3 = glm::vec3;
 using Color = glm::vec4;
 using Vertices = std::vector<MeshVertex>;
-const Color white(.94f, .96f, 1.f, 1.f), blue(.13f, .37f, .96f, 1.f);
-const Color red(.96f, .12f, .18f, 1.f), yellow(1.f, .79f, .12f, 1.f);
-const Color green(.26f, .86f, .37f, 1.f), purple(.64f, .24f, .89f, 1.f);
-const Color metal(.22f, .28f, .40f, 1.f), dark(.025f, .045f, .09f, 1.f);
-const Color glass(.24f, .88f, 1.f, 1.f), flame(1.f, .46f, .12f, 1.f);
+const Color white(.94f, .96f, 1.f, 1.f);
+
+std::map<std::string, Color> readMaterials(const std::filesystem::path& path) {
+    std::ifstream file(path);
+    if (!file) throw std::runtime_error("Falta el material " + path.filename().string());
+    std::map<std::string, Color> colors;
+    std::string line, name;
+    while (std::getline(file, line)) {
+        std::istringstream row(line);
+        row.imbue(std::locale::classic());
+        std::string tag;
+        row >> tag;
+        if (tag == "newmtl") {
+            std::getline(row >> std::ws, name);
+            if (name.empty()) throw std::runtime_error("Material sin nombre en " + path.filename().string());
+            colors[name] = white;
+        } else if (tag == "Kd") {
+            Color color(1.f);
+            if (name.empty() || !(row >> color.r >> color.g >> color.b))
+                throw std::runtime_error("Color Kd invalido en " + path.filename().string());
+            for (int channel = 0; channel < 3; ++channel)
+                if (!std::isfinite(color[channel]) || color[channel] < 0 || color[channel] > 1)
+                    throw std::runtime_error("Color Kd fuera de rango en " + path.filename().string());
+            colors[name] = color;
+        }
+    }
+    return colors;
+}
+
+// OBJ indices are one-based; negative indices refer to the last defined entries.
+std::size_t objIndex(int index, std::size_t count) {
+    const auto resolved = index > 0 ? static_cast<long long>(index) - 1
+                                  : static_cast<long long>(count) + index;
+    if (index == 0 || resolved < 0 || static_cast<std::size_t>(resolved) >= count)
+        throw std::runtime_error("Indice OBJ fuera de rango.");
+    return static_cast<std::size_t>(resolved);
+}
+
+Vertices readObj(const std::filesystem::path& path) {
+    std::ifstream file(path);
+    if (!file) throw std::runtime_error("Falta la malla " + path.filename().string());
+    std::vector<V3> positions, normals;
+    std::vector<V2> coordinates;
+    std::map<std::string, Color> materials;
+    Color color = white;
+    Vertices vertices;
+    std::string line;
+    std::size_t lineNumber = 0;
+    try {
+        while (std::getline(file, line)) {
+            ++lineNumber;
+            std::istringstream row(line);
+            row.imbue(std::locale::classic());
+            std::string tag;
+            row >> tag;
+            if (tag == "v" || tag == "vn") {
+                V3 value;
+                if (!(row >> value.x >> value.y >> value.z))
+                    throw std::runtime_error("Se necesitan tres coordenadas.");
+                if (tag == "vn") {
+                    const float length = glm::length(value);
+                    if (!std::isfinite(length) || length < 1e-8f)
+                        throw std::runtime_error("Normal OBJ degenerada.");
+                    normals.push_back(value / length);
+                } else {
+                    positions.push_back(value);
+                }
+            } else if (tag == "vt") {
+                V2 uv;
+                if (!(row >> uv.x >> uv.y)) throw std::runtime_error("UV incompletas.");
+                coordinates.push_back(uv);
+            } else if (tag == "mtllib") {
+                std::string name;
+                std::getline(row >> std::ws, name);
+                const std::filesystem::path materialFile(name);
+                if (name.empty() || materialFile.has_parent_path())
+                    throw std::runtime_error("El MTL debe estar junto al OBJ.");
+                const auto loaded = readMaterials(path.parent_path() / materialFile);
+                materials.insert(loaded.begin(), loaded.end());
+            } else if (tag == "usemtl") {
+                std::string name;
+                std::getline(row >> std::ws, name);
+                const auto found = materials.find(name);
+                if (found == materials.end()) throw std::runtime_error("Material desconocido " + name);
+                color = found->second;
+            } else if (tag == "f") {
+                for (int corner = 0; corner < 3; ++corner) {
+                    std::string faceVertex;
+                    if (!(row >> faceVertex)) throw std::runtime_error("Cara OBJ incompleta.");
+                    std::istringstream indices(faceVertex);
+                    int position = 0, uv = 0, normal = 0;
+                    char firstSlash = 0, secondSlash = 0;
+                    if (!(indices >> position >> firstSlash >> uv >> secondSlash >> normal) ||
+                        firstSlash != '/' || secondSlash != '/' || indices.peek() != EOF)
+                        throw std::runtime_error("Exporta cada vertice como posicion/UV/normal.");
+                    vertices.push_back({positions.at(objIndex(position, positions.size())),
+                                        normals.at(objIndex(normal, normals.size())),
+                                        coordinates.at(objIndex(uv, coordinates.size())), color});
+                }
+                std::string extra;
+                if (row >> extra && extra.front() != '#')
+                    throw std::runtime_error("Triangula las caras antes de exportar el OBJ.");
+            }
+        }
+    } catch (const std::exception& error) {
+        throw std::runtime_error(path.filename().string() + " linea " + std::to_string(lineNumber) + ": " + error.what());
+    }
+    return vertices;
+}
 
 void triangle(Vertices& out, V3 a, V3 b, V3 c, Color color) {
     V3 n = glm::cross(b - a, c - a);
@@ -67,130 +175,6 @@ void box(Vertices& out, V3 center, V3 half, Color color) {
     quad(out, {a.x,a.y,a.z}, {b.x,a.y,a.z}, {b.x,a.y,b.z}, {a.x,a.y,b.z}, color);
 }
 
-// Six-sided motor, long axis Y. Flat-shaded faces show its real thickness.
-void engine(Vertices& out, float x, float rear, float front, float radius, Color color) {
-    const float tau = 6.28318530718f;
-    for (int i = 0; i < 6; ++i) {
-        const float a = tau * i / 6.f, b = tau * (i + 1) / 6.f;
-        V3 ar(x + radius * std::cos(a), rear, radius * std::sin(a) - .04f);
-        V3 br(x + radius * std::cos(b), rear, radius * std::sin(b) - .04f);
-        V3 af(ar.x, front, ar.z), bf(br.x, front, br.z);
-        quad(out, ar, af, bf, br, color);
-        triangle(out, {x, front, -.04f}, bf, af, color);
-        triangle(out, {x, rear, -.04f}, ar, br, flame);
-    }
-}
-
-void cockpit(Vertices& out, float x, float y, float width, float length, float z) {
-    hull(out, {{x-width,y-length}, {x+width,y-length}, {x+width*.65f,y+length},
-               {x,y+length*1.22f}, {x-width*.65f,y+length}}, z, z + .065f, glass, .65f);
-}
-
-Vertices flecha() {
-    Vertices out;
-    for (float side : {-1.f, 1.f}) {
-        hull(out, {{side*.09f,.34f}, {side*.58f,-.34f}, {side*.49f,-.46f},
-                   {side*.08f,-.28f}}, -.075f, .075f, white);
-        hull(out, {{side*.31f,-.12f}, {side*.49f,-.32f}, {side*.45f,-.37f},
-                   {side*.27f,-.19f}}, .077f, .095f, red, .88f);
-        engine(out, side * .29f, -.51f, -.29f, .074f, metal);
-    }
-    hull(out, {{0.f,.72f}, {-.135f,-.45f}, {.135f,-.45f}}, -.13f, .17f, blue, .76f);
-    hull(out, {{0.f,.70f}, {-.035f,.43f}, {.035f,.43f}}, .06f, .19f, white);
-    cockpit(out, 0, .16f, .065f, .16f, .18f);
-    return out;
-}
-
-Vertices delta() {
-    Vertices out;
-    hull(out, {{0.f,.70f}, {-.59f,-.45f}, {.59f,-.45f}}, -.10f, .095f, red, .84f);
-    for (float side : {-1.f, 1.f}) {
-        hull(out, {{side*.22f,-.10f}, {side*.47f,-.36f}, {side*.20f,-.31f}}, .10f, .13f, white);
-        engine(out, side * .23f, -.51f, -.33f, .07f, metal);
-    }
-    hull(out, {{0.f,.63f}, {-.10f,-.43f}, {.10f,-.43f}}, .05f, .19f, red, .75f);
-    cockpit(out, 0.f, .10f, .06f, .17f, .19f);
-    return out;
-}
-
-Vertices twinEngine() {
-    Vertices out;
-    box(out, {0.f,-.12f,-.08f}, {.39f,.065f,.06f}, metal);
-    for (float side : {-1.f, 1.f}) {
-        const float x = side * .40f;
-        hull(out, {{x-.12f,-.48f}, {x+.12f,-.48f}, {x+.12f,.39f},
-                   {x+.055f,.56f}, {x-.055f,.56f}, {x-.12f,.39f}}, -.12f, .14f, green);
-        hull(out, {{x-.035f,-.34f}, {x+.035f,-.34f}, {x+.035f,.29f},
-                   {x-.035f,.29f}}, .145f, .157f, white, .9f);
-        engine(out, x, -.59f, -.42f, .085f, metal);
-    }
-    hull(out, {{-.15f,-.35f}, {.15f,-.35f}, {.14f,.40f}, {0.f,.58f}, {-.14f,.40f}},
-         -.13f, .18f, white);
-    hull(out, {{-.085f,-.34f}, {.085f,-.34f}, {.075f,.36f}, {0.f,.53f}, {-.075f,.36f}},
-         .15f, .19f, green);
-    cockpit(out, 0.f, .09f, .06f, .15f, .19f);
-    return out;
-}
-
-void eyes(Vertices& out, float separation, float y, float z) {
-    for (float side : {-1.f, 1.f}) {
-        box(out, {side*separation,y,z}, {.046f,.052f,.017f}, dark);
-        box(out, {side*separation,y-.015f,z+.02f}, {.018f,.023f,.01f}, white);
-    }
-}
-
-Vertices bee() {
-    Vertices out;
-    for (float side : {-1.f, 1.f}) {
-        hull(out, {{side*.10f,.20f}, {side*.43f,.37f}, {side*.54f,.12f},
-                   {side*.30f,-.22f}, {side*.13f,-.15f}}, -.09f, .10f, blue);
-        hull(out, {{side*.30f,.18f}, {side*.45f,.29f}, {side*.50f,.12f},
-                   {side*.34f,-.02f}}, .10f, .135f, yellow);
-        hull(out, {{side*.12f,-.17f}, {side*.27f,-.37f}, {side*.23f,-.43f},
-                   {side*.08f,-.29f}}, -.02f, .085f, red);
-    }
-    hull(out, {{0.f,-.47f}, {.18f,-.27f}, {.13f,.31f}, {0.f,.43f},
-               {-.13f,.31f}, {-.18f,-.27f}}, -.15f, .18f, yellow);
-    box(out, {0.f,.12f,.185f}, {.105f,.045f,.017f}, blue);
-    box(out, {0.f,.29f,.165f}, {.072f,.034f,.016f}, blue);
-    eyes(out, .077f, -.23f, .195f);
-    return out;
-}
-
-Vertices butterfly() {
-    Vertices out;
-    for (float side : {-1.f, 1.f}) {
-        hull(out, {{side*.10f,.18f}, {side*.40f,.46f}, {side*.53f,.30f},
-                   {side*.49f,-.17f}, {side*.17f,-.31f}}, -.10f, .12f, red);
-        hull(out, {{side*.25f,.03f}, {side*.43f,.28f}, {side*.43f,-.08f},
-                   {side*.29f,-.17f}}, .12f, .15f, white);
-        hull(out, {{side*.08f,-.21f}, {side*.21f,-.45f}, {side*.14f,-.49f},
-                   {side*.04f,-.29f}}, -.04f, .06f, blue);
-    }
-    hull(out, {{0.f,-.43f}, {.16f,-.23f}, {.10f,.32f}, {0.f,.43f},
-               {-.10f,.32f}, {-.16f,-.23f}}, -.15f, .19f, white);
-    hull(out, {{-.13f,-.17f}, {.13f,-.17f}, {.10f,.04f}, {-.10f,.04f}}, .19f, .205f, red);
-    eyes(out, .067f, -.24f, .215f);
-    return out;
-}
-
-Vertices boss() {
-    Vertices out;
-    for (float side : {-1.f, 1.f}) {
-        hull(out, {{side*.12f,.15f}, {side*.42f,.43f}, {side*.56f,.28f},
-                   {side*.52f,-.19f}, {side*.20f,-.35f}}, -.10f, .14f, purple);
-        hull(out, {{side*.29f,-.13f}, {side*.48f,-.08f}, {side*.45f,.21f},
-                   {side*.29f,.10f}}, .14f, .19f, green);
-        hull(out, {{side*.09f,-.23f}, {side*.24f,-.46f}, {side*.14f,-.50f},
-                   {side*.05f,-.31f}}, -.01f, .10f, yellow);
-    }
-    hull(out, {{-.19f,-.24f}, {0.f,-.45f}, {.19f,-.24f}, {.18f,.23f},
-               {0.f,.43f}, {-.18f,.23f}}, -.16f, .22f, green);
-    hull(out, {{0.f,.35f}, {-.10f,.07f}, {.10f,.07f}}, .22f, .24f, yellow);
-    eyes(out, .085f, -.19f, .235f);
-    return out;
-}
-
 Vertices projectile(bool hostile) {
     Vertices out;
     const Color color = hostile ? Color(1.f,.22f,.08f,1.f) : Color(.25f,.85f,1.f,1.f);
@@ -212,6 +196,10 @@ void Mesh3D::upload(const std::vector<MeshVertex>& vertices) {
                 throw std::runtime_error("La malla 3D contiene valores no finitos.");
         if (glm::dot(v.normal,v.normal) < .9f)
             throw std::runtime_error("La malla 3D contiene una normal degenerada.");
+        for (int k = 0; k < 2; ++k)
+            if (!std::isfinite(v.uv[k])) throw std::runtime_error("La malla tiene UV no finitas.");
+        for (int k = 0; k < 4; ++k)
+            if (!std::isfinite(v.color[k])) throw std::runtime_error("La malla tiene un color no finito.");
     }
     release();
     glGenVertexArrays(1, &vao);
@@ -239,6 +227,15 @@ void Mesh3D::upload(const std::vector<MeshVertex>& vertices) {
         throw std::runtime_error("No se ha podido cargar una malla 3D en VAO/VBO.");
     }
     count = vertices.size();
+    lower = upper = vertices.front().position;
+    for (const auto& vertex : vertices) {
+        lower = glm::min(lower, vertex.position);
+        upper = glm::max(upper, vertex.position);
+    }
+}
+
+void Mesh3D::loadObj(const std::filesystem::path& path) {
+    upload(readObj(path));
 }
 
 void Mesh3D::draw() const {
@@ -292,22 +289,28 @@ void Mesh3D::release() {
     if (vbo) glDeleteBuffers(1, &vbo);
     vao = vbo = 0;
     count = 0;
+    lower = upper = V3(0.f);
 }
 
-void ModelLibrary::initialize() {
-    if (uploads == 9) return;
+void ModelLibrary::initialize(const std::filesystem::path& folder) {
+    if (uploads == 10) return;
     release();
     try {
         auto upload = [this](Mesh3D& mesh, const Vertices& vertices) {
             mesh.upload(vertices);
             ++uploads;
         };
-        upload(ships[0],flecha());
-        upload(ships[1],delta());
-        upload(ships[2],twinEngine());
-        upload(enemies[0],bee());
-        upload(enemies[1],butterfly());
-        upload(enemies[2],boss());
+        auto load = [this, &folder](Mesh3D& mesh, const wchar_t* filename) {
+            mesh.loadObj(folder / filename);
+            ++uploads;
+        };
+        load(ships[0],L"nave_flecha.obj");
+        load(ships[1],L"nave_delta.obj");
+        load(ships[2],L"nave_doble_motor.obj");
+        load(enemies[0],L"enemigo_abeja.obj");
+        load(enemies[1],L"enemigo_escarabajo.obj");
+        load(enemies[2],L"jefe_acorazado.obj");
+        load(scenery,L"escenario_orbital.obj");
         upload(shot,projectile(false));
         upload(enemyShot,projectile(true));
         Vertices cube;
@@ -322,6 +325,7 @@ void ModelLibrary::initialize() {
 void ModelLibrary::release() {
     for (auto& mesh : ships) mesh.release();
     for (auto& mesh : enemies) mesh.release();
+    scenery.release();
     shot.release();
     enemyShot.release();
     particle.release();
@@ -329,10 +333,11 @@ void ModelLibrary::release() {
 }
 
 bool ModelLibrary::verifyGpu() const {
-    bool correct = uploads == 9;
+    bool correct = uploads == 10;
     // Check every mesh even if an earlier one fails, including its GL errors.
     for (const auto& mesh : ships) if (!mesh.verifyGpu()) correct = false;
     for (const auto& mesh : enemies) if (!mesh.verifyGpu()) correct = false;
+    if (!scenery.verifyGpu()) correct = false;
     if (!shot.verifyGpu()) correct = false;
     if (!enemyShot.verifyGpu()) correct = false;
     if (!particle.verifyGpu()) correct = false;
@@ -341,7 +346,7 @@ bool ModelLibrary::verifyGpu() const {
 }
 
 std::size_t ModelLibrary::vertexCount() const {
-    std::size_t total = shot.vertexCount() + enemyShot.vertexCount() + particle.vertexCount();
+    std::size_t total = shot.vertexCount() + enemyShot.vertexCount() + particle.vertexCount() + scenery.vertexCount();
     for (const auto& mesh : ships) total += mesh.vertexCount();
     for (const auto& mesh : enemies) total += mesh.vertexCount();
     return total;

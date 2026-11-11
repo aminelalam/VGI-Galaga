@@ -1,6 +1,8 @@
 # Galaga 3D · VGI
 
-Demo nativa en C++/MFC/OpenGL con **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. La cámara está detrás de la nave. Los enemigos mantienen una formación estática a distintas distancias y alturas, y los disparos y las colisiones se calculan en XYZ. **Durante la partida, el HUD muestra únicamente PUNTOS y la puntuación.**
+Demo nativa en C++/MFC/OpenGL con **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. La cámara está detrás de la nave, sobre una plataforma orbital con estructuras laterales. Los enemigos mantienen una formación estática a distintas distancias y alturas, y los disparos y las colisiones se calculan en XYZ. **Durante la partida, el HUD muestra únicamente PUNTOS y la puntuación.**
+
+Las naves, enemigos y escenario son [mallas OBJ/MTL cargadas por el juego](Recursos_Galaga3D/modelos/README.md). Se pueden editar en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend), con un catálogo de modelos y una escena de combate.
 
 Abre **`dist/Galaga3D/Galaga3D.exe`** para jugar o ejecuta **`build-demo.cmd`** para compilar, probar y preparar el paquete. La carpeta distribuida incluye un motor OpenGL local que evita el aviso de actualizar el controlador en este equipo.
 

@@ -15,7 +15,7 @@ public:
     unsigned int uploadCount() const {return models.uploadCount();}
     unsigned int drawCount() const {return draws;}
     // Same geometry and shader, different camera: verifies real solid models.
-    void modelGallery(int width,int height,float angle);
+    void modelGallery(int width,int height,float angle,bool wireframe=false);
 private:
     Renderer2D hud;
     ModelLibrary models;

@@ -1,5 +1,11 @@
 # Interfaz de Galaga 3D
 
+## Mallas integradas en el juego
+
+La entrega del 11 de noviembre incluye [tres naves, dos enemigos, el modelo del jefe y un escenario orbital](modelos/README.md). Son archivos OBJ/MTL cargados por la demo C++ en VAO/VBO estáticos. [Mallas_Galaga3D.blend](blender/Mallas_Galaga3D.blend) contiene los modelos editables y el escenario con las naves en posición.
+
+Las secciones siguientes documentan los prototipos anteriores de interfaz y sus recursos.
+
 ## Blender retro
 
 Dos versiones de los modelos y las pantallas en estilo arcade. Incluyen las naves FLECHA, DELTA y DOBLE MOTOR, enemigos, jefe y HUD. Las piezas son mallas editables, con letras de bloques y materiales de pocos colores.

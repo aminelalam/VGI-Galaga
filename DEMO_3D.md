@@ -4,7 +4,9 @@ Abre **dist/Galaga3D/Galaga3D.exe** y conserva toda la carpeta junto al ejecutab
 
 ## Juego
 
-Una ronda, 18 enemigos y tres vidas. La nave solo se mueve en X; Y y Z permanecen fijos. Los enemigos son mallas solidas inmoviles en tres profundidades reales: Z=-2.5, Z=0 y Z=2.5. La camara en tercera persona se situa detras de la nave y la sigue lateralmente. El fondo es negro liso. Las tres filas tienen seis columnas uniformes, separadas en distancia y altura. La perspectiva, la iluminacion y el depth buffer muestran el volumen. No hay entradas, picados, particulas, parpadeos ni animacion del fondo.
+Una ronda, 18 enemigos y tres vidas. La nave solo se mueve en X; Y y Z permanecen fijos. Los enemigos son mallas solidas inmoviles en tres profundidades reales, Z=-2.5, Z=0 y Z=2.5. La camara en tercera persona se situa detras de la nave y la sigue lateralmente. Una plataforma orbital con pilares laterales muestra la profundidad del escenario. Las tres filas tienen seis columnas uniformes, separadas en distancia y altura. La perspectiva, la iluminacion y el depth buffer muestran el volumen.
+
+Las tres naves, la abeja, el escarabajo, el modelo del jefe y el escenario se editan en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend) y se exportan a OBJ/MTL. El juego carga estas mallas al arrancar. [Edicion, exportacion y alcance](Recursos_Galaga3D/modelos/README.md).
 
 Alinea tu nave horizontalmente con un enemigo. El disparo selecciona el enemigo mas cercano dentro del margen lateral y apunta a su centro en XYZ al salir. Conserva esa trayectoria durante el vuelo. Cuando ningun enemigo queda dentro del margen, sale hacia delante. Los enemigos disparan de uno en uno hacia tu posicion al emitir el tiro. Las balas aliadas son cian y las hostiles naranja rojizo. Los proyectiles hostiles se retiran tras pasar al jugador.
 
@@ -20,7 +22,7 @@ Se conserva la solucion **Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln**, el pro
 
 - Game3D.h/.cpp: simulacion a 60 Hz, entrada lateral, formacion estatica, disparos y colisiones por barrido de esferas en XYZ.
 - GameView3D.cpp: entrada y ciclo de actualizacion mediante MFC.
-- Mesh3D.h/.cpp: mallas trianguladas, normales, colores y VAO/VBO estaticos.
+- Mesh3D.h/.cpp: carga de mallas OBJ trianguladas y materiales MTL, normales, colores y VAO/VBO estaticos.
 - Renderer3D.h/.cpp: perspectiva, camara GLM y matrices model/view/projection.
 - shaders/galaga3d.vert y galaga3d.frag: transformaciones e iluminacion Phong con estructuras Light y Material, segun GL-6.
 - Renderer2D.h/.cpp: texturas PNG del HUD y mezcla alfa en pantalla.
