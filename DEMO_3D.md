@@ -1,56 +1,108 @@
-# Galaga 3D basico en EntornVGI
+# Galaga 3D en EntornVGI
 
-Abre **dist/Galaga3D/Galaga3D.exe** y conserva toda la carpeta junto al ejecutable.
+La campaña se desarrolla en la rama **`codex/mallas-3d-escenario`**. Para preparar la versión de tu copia local, ejecuta **`build-demo.cmd`** desde la raíz del repositorio. El paquete queda en **`dist/Galaga3D`**; abre **`dist/Galaga3D/Galaga3D.exe`** y conserva junto a él sus carpetas de recursos y DLL.
 
-## Juego
+## Cómo se juega
 
-Una ronda, 18 enemigos y tres vidas. La nave solo se mueve en X; Y y Z permanecen fijos. Los enemigos son mallas solidas inmoviles en tres profundidades reales, Z=-2.5, Z=0 y Z=2.5. La camara en tercera persona se situa detras de la nave y la sigue lateralmente. Una plataforma orbital con pilares laterales muestra la profundidad del escenario. Las tres filas tienen seis columnas uniformes, separadas en distancia y altura. La perspectiva, la iluminacion y el depth buffer muestran el volumen.
+Elige Flecha, Delta o Doble Motor en el menú y pulsa Enter. Empiezas con tres vidas. La secuencia es combate 1 → esquiva 1 → combate 2 → esquiva 2 → combate 3 → jefe final. Los combates reúnen 12, 15 y 18 enemigos; las esquivas duran 12 y 15 segundos. Se gana al destruir el jefe y se pierde al agotar las vidas.
 
-Las tres naves, la abeja, el escarabajo, el modelo del jefe y el escenario se editan en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend) y se exportan a OBJ/MTL. El juego carga estas mallas al arrancar. [Edicion, exportacion y alcance](Recursos_Galaga3D/modelos/README.md).
+En los combates, la cámara se sitúa detrás de la nave. Los enemigos entran desde distintos puntos, ocupan posiciones a diferentes alturas y distancias, disparan y realizan picados con un aviso previo. En las esquivas, la cámara pasa a la cabina y debes evitar los asteroides que se aproximan. En esos tramos no se dispara.
 
-Alinea tu nave horizontalmente con un enemigo. El disparo selecciona el enemigo mas cercano dentro del margen lateral y apunta a su centro en XYZ al salir. Conserva esa trayectoria durante el vuelo. Cuando ningun enemigo queda dentro del margen, sale hacia delante. Los enemigos disparan de uno en uno hacia tu posicion al emitir el tiro. Las balas aliadas son cian y las hostiles naranja rojizo. Los proyectiles hostiles se retiran tras pasar al jugador.
+| Tecla | Acción |
+| --- | --- |
+| 1 / 2 / 3 en el menú | Elegir nave. |
+| Enter en el menú | Empezar la campaña. |
+| A / D o flechas izquierda / derecha | Desplazarse lateralmente. |
+| W / S o flechas arriba / abajo | Subir y bajar. |
+| Espacio | Disparar con el arma seleccionada. |
+| 1 / 2 / 3 / 4 en partida | Seleccionar simple, doble paralelo, triple o misil. |
+| Q | Lanzar un misil especial; recarga de cuatro segundos. |
+| P | Pausar o reanudar. |
+| Esc | Pausar durante el juego; volver al menú desde pausa o resultados. |
+| R en resultados | Reiniciar la campaña. |
+| M | Silenciar o activar música y efectos. |
+| F2 | Alternar entre caras sólidas y triángulos de la malla. |
 
-La camara usa un campo de vision de 38 grados y una formacion con modelos ampliados, con el radio de contacto ajustado a su escala. Durante la partida, el HUD muestra unicamente PUNTOS y la puntuacion en la esquina superior izquierda. La revision funcional y los limites de validacion se recogen en REVISION_JUEGO.txt.
+Perder el foco de la ventana pausa la simulación. La selección de nave y de arma se conserva al reiniciar. El récord se guarda en el perfil de Windows al cerrar la aplicación y se recupera en la siguiente apertura.
 
-Enter inicia; A/D o flechas mueven; Espacio dispara; P pausa. En el menu, 1/2/3 eligen Flecha, Delta o Doble Motor. R reinicia desde un resultado. Esc pausa o vuelve al menu desde pausa/resultados. Perder el foco pausa la simulacion.
+El HUD ocupa los bordes: puntos, etapa, vidas, arma y estado del misil especial. Durante las esquivas informa del tiempo restante; ante el jefe muestra su salud. Los mensajes de llegada de una etapa son temporales.
 
-Ganas al eliminar los 18 enemigos y pierdes al agotar tres vidas. El combo interviene en el calculo de puntos y el record se guarda internamente. El HUD utiliza la etiqueta original Recursos_Galaga3D/hud/etiqueta_puntos.png. La seleccion de nave, la pausa y los resultados tienen sus propias pantallas con instrucciones.
+## Espacio 3D, cámara y disparos
 
-## Estructura y contenidos de VGI
+El mundo usa **X para izquierda/derecha, Y para avance y Z para altura**. El jugador controla X y Z de manera continua, con la velocidad diagonal normalizada. La Y del jugador permanece fija dentro del sistema relativo al vuelo. El desplazamiento de las estrellas, las entradas y picados de los enemigos y la aproximación de los obstáculos representan el avance. No hay un control manual de aceleración ni vuelo libre en seis direcciones.
 
-Se conserva la solucion **Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln**, el proyecto **EntornVGI/EntornVGI.vcxproj**, las ventanas MFC, los mensajes de teclado y el contexto OpenGL de la plantilla. El menu Juego permite regresar al entorno docente. No es el MVP aparte.
+Los objetos tienen geometría tridimensional y posiciones XYZ. La cámara de combate sigue el movimiento lateral y la altura de la nave; la de cabina mira hacia +Y desde el jugador. La proyección en perspectiva hace que los objetos cercanos se vean mayores y el buffer de profundidad resuelve qué superficies ocultan a otras. Las estructuras del escenario quedan alrededor del corredor de combate.
 
-- Game3D.h/.cpp: simulacion a 60 Hz, entrada lateral, formacion estatica, disparos y colisiones por barrido de esferas en XYZ.
-- GameView3D.cpp: entrada y ciclo de actualizacion mediante MFC.
-- Mesh3D.h/.cpp: carga de mallas OBJ trianguladas y materiales MTL, normales, colores y VAO/VBO estaticos.
-- Renderer3D.h/.cpp: perspectiva, camara GLM y matrices model/view/projection.
-- shaders/galaga3d.vert y galaga3d.frag: transformaciones e iluminacion Phong con estructuras Light y Material, segun GL-6.
-- Renderer2D.h/.cpp: texturas PNG del HUD y mezcla alfa en pantalla.
-- DemoVerification.cpp: comprobacion del render real, buffers, HUD y capturas.
+El disparo simple avanza hacia +Y. El doble dispara dos proyectiles paralelos desde posiciones laterales distintas. El triple abre tres trayectorias en abanico. Para acertar con estas armas hay que alinear la nave con la altura y la posición lateral del enemigo.
 
-Cada malla se carga una vez con GL_STATIC_DRAW. Cada instancia reutiliza el VAO y envia model y la matriz normal al shader. El HUD usa un buffer dinamico independiente. Las colisiones usan coordenadas del mundo, no posiciones de pantalla: coincidir visualmente a distinta profundidad no basta para impactar.
+El misil hace cuatro puntos de daño y tiene una cadencia menor. Al salir puede orientarse hacia un enemigo que esté cerca de la línea de tiro; después conserva su dirección, sin perseguirlo durante el vuelo. Q usa ese mismo tipo de proyectil con una recarga independiente. Los enemigos apuntan hacia la posición del jugador al emitir su disparo.
 
-Corresponde a los bloques de transformaciones y modelado 3D, ocultaciones, iluminacion, texturas y shaders de la Guia Docent VGI aportada. GL-3 explica VBO/VAO y GL-4 explica lookAt, perspectiva y matrices. Se reviso tambien el acta 4 del repositorio; las ampliaciones de skins, cajas y modos no forman parte de esta version basica.
+Las colisiones se calculan con volúmenes esféricos en XYZ y el recorrido entre la posición anterior y la actual. El jefe usa un elipsoide: su anchura, profundidad y altura tienen límites distintos, para que una bala que pase por encima de la nave no cuente como impacto. El contacto se resuelve por el primer instante válido del recorrido. Las mallas visibles no son los volúmenes de colisión: el juego utiliza estas formas simplificadas para mantener el cálculo comprensible y económico. Los destellos, efectos y sonidos comunican impactos y daño.
+
+## Mallas, materiales y contenidos de VGI
+
+Se conserva la solución **`Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln`**, el proyecto **`EntornVGI/EntornVGI.vcxproj`**, las ventanas MFC, los mensajes de teclado y el contexto OpenGL de la plantilla. El menú Juego permite volver al entorno docente, que requiere OpenGL 4.6; el render del juego utiliza shaders GLSL 330. El MVP privado aparte queda fuera de esta versión y de su publicación.
+
+Las naves, enemigos y escenario se editan en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend). Los archivos OBJ/MTL exportados contienen posiciones, caras triangulares, normales, coordenadas UV y materiales. Los modelos mantienen volumen visto desde diferentes ángulos. Consulta las instrucciones de [edición y exportación](Recursos_Galaga3D/modelos/README.md).
+
+El recorrido de un modelo es: Blender → OBJ/MTL → `MeshVertex` → VBO/EBO → VAO → shader. El VBO almacena una sola copia de cada vértice completo con `GL_STATIC_DRAW`; el EBO conserva los índices de los triángulos y el VAO describe cómo leer ambos buffers. Los vértices con normales, UV o materiales diferentes siguen separados. Cada instancia reutiliza esos datos mediante `glDrawElements` y envía su matriz `model`, que sitúa, orienta y escala el objeto. `view` transforma a coordenadas de cámara y `projection` aplica la perspectiva. El shader obtiene la posición final mediante `projection * view * model * posición`.
+
+Los enemigos normales tienen una segunda malla de menor detalle para distancias de más de diez unidades por delante del jugador. Conserva su silueta, volumen y materiales; al acercarse se usa la malla completa. Ambas versiones se cargan una vez, y cambiar de detalle solo selecciona el VAO. Esta reducción evita procesar miles de triángulos pequeños que apenas ocupan píxeles en la pantalla, especialmente cuando Mesa dibuja con la CPU.
+
+| Atributo del VAO | Datos |
+| --- | --- |
+| 0 | Posición XYZ. |
+| 1 | Normal XYZ de la superficie. |
+| 2 | Coordenadas UV. |
+| 3 | Color difuso procedente de `Kd`. |
+| 4 | Dos parámetros de superficie derivados de `Ks` y `Ns`. |
+
+El cargador convierte `Ks` en una intensidad especular media y utiliza `Ns` para ajustar la concentración del brillo. Estos valores viajan por el atributo 4. Los colores sólidos y sus brillos distinguen las superficies; disponer de UV no implica que cada nave use una textura de imagen.
+
+La iluminación Phong se calcula en coordenadas del mundo con las estructuras `Light` y `Material`: emisión, ambiente, difusión y reflexión especular. La matriz normal es la transpuesta de la inversa de la parte 3×3 de `model`, para conservar la orientación correcta de las normales al transformar un objeto. Esto relaciona la implementación con VBO/VAO de **GL-3**, cámara y matrices de **GL-4**, e iluminación de **GL-6**. El buffer de profundidad y el HUD con mezcla alfa corresponden a ocultaciones y composición de la asignatura.
+
+## Dónde está cada parte del código
+
+Todos los archivos siguientes están en `Entrega_Amin_VGI/entornsGrafics/EntornVGI`, salvo las pruebas de lógica, situadas en `Entrega_Amin_VGI/entornsGrafics/tests`.
+
+| Archivo | Responsabilidad |
+| --- | --- |
+| `Game3D.h/.cpp` | Reglas y simulación a 60 pasos por segundo: campaña, movimiento X/Z, fases enemigas, armas, obstáculos, vida, puntuación y colisiones XYZ. No depende de MFC ni OpenGL. |
+| `GameView3D.cpp` | Teclado, reloj, acumulador de pasos de simulación, pausa al perder el foco y eventos de audio. |
+| `Mesh3D.h/.cpp` | Lectura de OBJ/MTL, formato intercalado de vértices, VBO/VAO y biblioteca de mallas reutilizadas. |
+| `Renderer3D.h/.cpp` | Cámaras de combate y cabina, perspectiva, matrices, dibujo de instancias y modo de malla. |
+| `shaders/galaga3d.vert` y `galaga3d.frag` | Transformación de vértices y normales; iluminación Phong y parámetros de material. |
+| `Renderer2D.h/.cpp` | Menú, HUD, pausa y resultados, superpuestos mediante mezcla alfa. |
+| `GameAudio.h/.cpp` | Mezcla de música y efectos WAV con WinMM; el audio es opcional si el dispositivo no está disponible. |
+| `Game3DTests.cpp` | Comprobaciones automáticas de reglas y campaña mediante la API de simulación. |
+| `DemoVerification.cpp` | Comprobación gráfica con contexto OpenGL real, recursos, buffers y capturas. |
+
+Los recursos son externos al ejecutable y se copian durante la compilación. El [audio original](Recursos_Galaga3D/audio/README.md) incluye música de menú y partida y efectos de disparo, impacto, daño, transición, victoria y derrota. Se genera de forma determinista con `Recursos_Galaga3D/scripts/generar_audio.py` y se mezcla mediante WinMM sin incorporar un motor de audio grande.
 
 ## Compilar y comprobar
 
-Windows x64, Visual Studio 2022, C++ de escritorio, MFC v143 y Windows SDK.
+Requisitos: Windows x64, Visual Studio 2022 con desarrollo de escritorio en C++, MFC v143 y Windows SDK.
 
+Desde la raíz del repositorio:
+
+```powershell
+.\build-demo.cmd
+.\build-demo.cmd -Configuration Release -Verify -Package
+.\build-demo.cmd -Configuration Debug -Verify
 ```
-build-demo.cmd -Configuration Release -Verify -Package
-build-demo.cmd -Configuration Debug -Verify
-```
 
-La primera orden prepara dist/Galaga3D. Los ejecutables de desarrollo quedan en Entrega_Amin_VGI/entornsGrafics/bin/x64/Release o Debug. La solucion incluye pruebas de logica y copia los recursos del proyecto automaticamente.
+Sin argumentos, el script realiza la misma operación que la segunda orden: compila Release, ejecuta las pruebas de lógica y la verificación gráfica, y prepara `dist/Galaga3D`. La tercera orden prepara una compilación Debug con comprobación gráfica, sin empaquetarla.
 
-Las pruebas comprueban las tres profundidades, formacion inmovil, limites, pausa, direccion XYZ, impactos, reinicio y partidas completas. Un piloto de prueba gana usando solo movimiento y disparo; un jugador quieto pierde naturalmente. La verificacion grafica comprueba shaders, VAO/VBO, depth buffer, recursos HUD, captura 16:9 y 4:3 y reutilizacion de mallas sin nuevas cargas. Resultados en bin/x64/<configuracion>/verification. No sustituyen una sesion manual del jugador.
+Los ejecutables de desarrollo quedan en `Entrega_Amin_VGI/entornsGrafics/bin/x64/Release` o `Debug`. Las pruebas de lógica se ejecutan desde `bin/tests/<configuración>/Game3DTests.exe`. Los informes y capturas de verificación gráfica quedan en `bin/x64/<configuración>/verification`; los mensajes de arranque están junto al ejecutable en `startup.log` y `context.log`.
 
-Se incluye Mesa LLVMpipe local porque el controlador del sistema proporcionaba OpenGL 1.1. Permite ejecutar shaders sin cambiar el controlador; en este equipo el rasterizado se realiza en CPU. Es necesario conservar opengl32.dll. Origen, hashes y licencias en third_party/mesa.
+Verificación del 11 de noviembre de 2026: **Release y Debug pasan 53 comprobaciones de lógica y la verificación gráfica**. El piloto de prueba completa las tres oleadas, ambas esquivas y el jefe en aproximadamente 75 segundos mediante entradas normales; el jugador inmóvil pierde. Se inspeccionaron las capturas del ejecutable, incluidas las esquinas del movimiento, la cabina y los modelos sólidos y en malla. La valoración manual de dificultad y de la mezcla de sonido sigue pendiente.
 
-## Transparencia del uso de IA
+En este equipo, el render de referencia Release con Mesa LLVMpipe pasó de unos 49 a **22,9 ms por imagen a 1280×720** al introducir índices y detalle reducido para los enemigos lejanos. A 960×540 se midieron 17,8 ms. Son medias de 60 imágenes de la formación de referencia, no una garantía de FPS para todos los equipos o fases. El [informe conservado](Recursos_Galaga3D/previews/Mallas/Verificacion_Release.txt) identifica el renderizador y las comprobaciones.
 
-La adaptacion de Game3D, Renderer3D, Renderer2D y las pruebas, asi como esta documentacion y el ajuste del script de compilacion, se han realizado con asistencia de Codex. La guia docente aportada restringe expresamente el uso de IA en programacion. Esta implementacion asistida no debe presentarse como codigo escrito de forma independiente ni como cumplimiento de esa restriccion. El equipo debe contrastar su uso con el profesor.
+El paquete incluye Mesa LLVMpipe local para equipos cuyo controlador solo expone OpenGL 1.1. En esa configuración el rasterizado se realiza en CPU. Conserva `opengl32.dll` y los recursos del paquete. Su origen, hashes y licencias están en `Entrega_Amin_VGI/entornsGrafics/third_party/mesa`.
 
-El contraste con VGI - Teoria i Problemes, sus paginas de referencia y seis pruebas de los terminos de iluminacion se recogen en REVISION_JUEGO.txt.
+## Alcance de la documentación y uso de IA
 
-La asistencia permite relacionar rapidamente matrices, buffers y reglas, pero el alumnado debe comprender las transformaciones, la deteccion de impactos, las limitaciones del apuntado automatico y el uso de Mesa antes de explicar o evaluar el resultado.
+Los PDF, actas y documentos de gestión se conservan como referencia. La [guía del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf) corresponde a la revisión del 1 de noviembre de 2026 y no documenta todos los cambios de esta campaña. Las propuestas de skins, cajas de recompensas y economía de partida no están implementadas aquí. El contraste previo con las páginas de teoría se conserva en `REVISION_JUEGO.txt`.
+
+La adaptación del juego, sus mallas, audio, pruebas y documentación se ha realizado con asistencia de Codex. La guía docente aportada restringe expresamente el uso de IA en programación. Esta implementación asistida no debe presentarse como código escrito de forma independiente ni como cumplimiento de esa restricción. El equipo debe contrastar su uso con el profesor y comprender las transformaciones, buffers, iluminación, reglas y colisiones antes de explicar el resultado.

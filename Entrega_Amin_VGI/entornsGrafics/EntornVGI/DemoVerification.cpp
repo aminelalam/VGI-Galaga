@@ -48,7 +48,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
             for(size_t pixel=3;pixel<flipped.size();pixel+=4)flipped[pixel]=255;
             if(!gallery&&width==1280&&height==720&&game.phase==galaga::Phase::Playing){
                 size_t visibleScore=0;
-                for(int y=18;y<80;++y)for(int x=55;x<260;++x){const auto* p=flipped.data()+(size_t(y)*width+x)*4;if(std::max({p[0],p[1],p[2]})>150)++visibleScore;}
+                for(int y=18;y<80;++y)for(int x=30;x<220;++x){const auto* p=flipped.data()+(size_t(y)*width+x)*4;if(std::max({p[0],p[1],p[2]})>150)++visibleScore;}
                 if(visibleScore<300)throw std::runtime_error("HUD score missing from framebuffer");
             }
             if(!SOIL_save_image((folder/(std::string(name)+".png")).string().c_str(),SOIL_SAVE_TYPE_PNG,width,height,4,flipped.data()))throw std::runtime_error("could not write PNG");
@@ -60,30 +60,67 @@ bool CEntornVGIView::VerifyDemoRendering() {
             return hash;
         };
         auto key=[&](UINT code){GameKeyDown(code,0);OnKeyUp(code,1,0);};
+        // Exercise the MFC interception path, including the new flight axes.
+        for(UINT code:{UINT('W'),UINT('S'),UINT(VK_UP),UINT(VK_DOWN),UINT('Q')}){
+            MSG message{};message.message=WM_KEYDOWN;message.wParam=code;
+            if(!PreTranslateMessage(&message)||!gameKeys[code])throw std::runtime_error("flight input not routed to game");
+            message.message=WM_KEYUP;
+            if(!PreTranslateMessage(&message)||gameKeys[code])throw std::runtime_error("flight input release was lost");
+        }
+        key('M');if(!gameAudio.isMuted())throw std::runtime_error("audio toggle failed");key('M');
         game=galaga::Game3D{};capture("01-menu",1280,720);
         key('2');if(game.selectedShip!=1)throw std::runtime_error("ship selection failed");
         capture("02-delta-selected",1280,720);
         key('3');if(game.selectedShip!=2)throw std::runtime_error("third ship selection failed");
         key(VK_RETURN);if(game.phase!=galaga::Phase::Playing||game.selectedShip!=2)throw std::runtime_error("Enter did not preserve selected ship");
-        for(int i=0;i<390;++i)game.update({});
+        for(int i=0;i<220;++i)game.update({});
         capture("03-combat",1280,720);capture("04-combat-4x3",1024,768);
-        game.player.x=-7.68f;capture("04-left-limit",1280,720);
-        game.player.x=7.68f;capture("04-right-limit",1280,720);game.player.x=0;
+        game.selectedShip=0;capture("03-combat-flecha",1280,720);
+        game.selectedShip=1;capture("03-combat-delta",1280,720);game.selectedShip=2;
+        auto placePlayer=[&](float x,float z){
+            game.player.x=x;game.previousPlayer=game.player;game.playerZ=game.previousPlayerZ=z;
+        };
+        placePlayer(-7.68f,0);capture("04-left-limit",1280,720);
+        placePlayer(7.68f,0);capture("04-right-limit",1280,720);
+        placePlayer(galaga::Game3D::PlayerLimitX,galaga::Game3D::PlayerMaxZ);
+        capture("04-upper-right-limit",1280,720);
+        placePlayer(-galaga::Game3D::PlayerLimitX,galaga::Game3D::PlayerMinZ);
+        capture("04-lower-left-limit",1280,720);placePlayer(0,0);
         bool hasNear=false,hasFar=false;
-        for(const auto& e:game.enemies){hasNear|=e.z>2;hasFar|=e.z<-2;}
+        for(const auto& e:game.enemies){hasNear|=e.pos.y<17;hasFar|=e.pos.y>23&&e.z>3;}
         if(!hasNear||!hasFar)throw std::runtime_error("missing persistent enemy depth levels");
         auto still=capture("05-depth-levels",1280,720);
         if(still!=capture("05-static-repeat",1280,720))throw std::runtime_error("static scene changed without simulation");
         auto savedGame=game;
-        game.reset();game.player.x=game.enemies[2].pos.x+.5f;
-        if(!game.aimTarget())throw std::runtime_error("missing aim target at lateral margin");
+        placePlayer(game.enemies[1].pos.x,game.enemies[1].z);
         capture("11-aligned-shot",1280,720);
         game.update({false,false,true});
         for(int step=0;step<20;++step)game.update({});
         capture("12-shot-in-flight",1280,720);
-        for(int step=0;step<50;++step)game.update({});
+        for(int step=0;step<17;++step)game.update({});
         if(game.kills!=1)throw std::runtime_error("selected target was not hit");
         capture("13-confirmed-hit",1280,720);
+        for(int weapon=0;weapon<4;++weapon){
+            game=savedGame;key(UINT('1'+weapon));
+            if(int(game.weapon)!=weapon)throw std::runtime_error("weapon hotkey failed");
+            game.update({false,false,true});
+            for(int step=0;step<12;++step)game.update({});
+            capture(("15-weapon-"+std::to_string(weapon+1)).c_str(),1280,720);
+        }
+        game=savedGame;
+        for(int step=0;step<210;++step)game.update({});
+        capture("16-enemy-dive",1280,720);
+        game=savedGame;
+        for(auto& e:game.enemies)e.alive=false;
+        game.update({});
+        if(game.stage!=galaga::Stage::Evasion)throw std::runtime_error("cockpit stage did not start");
+        for(int step=0;step<180;++step)game.update({});
+        capture("17-cockpit-evasion",1280,720);capture("17-cockpit-4x3",1024,768);
+        game=savedGame;game.wave=3;
+        for(auto& e:game.enemies)e.alive=false;
+        game.update({});
+        for(int step=0;step<190;++step)game.update({});
+        capture("18-boss",1280,720);
         game=savedGame;
         key('P');float time=game.time;for(int i=0;i<180;++i)game.update({false,true,true});
         if(game.time!=time||game.phase!=galaga::Phase::Paused)throw std::runtime_error("pause integration failed");
@@ -95,7 +132,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         key('1');key(VK_RETURN);
         game.phase=galaga::Phase::Victory;game.score=2100;for(auto& e:game.enemies)e.alive=false;
         capture("07-victory-fixture",1280,720);
-        key('R');if(game.remaining()!=18||game.score!=0||game.lives!=3)throw std::runtime_error("restart integration failed");
+        key('R');if(game.remaining()!=12||game.score!=0||game.lives!=3)throw std::runtime_error("restart integration failed");
         game.phase=galaga::Phase::Defeat;game.lives=0;game.score=750;
         capture("08-defeat-fixture",1280,720);
         auto front=capture("09-models-front",1280,720,true,.25f);
@@ -103,15 +140,19 @@ bool CEntornVGIView::VerifyDemoRendering() {
         if(front==side)throw std::runtime_error("model matrix rotation did not alter rendering");
         capture("14-models-wireframe",1280,720,true,.25f,true);
         report<<"PASS model matrix: rotated solid meshes produce different frames\n";
-        game.reset();for(int i=0;i<390;++i)game.update({});
-        target(1280,720);
-        auto start=std::chrono::steady_clock::now();
-        for(int i=0;i<60;++i){gameRenderer.draw(game,1280,720);glFinish();}
-        auto ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count()/60;
-        report<<"Average render (60 frames, 1280x720): "<<ms<<" ms\n";
+        game.reset();for(int i=0;i<220;++i)game.update({});
+        for(int benchmarkWidth:{1280,960}){
+            const int benchmarkHeight=benchmarkWidth*9/16;
+            target(benchmarkWidth,benchmarkHeight);
+            for(int warmup=0;warmup<3;++warmup){gameRenderer.draw(game,benchmarkWidth,benchmarkHeight);glFinish();}
+            auto start=std::chrono::steady_clock::now();
+            for(int i=0;i<60;++i){gameRenderer.draw(game,benchmarkWidth,benchmarkHeight);glFinish();}
+            auto ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count()/60;
+            report<<"Average render (60 frames, "<<benchmarkWidth<<"x"<<benchmarkHeight<<"): "<<ms<<" ms\n";
+        }
         if(gameRenderer.uploadCount()!=uploads||!gameRenderer.verifyGpu(report))throw std::runtime_error("mesh buffers changed across frames");
         if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("OpenGL error after verification");
-        report<<"PASS MFC handlers: 3 ships / start / pause / resume / focus loss / menu / restart\n";
+        report<<"PASS MFC handlers: XYZ flight keys / 4 weapons / audio / 3 ships / start / pause / resume / focus loss / menu / restart\n";
         report<<"PASS static meshes reused through all captures and 60 frames; XYZ depth buffer active\n";
         cleanup();return true;
     }catch(const std::exception& e){report<<"FAIL "<<e.what()<<"\n";}

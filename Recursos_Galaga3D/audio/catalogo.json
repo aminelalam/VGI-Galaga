@@ -1,0 +1,58 @@
+[
+  {
+    "file": "menu.wav",
+    "seconds": 20.0,
+    "peak": 0.38,
+    "rms": 0.1105,
+    "sha256": "6c8534c7fd931d47bc627cc63bdd6825185aa77675fec3abdea7b95bccc2e1e2"
+  },
+  {
+    "file": "combat.wav",
+    "seconds": 14.545,
+    "peak": 0.4,
+    "rms": 0.1054,
+    "sha256": "eac2029e55b42dce04564d5f6cd9461db4f4311208946e68077c5b38b6fe100d"
+  },
+  {
+    "file": "shot.wav",
+    "seconds": 0.12,
+    "peak": 0.52,
+    "rms": 0.1516,
+    "sha256": "e28c1cbb312816bfe0dffaaf970faba87f68a3212ca48cbea488bb4d51e72b78"
+  },
+  {
+    "file": "hit.wav",
+    "seconds": 0.19,
+    "peak": 0.56,
+    "rms": 0.0995,
+    "sha256": "2d11e1eb9083bd150fcb6d663d96122c33721576ceacab4c4b97234814f68f2f"
+  },
+  {
+    "file": "damage.wav",
+    "seconds": 0.48,
+    "peak": 0.61,
+    "rms": 0.1071,
+    "sha256": "d85d7a16378cef74bfdd8afea901ebdcc8e13b954effb29fc819e15f909ec603"
+  },
+  {
+    "file": "victory.wav",
+    "seconds": 1.6,
+    "peak": 0.53,
+    "rms": 0.1724,
+    "sha256": "7940ce4628c237c4cc5b2ec3de4df8492984295f78534042796241ed343e8546"
+  },
+  {
+    "file": "defeat.wav",
+    "seconds": 1.8,
+    "peak": 0.48,
+    "rms": 0.1681,
+    "sha256": "d585d603727de113061e725f39ebae81c10564a9453d4edd80120f39fdd4f788"
+  },
+  {
+    "file": "transition.wav",
+    "seconds": 0.8,
+    "peak": 0.4,
+    "rms": 0.117,
+    "sha256": "bca65457379cc4a013a8f4388c651c7fcfabc574c3f8160e6220276f38b1fe00"
+  }
+]

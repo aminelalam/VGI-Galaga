@@ -1,20 +1,26 @@
 # Galaga 3D · VGI
 
-Demo nativa en C++/MFC/OpenGL con **una ronda, tres naves seleccionables y movimiento exclusivamente lateral**. La cámara está detrás de la nave, sobre una plataforma orbital con estructuras laterales. Los enemigos mantienen una formación estática a distintas distancias y alturas, y los disparos y las colisiones se calculan en XYZ. **Durante la partida, el HUD muestra únicamente PUNTOS y la puntuación.**
+Juego nativo en C++/MFC/OpenGL, integrado en la estructura de EntornVGI. La campaña encadena **tres combates, dos tramos de esquiva desde la cabina y un jefe final**. Puedes elegir entre tres naves y moverte a izquierda, derecha, arriba y abajo. Los enemigos entran en formación a diferentes distancias y alturas, disparan y realizan picados en el espacio 3D.
 
-Las naves, enemigos y escenario son [mallas OBJ/MTL cargadas por el juego](Recursos_Galaga3D/modelos/README.md). Se pueden editar en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend), con un catálogo de modelos y una escena de combate.
+Las naves, enemigos y escenario son [mallas OBJ/MTL cargadas por el juego](Recursos_Galaga3D/modelos/README.md), con vértices, triángulos y normales. Se pueden editar en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend). La perspectiva, las ocultaciones y la iluminación muestran su volumen; **F2** permite inspeccionar los triángulos durante el juego.
 
-Abre **`dist/Galaga3D/Galaga3D.exe`** para jugar o ejecuta **`build-demo.cmd`** para compilar, probar y preparar el paquete. La carpeta distribuida incluye un motor OpenGL local que evita el aviso de actualizar el controlador en este equipo.
+Esta implementación está en la rama **`codex/mallas-3d-escenario`**. Ejecuta **`build-demo.cmd`** desde su copia local para compilar, lanzar las comprobaciones y preparar **`dist/Galaga3D/Galaga3D.exe`**. Conserva toda la carpeta `dist/Galaga3D` al distribuir el juego. Incluye Mesa local para ejecutar OpenGL cuando el controlador del equipo no ofrece la versión necesaria.
 
-**Controles:** 1/2/3 eligen nave; Enter empieza; A/D o flechas mueven; Espacio dispara; P pausa; R reinicia tras el resultado. Esc permite regresar a la selección desde pausa o resultados.
+**Controles:** en el menú, 1/2/3 eligen nave y Enter empieza. En partida, WASD o flechas mueven en horizontal y altura; Espacio dispara; 1/2/3/4 eligen disparo simple, doble paralelo, triple o misil; Q lanza el misil especial con recarga. P pausa, M activa o silencia el audio y F2 alterna la vista de malla. R reinicia tras el resultado; Esc pausa o regresa al menú desde pausa o resultados.
+
+La cámara sigue a la nave desde detrás durante los combates y pasa a la cabina en las esquivas. El avance se representa en un sistema de coordenadas relativo al vuelo: controlas **X** y **Z**, mientras las trayectorias y el desplazamiento del entorno expresan el avance en **Y**. El HUD discreto informa de puntos, etapa, vidas, arma y recarga, con una barra de salud para el jefe. La música y los efectos son [audio original generado matemáticamente](Recursos_Galaga3D/audio/README.md).
 
 [Instrucciones, arquitectura y verificación](DEMO_3D.md) · [Solución Visual Studio 2022](Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln)
 
-[Guía completa del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Documenta la revisión del 1 de noviembre de 2026 con lenguaje sencillo, ejemplos numéricos, una referencia de funciones y listados de código numerados. El HUD se simplificó el 2 de noviembre para mostrar solo los puntos durante la partida. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt).
+![Combate en tercera persona, captura del ejecutable](Recursos_Galaga3D/previews/Mallas/Partida.png)
 
-La nueva acta se aplica con mallas cargadas una sola vez en VBO/VAO y una matriz `model` enviada al shader por instancia. El HUD utiliza la etiqueta de puntos del proyecto y las naves reinterpretan sus tres diseños con colores y siluetas de Galaga.
+[Vista desde la cabina](Recursos_Galaga3D/previews/Mallas/Cabina.png) · [Modelos sólidos](Recursos_Galaga3D/previews/Mallas/Modelos.png) · [Triángulos de las mallas](Recursos_Galaga3D/previews/Mallas/Mallas.png) · [Informe gráfico Release](Recursos_Galaga3D/previews/Mallas/Verificacion_Release.txt)
 
-La documentación de gestión que sigue recoge el diseño completo anterior: tres oleadas, jefe y planos A/B. **La demo actual usa una sola ronda y no permite cambiar de plano**, según la última decisión del usuario. Los PDF, actas y hojas de cálculo originales se conservan como documentación de referencia.
+[Guía del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Documenta la revisión del 1 de noviembre de 2026; sus listados y alcance son anteriores a esta campaña. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt). Las instrucciones de la implementación actual están en [DEMO_3D.md](DEMO_3D.md).
+
+Los modelos se cargan una vez en VBO/EBO/VAO. Los enemigos lejanos usan una variante de menor detalle y al acercarse recuperan la malla completa. Cada instancia envía su matriz `model` y la matriz normal al shader; `view` y `projection` definen la cámara. El atributo 4 transporta los parámetros de superficie derivados de `Ks` y `Ns` del MTL. La iluminación Phong sigue los términos de luz y material de GL-6. Los detalles y su relación con GL-3 y GL-4 se explican en [DEMO_3D.md](DEMO_3D.md).
+
+Los PDF, actas y hojas de cálculo originales se conservan como documentación de referencia. Algunos describen propuestas anteriores, incluidos los planos A/B. La campaña actual usa movimiento continuo en horizontal y altura. El MVP privado aparte queda fuera de esta entrega y de su publicación.
 
 ## 📊 Un Excel para mantener el proyecto
 
@@ -73,7 +79,7 @@ La portada, diagramas, maqueta y tráiler descargado funcionan localmente. Los e
 
 ## 📁 Organización
 
-La interfaz editable de Blender, los sprites PNG/SVG, los atlas y sus comprobaciones están en [Recursos_Galaga3D](Recursos_Galaga3D/README.md). Conservan la propuesta anterior, incluidos los planos A/B. La demo C++ tiene un HUD arcade propio y modelos sólidos basados en las fotos; su implementación está en `Entrega_Amin_VGI/entornsGrafics/EntornVGI`.
+Los modelos editables de Blender, OBJ/MTL, audio, sprites PNG/SVG y atlas están en [Recursos_Galaga3D](Recursos_Galaga3D/README.md). Los materiales gráficos de propuestas anteriores se conservan junto a los recursos del juego. La implementación C++ de la campaña está en `Entrega_Amin_VGI/entornsGrafics/EntornVGI`.
 
 ```text
 Entrega_Amin_VGI/
@@ -95,13 +101,11 @@ Entrega_Amin_VGI/
 └── recursos/                        # Acta, imágenes, diagramas y vídeo
 ```
 
-## 🧭 Estado de la implementación
+## 🧭 Alcance y comprobación
 
-- [x] Integrar una ronda completa en la plantilla de VGI.
-- [x] Crear tres naves y enemigos con volumen, VAO/VBO y shaders.
-- [x] Mantener controles laterales y trayectorias enemigas en 3D.
-- [x] Ejecutar pruebas de lógica y de render, con capturas.
-- [ ] Ampliar a las tres oleadas y jefe del diseño completo, si se solicita.
+La implementación incluye la secuencia de campaña, cuatro armas, misil especial, vuelo en X/Z, combates en tercera persona, esquivas desde cabina y audio. Las mallas y los shaders se integran en la plantilla de VGI. Las skins, las cajas de recompensas y una economía de partida siguen como propuestas de las actas.
+
+`build-demo.cmd` ejecuta las pruebas de lógica y la verificación gráfica antes de preparar el paquete. En la revisión del 11 de noviembre de 2026, Release y Debug pasan 53 comprobaciones de lógica, incluida una campaña completa con entradas normales, y la verificación del pipeline OpenGL. Las capturas se han inspeccionado; la dificultad y la mezcla de sonido quedan pendientes de una sesión manual.
 
 ## 🎨 Fuentes y créditos
 

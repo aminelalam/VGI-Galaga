@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "Mesh3D.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <fstream>
 #include <limits>
 #include <locale>
 #include <map>
+#include <random>
 #include <sstream>
 #include <stdexcept>
 #include <type_traits>
@@ -18,10 +20,15 @@ using Color = glm::vec4;
 using Vertices = std::vector<MeshVertex>;
 const Color white(.94f, .96f, 1.f, 1.f);
 
-std::map<std::string, Color> readMaterials(const std::filesystem::path& path) {
+struct MeshMaterial {
+    Color color = white;
+    V2 surface{1.f, 1.f};
+};
+
+std::map<std::string, MeshMaterial> readMaterials(const std::filesystem::path& path) {
     std::ifstream file(path);
     if (!file) throw std::runtime_error("Falta el material " + path.filename().string());
-    std::map<std::string, Color> colors;
+    std::map<std::string, MeshMaterial> colors;
     std::string line, name;
     while (std::getline(file, line)) {
         std::istringstream row(line);
@@ -31,7 +38,7 @@ std::map<std::string, Color> readMaterials(const std::filesystem::path& path) {
         if (tag == "newmtl") {
             std::getline(row >> std::ws, name);
             if (name.empty()) throw std::runtime_error("Material sin nombre en " + path.filename().string());
-            colors[name] = white;
+            colors[name] = MeshMaterial{};
         } else if (tag == "Kd") {
             Color color(1.f);
             if (name.empty() || !(row >> color.r >> color.g >> color.b))
@@ -39,7 +46,20 @@ std::map<std::string, Color> readMaterials(const std::filesystem::path& path) {
             for (int channel = 0; channel < 3; ++channel)
                 if (!std::isfinite(color[channel]) || color[channel] < 0 || color[channel] > 1)
                     throw std::runtime_error("Color Kd fuera de rango en " + path.filename().string());
-            colors[name] = color;
+            colors[name].color = color;
+        } else if (tag == "Ks") {
+            V3 specular;
+            if (name.empty() || !(row >> specular.x >> specular.y >> specular.z))
+                throw std::runtime_error("Ks invalido en " + path.filename().string());
+            const float intensity = (specular.x + specular.y + specular.z) / 3.f;
+            if (!std::isfinite(intensity) || intensity < 0 || intensity > 1)
+                throw std::runtime_error("Ks fuera de rango.");
+            colors[name].surface.x = intensity / .16f;
+        } else if (tag == "Ns") {
+            float shininess = 0;
+            if (name.empty() || !(row >> shininess) || !std::isfinite(shininess) || shininess < 0)
+                throw std::runtime_error("Ns invalido en " + path.filename().string());
+            colors[name].surface.y = std::clamp(shininess, 1.f, 128.f) / 32.f;
         }
     }
     return colors;
@@ -59,8 +79,8 @@ Vertices readObj(const std::filesystem::path& path) {
     if (!file) throw std::runtime_error("Falta la malla " + path.filename().string());
     std::vector<V3> positions, normals;
     std::vector<V2> coordinates;
-    std::map<std::string, Color> materials;
-    Color color = white;
+    std::map<std::string, MeshMaterial> materials;
+    MeshMaterial material;
     Vertices vertices;
     std::string line;
     std::size_t lineNumber = 0;
@@ -100,7 +120,7 @@ Vertices readObj(const std::filesystem::path& path) {
                 std::getline(row >> std::ws, name);
                 const auto found = materials.find(name);
                 if (found == materials.end()) throw std::runtime_error("Material desconocido " + name);
-                color = found->second;
+                material = found->second;
             } else if (tag == "f") {
                 for (int corner = 0; corner < 3; ++corner) {
                     std::string faceVertex;
@@ -113,7 +133,7 @@ Vertices readObj(const std::filesystem::path& path) {
                         throw std::runtime_error("Exporta cada vertice como posicion/UV/normal.");
                     vertices.push_back({positions.at(objIndex(position, positions.size())),
                                         normals.at(objIndex(normal, normals.size())),
-                                        coordinates.at(objIndex(uv, coordinates.size())), color});
+                                        coordinates.at(objIndex(uv, coordinates.size())), material.color, material.surface});
                 }
                 std::string extra;
                 if (row >> extra && extra.front() != '#')
@@ -183,6 +203,19 @@ Vertices projectile(bool hostile) {
     box(out, {0.f,0.f,.043f}, {.016f,.17f,.012f}, white);
     return out;
 }
+
+Vertices starField() {
+    Vertices out;
+    std::mt19937 random(4301);
+    std::uniform_real_distribution<float> lateral(-115.f,115.f), depth(45.f,210.f),
+        height(-65.f,85.f), brightness(.2f,.85f), size(.025f,.085f);
+    for (int index = 0; index < 300; ++index) {
+        const V3 centre(lateral(random),depth(random),height(random));
+        const float light = brightness(random);
+        box(out,centre,V3(size(random)),Color(light*.85f,light*.92f,light,1.f));
+    }
+    return out;
+}
 }
 
 void Mesh3D::upload(const std::vector<MeshVertex>& vertices) {
@@ -197,17 +230,34 @@ void Mesh3D::upload(const std::vector<MeshVertex>& vertices) {
         if (glm::dot(v.normal,v.normal) < .9f)
             throw std::runtime_error("La malla 3D contiene una normal degenerada.");
         for (int k = 0; k < 2; ++k)
-            if (!std::isfinite(v.uv[k])) throw std::runtime_error("La malla tiene UV no finitas.");
+            if (!std::isfinite(v.uv[k]) || !std::isfinite(v.surface[k])) throw std::runtime_error("La malla tiene UV o material no finitos.");
         for (int k = 0; k < 4; ++k)
             if (!std::isfinite(v.color[k])) throw std::runtime_error("La malla tiene un color no finito.");
+    }
+    // Reuse identical complete vertices through an EBO. Normals, material seams
+    // and UV seams remain distinct, so indexing does not change the surfaces.
+    Vertices unique;
+    std::vector<unsigned int> indices;
+    std::map<std::array<float,14>,unsigned int> lookup;
+    unique.reserve(vertices.size());indices.reserve(vertices.size());
+    for(const auto& vertex:vertices){
+        const std::array<float,14> key{vertex.position.x,vertex.position.y,vertex.position.z,
+            vertex.normal.x,vertex.normal.y,vertex.normal.z,vertex.uv.x,vertex.uv.y,
+            vertex.color.r,vertex.color.g,vertex.color.b,vertex.color.a,vertex.surface.x,vertex.surface.y};
+        auto found=lookup.emplace(key,static_cast<unsigned int>(unique.size()));
+        if(found.second)unique.push_back(vertex);
+        indices.push_back(found.first->second);
     }
     release();
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(MeshVertex)),
-                 vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(unique.size() * sizeof(MeshVertex)),
+                 unique.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,static_cast<GLsizeiptr>(indices.size()*sizeof(unsigned int)),indices.data(),GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex),
                           reinterpret_cast<void*>(offsetof(MeshVertex,position)));
@@ -220,13 +270,17 @@ void Mesh3D::upload(const std::vector<MeshVertex>& vertices) {
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex),
                           reinterpret_cast<void*>(offsetof(MeshVertex,color)));
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex),
+                          reinterpret_cast<void*>(offsetof(MeshVertex,surface)));
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER,0);
-    if (!vao || !vbo || glGetError() != GL_NO_ERROR) {
+    if (!vao || !vbo || !ebo || glGetError() != GL_NO_ERROR) {
         release();
         throw std::runtime_error("No se ha podido cargar una malla 3D en VAO/VBO.");
     }
     count = vertices.size();
+    storedVertices=unique.size();
     lower = upper = vertices.front().position;
     for (const auto& vertex : vertices) {
         lower = glm::min(lower, vertex.position);
@@ -241,12 +295,12 @@ void Mesh3D::loadObj(const std::filesystem::path& path) {
 void Mesh3D::draw() const {
     if (!valid()) return;
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(count));
+    glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(count),GL_UNSIGNED_INT,nullptr);
 }
 
 bool Mesh3D::verifyGpu() const {
     if (!valid() || !glIsVertexArray || !glIsBuffer ||
-        glIsVertexArray(vao) != GL_TRUE || glIsBuffer(vbo) != GL_TRUE) return false;
+        glIsVertexArray(vao) != GL_TRUE || glIsBuffer(vbo) != GL_TRUE || glIsBuffer(ebo) != GL_TRUE) return false;
 
     GLint previousVao = 0, previousBuffer = 0;
     glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &previousVao);
@@ -257,12 +311,18 @@ bool Mesh3D::verifyGpu() const {
     GLint bytes = 0, usage = 0;
     glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bytes);
     glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_USAGE, &usage);
-    bool correct = bytes > 0 && static_cast<std::size_t>(bytes) == count * sizeof(MeshVertex)
+    bool correct = bytes > 0 && static_cast<std::size_t>(bytes) == storedVertices * sizeof(MeshVertex)
                    && usage == GL_STATIC_DRAW;
-    const GLint sizes[] = {3, 3, 2, 4};
+    GLint indexBinding=0,indexBytes=0,indexUsage=0;
+    glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING,&indexBinding);
+    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER,GL_BUFFER_SIZE,&indexBytes);
+    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER,GL_BUFFER_USAGE,&indexUsage);
+    correct &= static_cast<unsigned int>(indexBinding)==ebo && indexUsage==GL_STATIC_DRAW &&
+        static_cast<std::size_t>(indexBytes)==count*sizeof(unsigned int);
+    const GLint sizes[] = {3, 3, 2, 4, 2};
     const std::size_t offsets[] = {offsetof(MeshVertex, position), offsetof(MeshVertex, normal),
-                                  offsetof(MeshVertex, uv), offsetof(MeshVertex, color)};
-    for (GLuint index = 0; index < 4; ++index) {
+                                  offsetof(MeshVertex, uv), offsetof(MeshVertex, color), offsetof(MeshVertex, surface)};
+    for (GLuint index = 0; index < 5; ++index) {
         GLint enabled = 0, size = 0, type = 0, binding = 0, stride = 0, normalized = 0;
         void* offset = nullptr;
         glGetVertexAttribiv(index, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
@@ -287,13 +347,14 @@ bool Mesh3D::verifyGpu() const {
 void Mesh3D::release() {
     if (vao) glDeleteVertexArrays(1, &vao);
     if (vbo) glDeleteBuffers(1, &vbo);
-    vao = vbo = 0;
-    count = 0;
+    if (ebo) glDeleteBuffers(1, &ebo);
+    vao = vbo = ebo = 0;
+    count = storedVertices = 0;
     lower = upper = V3(0.f);
 }
 
 void ModelLibrary::initialize(const std::filesystem::path& folder) {
-    if (uploads == 10) return;
+    if (uploads == MeshCount) return;
     release();
     try {
         auto upload = [this](Mesh3D& mesh, const Vertices& vertices) {
@@ -310,7 +371,12 @@ void ModelLibrary::initialize(const std::filesystem::path& folder) {
         load(enemies[0],L"enemigo_abeja.obj");
         load(enemies[1],L"enemigo_escarabajo.obj");
         load(enemies[2],L"jefe_acorazado.obj");
+        load(distantEnemies[0],L"enemigo_abeja_lod.obj");
+        load(distantEnemies[1],L"enemigo_escarabajo_lod.obj");
         load(scenery,L"escenario_orbital.obj");
+        load(asteroid,L"obstaculo_asteroide.obj");
+        load(cockpit,L"cockpit_marco.obj");
+        upload(stars,starField());
         upload(shot,projectile(false));
         upload(enemyShot,projectile(true));
         Vertices cube;
@@ -325,7 +391,11 @@ void ModelLibrary::initialize(const std::filesystem::path& folder) {
 void ModelLibrary::release() {
     for (auto& mesh : ships) mesh.release();
     for (auto& mesh : enemies) mesh.release();
+    for (auto& mesh : distantEnemies) mesh.release();
     scenery.release();
+    asteroid.release();
+    cockpit.release();
+    stars.release();
     shot.release();
     enemyShot.release();
     particle.release();
@@ -333,11 +403,15 @@ void ModelLibrary::release() {
 }
 
 bool ModelLibrary::verifyGpu() const {
-    bool correct = uploads == 10;
+    bool correct = uploads == MeshCount;
     // Check every mesh even if an earlier one fails, including its GL errors.
     for (const auto& mesh : ships) if (!mesh.verifyGpu()) correct = false;
     for (const auto& mesh : enemies) if (!mesh.verifyGpu()) correct = false;
+    for (const auto& mesh : distantEnemies) if (!mesh.verifyGpu()) correct = false;
     if (!scenery.verifyGpu()) correct = false;
+    if (!asteroid.verifyGpu()) correct = false;
+    if (!cockpit.verifyGpu()) correct = false;
+    if (!stars.verifyGpu()) correct = false;
     if (!shot.verifyGpu()) correct = false;
     if (!enemyShot.verifyGpu()) correct = false;
     if (!particle.verifyGpu()) correct = false;
@@ -346,9 +420,11 @@ bool ModelLibrary::verifyGpu() const {
 }
 
 std::size_t ModelLibrary::vertexCount() const {
-    std::size_t total = shot.vertexCount() + enemyShot.vertexCount() + particle.vertexCount() + scenery.vertexCount();
+    std::size_t total = shot.vertexCount() + enemyShot.vertexCount() + particle.vertexCount() + scenery.vertexCount()
+                        + asteroid.vertexCount() + cockpit.vertexCount() + stars.vertexCount();
     for (const auto& mesh : ships) total += mesh.vertexCount();
     for (const auto& mesh : enemies) total += mesh.vertexCount();
+    for (const auto& mesh : distantEnemies) total += mesh.vertexCount();
     return total;
 }
 }

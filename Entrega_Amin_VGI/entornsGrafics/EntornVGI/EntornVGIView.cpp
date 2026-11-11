@@ -701,6 +701,8 @@ int CEntornVGIView::OnCreate(LPCREATESTRUCT lpCreateStruct)
     try {gameRenderer.initialize();gameRendererReady=true;trace << "Renderer ready" << std::endl;}
     catch(const std::exception& e) {CString message(e.what());AfxMessageBox(message);return -1;}
     game.bestScore=AfxGetApp()->GetProfileInt(L"Game",L"BestScore",0);
+    if(CString(GetCommandLineW()).Find(L"/verify-render")<0)
+        gameAudio.initialize(galaga::Renderer2D::executableDirectory()/L"Recursos_Galaga3D"/L"audio");
     ClearGameInput();SetTimer(45003,16,nullptr);
     wglMakeCurrent(nullptr,nullptr);
     return 0;
@@ -842,6 +844,7 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 void CEntornVGIView::OnDestroy()
 {
     KillTimer(45003);
+    gameAudio.release();
     if(CString(GetCommandLineW()).Find(L"/verify-render")<0)
         AfxGetApp()->WriteProfileInt(L"Game",L"BestScore",std::max(game.bestScore,game.score));
     if(m_hRC) {

@@ -2,6 +2,7 @@
 in vec3 worldPosition;
 in vec3 worldNormal;
 in vec4 vertexColor;
+in vec2 surfaceMaterial;
 uniform vec3 eye;
 uniform vec4 tint;
 
@@ -36,8 +37,8 @@ void main() {
     vec3 specular = vec3(0.0);
     if (cosine > 0.0) {
         vec3 reflected = reflect(-lightDirection, n);
-        float highlight = pow(max(dot(reflected, viewDirection), 0.0), material.shininess);
-        specular = material.specular * base * light.specular * highlight;
+        float highlight = pow(max(dot(reflected, viewDirection), 0.0), material.shininess * surfaceMaterial.y);
+        specular = material.specular * base * light.specular * highlight * surfaceMaterial.x;
     }
     outColor = vec4(clamp(emissive + ambient + diffuse + specular, 0.0, 1.0),
                     vertexColor.a * tint.a);

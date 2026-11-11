@@ -14,6 +14,7 @@ public:
     bool verifyLighting(std::ostream&);
     unsigned int uploadCount() const {return models.uploadCount();}
     unsigned int drawCount() const {return draws;}
+    void toggleWireframe() { wireframeMode=!wireframeMode; }
     // Same geometry and shader, different camera: verifies real solid models.
     void modelGallery(int width,int height,float angle,bool wireframe=false);
 private:
@@ -25,8 +26,9 @@ private:
     int lightPositionLocation=-1,lightDiffuseLocation=-1,lightSpecularLocation=-1,ambientLightLocation=-1;
     glm::mat4 view{1},projection{1};
     glm::vec3 eye{0,-4.5f,22};
+    bool wireframeMode=false;
     void begin3D();
-    void camera(bool menu,float playerX=0);
+    void camera(bool menu,float playerX=0,float playerZ=0,bool cockpit=false);
     void instance(const Mesh3D&,const glm::mat4&,glm::vec4 tint=glm::vec4(1),float emission=0);
 };
 }

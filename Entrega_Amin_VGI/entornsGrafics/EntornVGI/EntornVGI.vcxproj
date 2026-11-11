@@ -80,6 +80,8 @@
     <ProjectReference Include="..\third_party\glew\glew.vcxproj"><Project>{017E497F-72AC-47B0-844C-5DA40B005001}</Project></ProjectReference>
     <ProjectReference Include="..\third_party\soil2\soil2.vcxproj"><Project>{017E497F-72AC-47B0-844C-5DA40B005002}</Project></ProjectReference>
     <ClCompile Include="Game3D.cpp"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
+    <ClCompile Include="GameAudio.cpp"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
+    <ClInclude Include="GameAudio.h"/>
     <ClCompile Include="Renderer2D.cpp"/><ClCompile Include="Renderer3D.cpp"/><ClCompile Include="Mesh3D.cpp"/><ClCompile Include="GameView3D.cpp"/><ClCompile Include="DemoVerification.cpp"/>
     <ClInclude Include="Game3D.h"/><ClInclude Include="Renderer2D.h"/><ClInclude Include="Renderer3D.h"/><ClInclude Include="Mesh3D.h"/>
   </ItemGroup>
@@ -284,6 +286,7 @@
   </ItemGroup>
   <ItemGroup>
     <DemoAssets Include="$(ProjectDir)..\..\..\Recursos_Galaga3D\hud\*.png"><DemoFolder>hud</DemoFolder></DemoAssets>
+    <DemoAssets Include="$(ProjectDir)..\..\..\Recursos_Galaga3D\audio\*.wav"><DemoFolder>audio</DemoFolder></DemoAssets>
     <DemoAssets Include="$(ProjectDir)..\..\..\Recursos_Galaga3D\fonts\*"><DemoFolder>fonts</DemoFolder></DemoAssets>
     <DemoAssets Include="$(ProjectDir)..\..\..\Recursos_Galaga3D\modelos\*.obj;$(ProjectDir)..\..\..\Recursos_Galaga3D\modelos\*.mtl"><DemoFolder>modelos</DemoFolder></DemoAssets>
     <MesaRuntime Include="$(ProjectDir)..\third_party\mesa\bin\opengl32.dll" Condition="Exists('$(ProjectDir)..\third_party\mesa\bin\opengl32.dll')"/>

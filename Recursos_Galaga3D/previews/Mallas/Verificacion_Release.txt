@@ -1,0 +1,65 @@
+OpenGL: 4.6 (Core Profile) Mesa 26.2.5
+Renderer: llvmpipe (LLVM 23.1.3, 256 bits)
+PASS 3D GPU meshes: 15 static uploads, 32816 triangles; static VBO/EBO, VAO attributes 0/1/2/3/4; model/view/projection uniforms active
+PASS GL-6 shader term ambient
+PASS GL-6 shader term Lambert front
+PASS GL-6 shader term unlit back
+PASS GL-6 shader term Phong reflection
+PASS GL-6 shader term emissive
+PASS GL-6 shader term additive terms
+PASS 01-menu 1280x720; 37161 depth pixels
+PASS 02-delta-selected 1280x720; 37047 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 03-combat 1280x720; 154973 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 04-combat-4x3 1024x768; 99176 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 03-combat-flecha 1280x720; 153951 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 03-combat-delta 1280x720; 154733 depth pixels
+PASS framing at player X=-7.68, Z=0; smallest stationary target 42.1243px; formation width 323.983px
+PASS 04-left-limit 1280x720; 162712 depth pixels
+PASS framing at player X=7.68, Z=0; smallest stationary target 42.1243px; formation width 309.571px
+PASS 04-right-limit 1280x720; 154665 depth pixels
+PASS framing at player X=7.68, Z=4.6; smallest stationary target 41.8383px; formation width 306.734px
+PASS 04-upper-right-limit 1280x720; 167110 depth pixels
+PASS framing at player X=-7.68, Z=-3.2; smallest stationary target 42.3256px; formation width 326.171px
+PASS 04-lower-left-limit 1280x720; 148997 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 05-depth-levels 1280x720; 154973 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 05-static-repeat 1280x720; 154973 depth pixels
+PASS framing at player X=-1.22358, Z=-1.60144; smallest stationary target 42.2248px; formation width 297.733px
+PASS 11-aligned-shot 1280x720; 145796 depth pixels
+PASS framing at player X=-1.22358, Z=-1.60144; smallest stationary target 42.3407px; formation width 299.915px
+PASS 12-shot-in-flight 1280x720; 145855 depth pixels
+PASS framing at player X=-1.22358, Z=-1.60144; smallest stationary target 42.2645px; formation width 302.248px
+PASS 13-confirmed-hit 1280x720; 145225 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-1 1280x720; 155067 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-2 1280x720; 155048 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-3 1280x720; 155104 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-4 1280x720; 155252 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 41.5551px; formation width 327.592px
+PASS 16-enemy-dive 1280x720; 155409 depth pixels
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 17-cockpit-evasion 1280x720; 285125 depth pixels
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 17-cockpit-4x3 1024x768; 182433 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 156.623px; formation width 156.623px
+PASS 18-boss 1280x720; 152457 depth pixels
+PASS 06-pause 1280x720; 154973 depth pixels
+PASS 07-victory-fixture 1280x720; 146752 depth pixels
+PASS 08-defeat-fixture 1280x720; 146752 depth pixels
+PASS 09-models-front 1280x720; 165293 depth pixels
+PASS 10-models-side 1280x720; 111139 depth pixels
+PASS 14-models-wireframe 1280x720; 83252 depth pixels
+PASS model matrix: rotated solid meshes produce different frames
+Average render (60 frames, 1280x720): 22.9013 ms
+Average render (60 frames, 960x540): 17.7589 ms
+PASS 3D GPU meshes: 15 static uploads, 32816 triangles; static VBO/EBO, VAO attributes 0/1/2/3/4; model/view/projection uniforms active
+PASS MFC handlers: XYZ flight keys / 4 weapons / audio / 3 ships / start / pause / resume / focus loss / menu / restart
+PASS static meshes reused through all captures and 60 frames; XYZ depth buffer active

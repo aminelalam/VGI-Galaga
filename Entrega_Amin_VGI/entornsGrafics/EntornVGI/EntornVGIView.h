@@ -9,6 +9,7 @@
 
 #include "MainFrm.h"
 #include "Game3D.h"
+#include "GameAudio.h"
 #include "Renderer3D.h"
 #include <array>
 #include <chrono>
@@ -44,6 +45,7 @@ protected: // Crear sólo a partir de serialización
 public:
     galaga::Game3D game;
     galaga::Renderer3D gameRenderer;
+    galaga::GameAudio gameAudio;
     bool demoMode = true, gameRendererReady = false;
     std::array<bool,256> gameKeys{};
     std::chrono::steady_clock::time_point gameClock = std::chrono::steady_clock::now();

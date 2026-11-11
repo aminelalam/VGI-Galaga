@@ -1,3 +1,42 @@
+CAMPAÑA 3D Y REVISIÓN VISUAL · 11 de noviembre de 2026
+
+Esta sección describe la implementación actual. Las revisiones posteriores de este archivo conservan el historial de las demos anteriores.
+
+Decisiones actuales del usuario
+- Movimiento horizontal y vertical (X/Z), con cámara trasera en combate.
+- HUD discreto con información: puntos, vidas, fase, arma y estado del especial.
+- Naves, enemigos y escenario como mallas tridimensionales editables.
+- Se mantienen fuera el marcador de objetivo y el cambio artificial entre planos A/B.
+
+Alcance implementado
+La campaña reúne tres combates de 12, 15 y 18 enemigos, dos fases de esquiva de 12 y 15 segundos desde una cabina física, y un jefe de 36 puntos de vida. La primera esquiva se ha acortado para el ritmo de esta campaña breve; el esquema antiguo del Control1 describía 20 segundos y dos combates. Cada enemigo entra, forma, avisa, ataca y regresa mediante trayectorias XYZ. Hay tres naves, cuatro armas, un misil especial con recarga, música, efectos, pausa, reaparición y resultados. Skins, moneda y cajas siguen siendo ampliaciones propuestas, no funciones de esta versión.
+
+Qué significa 3D en esta implementación
+Los nueve OBJ suman 27.252 triángulos de superficies con volumen. Cada pieza exportada tiene aristas compartidas por dos caras, orientación exterior y volumen positivo. Los vértices, normales, UV y materiales se cargan en VAO/VBO estáticos; model sitúa cada instancia, view define la cámara y projection produce perspectiva. Hay profundidad, ocultaciones y luz Phong. El jugador controla X/Z en un sistema relativo al vuelo; las trayectorias, obstáculos y estrellas expresan el avance en Y. No se presenta como un simulador con aceleración o vuelo libre en seis ejes.
+
+Problemas detectados mediante capturas y correcciones
+1. La formación estática anterior apenas obligaba a comprender el espacio. Ahora hay entradas, ataques y retorno continuos, además de obstáculos que se aproximan y una cámara de cabina.
+2. Los cascos anteriores eran extrusiones muy simples. Los modelos actuales tienen secciones curvas, alas con grosor, cabinas, motores, toberas y armaduras; se distinguen normales suaves y aristas duras.
+3. Los asteroides jugables se confundían con el fondo. Usan un material piedra más claro y un pequeño término de emisión; las rocas decorativas se mantienen oscuras y fuera del corredor.
+4. El panel de cabina quedaba bajo la pantalla y los tubos presentaban giros bruscos. Se recolocó la consola dentro del campo visual y se corrigió el marco continuo usado al generar los tubos.
+5. Los nombres del menú se superponían a las toberas. La escala de presentación deja márgenes entre la malla y el texto.
+6. La cámara ahora sigue la altura y parte del movimiento lateral. Se comprueban las esquinas del espacio de control, el centro y ventanas 4:3; el HUD se compone en un lienzo 16:9 con bandas cuando procede.
+7. Las puntas de las alas quedaban fuera del margen de impacto. El radio de los enemigos normales se ajusta con su escala visible y se prueba un roce y un fallo exterior. El jefe usa semiejes diferentes para anchura, profundidad y altura, evitando una esfera que aceptaba impactos muy por encima del casco.
+8. Las capturas de los límites cambiaban la posición sin cambiar la anterior y simulaban una velocidad artificial. Las fixtures actualizan ambas posiciones; la inclinación visual queda limitada a los ángulos de vuelo previstos.
+9. El HUD de esquiva anunciaba un misil aunque esa fase desactiva el disparo. Ahora indica el modo de cabina y las armas en espera.
+10. La geometría detallada consumía unos 49 ms por imagen en Mesa por software a 1280x720 en este equipo. Se añadieron variantes cerradas de menor detalle para los dos enemigos lejanos, índices EBO para reutilizar vértices completos y un campo de estrellas menos denso. Los modelos detallados siguen usándose de cerca y en el catálogo; los valores finales se registran en render-report.txt. Se usa glDrawElements, sustituyendo el glDrawArrays de la revisión histórica.
+
+Criterios de comprobación
+La simulación se prueba a 60 Hz con entradas normales, incluido un recorrido completo y una derrota natural. Se comprueban movimiento diagonal, alturas, armas, colisiones barridas, caducidad parcial, contactos simultáneos, combos, pausas, huecos alcanzables y transiciones. El verificador gráfico ejecuta la aplicación MFC con un contexto OpenGL real, inspecciona VBO/VAO y atributos, aísla los términos de GL-6, comprueba profundidad y HUD y produce capturas de combate, límites, armas, picado, cabina, jefe y modelos desde varios ángulos. Los informes exactos de cada build están en bin/x64/<configuración>/verification/render-report.txt. Las capturas no sustituyen una valoración humana del control, la dificultad o la mezcla de sonido.
+
+Relación con las referencias
+Se conserva de Galaga la lectura de formaciones, proyectiles de colores distintos y puntuación/vidas visibles. Del manual de Star Fox Zero se toma como referencia la separación entre vista trasera amplia y vista de cabina. La cámara, las distancias, el balance y la alternancia de fases de este proyecto son decisiones propias; no se copian recursos de esos juegos.
+https://www.nintendo.co.jp/clv/manuals/en/pdf/CLV-P-NABNE_en.pdf
+https://www.nintendo.com/eu/media/downloads/games_8/emanuals/wii_u_6/star_fox_zero/ElectronicManual_WiiU_StarFoxZero_EN.pdf
+https://wikis.khronos.org/opengl/Depth_Test
+
+El contraste técnico de GL-2 a GL-7 documentado más abajo sigue aplicando al pipeline. El formato de vértice añade ahora un quinto atributo vec2 para la intensidad especular media de Ks y el exponente Ns. La guía PDF anterior corresponde al 1 de noviembre y no documenta esta campaña. El informe de arranque intermitente MFC de esa fecha sigue siendo histórico: no se atribuye una solución causal a cambios de cámara o de modelos.
+
 ACTUALIZACION DEL HUD · 2 de noviembre de 2026
 
 La version actual muestra unicamente PUNTOS y la puntuacion durante la partida, segun la peticion del usuario. Se ha retirado el marcador visual del objetivo y los demas elementos del HUD de combate. La seleccion de nave, la pausa y los resultados tienen pantallas propias. La comprobacion grafica verifica la presencia de la puntuacion. El informe del 1 de noviembre y el PDF describen el HUD anterior.

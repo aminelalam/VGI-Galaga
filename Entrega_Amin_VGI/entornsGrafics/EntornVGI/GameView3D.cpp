@@ -20,8 +20,9 @@ void CEntornVGIView::OnKillFocus(CWnd* next) {
 BOOL CEntornVGIView::PreTranslateMessage(MSG* message) {
     if(demoMode && (message->message==WM_KEYDOWN||message->message==WM_KEYUP)) {
         UINT key=static_cast<UINT>(message->wParam);
-        if(key=='A'||key=='D'||key==VK_LEFT||key==VK_RIGHT||key==VK_SPACE||key=='P'||key=='R'||
-            key=='1'||key=='2'||key=='3'||key==VK_RETURN||key==VK_ESCAPE) {
+        if(key=='A'||key=='D'||key=='W'||key=='S'||key=='Q'||key=='M'||key==VK_F2||
+            key==VK_LEFT||key==VK_RIGHT||key==VK_UP||key==VK_DOWN||key==VK_SPACE||key=='P'||key=='R'||
+            key=='1'||key=='2'||key=='3'||key=='4'||key==VK_RETURN||key==VK_ESCAPE) {
             if(message->message==WM_KEYDOWN)OnKeyDown(key,1,UINT(message->lParam>>16));
             else OnKeyUp(key,1,UINT(message->lParam>>16));
             return TRUE;
@@ -33,7 +34,12 @@ void CEntornVGIView::GameKeyDown(UINT key,UINT flags) {
     if(key>=gameKeys.size())return;
     bool fresh=(flags&0x4000)==0 && !gameKeys[key];
     if(fresh && key=='P') {game.pause();ClearGameInput();}
-    if(fresh && key>='1' && key<='3') game.selectShip(int(key-'1'));
+    if(fresh && key>='1' && key<='4') {
+        if(game.phase==galaga::Phase::Menu&&key<='3')game.selectShip(int(key-'1'));
+        else if(game.phase==galaga::Phase::Playing)game.selectWeapon(int(key-'1'));
+    }
+    if(fresh && key=='M')gameAudio.setMuted(!gameAudio.isMuted());
+    if(fresh && key==VK_F2)gameRenderer.toggleWireframe();
     if(fresh && key==VK_ESCAPE) {
         if(game.phase==galaga::Phase::Playing) game.pause();
         else if(game.phase!=galaga::Phase::Menu) game.returnToMenu();
@@ -48,18 +54,30 @@ void CEntornVGIView::GameKeyDown(UINT key,UINT flags) {
 void CEntornVGIView::GameTick() {
     auto now=std::chrono::steady_clock::now();
     double elapsed=std::chrono::duration<double>(now-gameClock).count();gameClock=now;
+    gameAudio.setScene(!demoMode?galaga::MusicScene::Silent:game.phase==galaga::Phase::Menu?
+        galaga::MusicScene::Menu:game.phase==galaga::Phase::Playing?galaga::MusicScene::Combat:galaga::MusicScene::Silent);
+    gameAudio.tick();
     if(!demoMode||game.phase!=galaga::Phase::Playing) {gameAccumulator=0;return;}
     // An inactive app or an inactive MDI document must never keep simulating.
     if(GetForegroundWindow()!=AfxGetMainWnd() || GetFocus()!=this) {
         game.pause();ClearGameInput();Invalidate(FALSE);return;
     }
     gameAccumulator+=std::min(elapsed,.1);
-    galaga::Input input{gameKeys['A']||gameKeys[VK_LEFT],gameKeys['D']||gameKeys[VK_RIGHT],gameKeys[VK_SPACE]};
+    galaga::Input input{gameKeys['A']||gameKeys[VK_LEFT],gameKeys['D']||gameKeys[VK_RIGHT],gameKeys[VK_SPACE],
+        gameKeys['W']||gameKeys[VK_UP],gameKeys['S']||gameKeys[VK_DOWN],gameKeys['Q']};
+    const int oldShots=game.shots,oldKills=game.kills,oldLives=game.lives,oldWave=game.wave,oldBoss=game.bossHealth;
+    const auto oldStage=game.stage;
     int steps=0;
     while(gameAccumulator>=galaga::Game3D::Step && steps++<5) {
         game.update(input);gameAccumulator-=galaga::Game3D::Step;
         if(game.phase!=galaga::Phase::Playing){gameAccumulator=0;break;}
     }
     if(gameAccumulator>=galaga::Game3D::Step)gameAccumulator=std::fmod(gameAccumulator,double(galaga::Game3D::Step));
+    if(game.shots>oldShots)gameAudio.play(galaga::SoundEvent::Shot);
+    if(game.kills>oldKills||game.bossHealth<oldBoss)gameAudio.play(galaga::SoundEvent::Hit);
+    if(game.lives<oldLives)gameAudio.play(galaga::SoundEvent::Damage);
+    if(game.stage!=oldStage||game.wave!=oldWave)gameAudio.play(galaga::SoundEvent::Transition);
+    if(game.phase==galaga::Phase::Victory)gameAudio.play(galaga::SoundEvent::Victory);
+    if(game.phase==galaga::Phase::Defeat)gameAudio.play(galaga::SoundEvent::Defeat);
     Invalidate(FALSE);
 }

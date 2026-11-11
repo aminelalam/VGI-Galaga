@@ -64,9 +64,6 @@ void main(){outColor=texture(image,texCoord)*tint;})";
     for(int i=0;glyphs[i];++i){unsigned ch=unsigned(glyphs[i]);int x=(ch%16)*8,y=(ch/16)*8;
         for(int r=0;r<7;++r)for(int c=0;c<5;++c)if(rows[i][r]&(1<<(4-c))){auto p=((y+r)*128+x+c)*4;atlas[p]=atlas[p+1]=atlas[p+2]=atlas[p+3]=255;}}
     texture(font,128,64,atlas.data());glBindVertexArray(0);
-    const auto path=executableDirectory()/L"Recursos_Galaga3D"/L"hud"/L"etiqueta_puntos.png";
-    scoreLabel=SOIL_load_OGL_texture(path.string().c_str(),SOIL_LOAD_RGBA,SOIL_CREATE_NEW_ID,0);
-    if(!scoreLabel)throw std::runtime_error("Falta la etiqueta de puntos del proyecto.");
 }
 void Renderer2D::release(){if(scoreLabel)glDeleteTextures(1,&scoreLabel);if(font)glDeleteTextures(1,&font);if(white)glDeleteTextures(1,&white);if(vbo)glDeleteBuffers(1,&vbo);if(vao)glDeleteVertexArrays(1,&vao);if(program)glDeleteProgram(program);scoreLabel=font=white=vbo=vao=program=0;}
 void Renderer2D::begin(int width,int height){
@@ -102,29 +99,53 @@ void Renderer2D::text(const std::string& value,float x,float y,int height,Color 
 void Renderer2D::background(const Game3D& g,int width,int height){
     begin(width,height);glClearColor(0,0,0,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     quad(0,0,1280,720,{0,0,0});
-    if(g.phase==Phase::Menu){for(int i=0;i<3;++i){float x=215+i*300.f;bool selected=i==g.selectedShip;quad(x,257,250,242,selected?Color{.043f,.055f,.083f,.94f}:Color{.022f,.029f,.045f,.9f});border(x,257,250,242,selected?Color{1,.8f,.18f}:Color{.16f,.20f,.27f});if(selected)quad(x,257,250,4,{1,.8f,.18f});}}
+    if(g.phase==Phase::Menu){for(int i=0;i<3;++i){float x=215+i*300.f;bool selected=i==g.selectedShip;quad(x,257,250,242,selected?Color{.055f,.06f,.07f}:Color{.025f,.028f,.032f});border(x,257,250,242,selected?Color{1,.8f,.25f}:Color{.15f,.17f,.19f});if(selected)quad(x,257,250,3,{1,.8f,.25f});}}
     finish();
 }
 void Renderer2D::overlay(const Game3D& g,int width,int height){
     begin(width,height);
-    const Color whiteC{.91f,.94f,1},yellow{1,.83f,.16f},red{1,.22f,.28f},blue{.3f,.7f,1},muted{.44f,.51f,.63f};
+    const Color whiteC{.91f,.94f,.98f},yellow{1,.83f,.25f},red{1,.3f,.22f},blue{.43f,.83f,.95f},muted{.53f,.59f,.65f};
     const char* ships[]={"FLECHA","DELTA","DOBLE MOTOR"};
     if(g.phase==Phase::Menu){
-        text("GALAGA",640,65,70,yellow,true);text("3 D",640,154,28,blue,true);
+        text("GALAGA 3D",640,71,52,whiteC,true);text("SECTOR ORBITAL",640,148,17,yellow,true);
         text("ELIGE TU NAVE",640,216,18,whiteC,true);
         for(int i=0;i<3;++i){float x=340+i*300.f;text(std::to_string(i+1),x-100,277,14,i==g.selectedShip?yellow:muted);text(ships[i],x,461,17,i==g.selectedShip?yellow:whiteC,true);}
         text("1 / 2 / 3  SELECCIONAR",640,530,14,muted,true);
         text("ENTER  EMPEZAR",640,578,24,yellow,true);
-        text("A/D MOVER   ESPACIO DISPARAR   P PAUSA",640,643,12,whiteC,true);
-        text("UNA RONDA - 18 ENEMIGOS - 3 VIDAS",640,682,11,muted,true);
+        text("WASD / FLECHAS  VOLAR     ESPACIO  DISPARAR     1-4  ARMAS",640,637,12,whiteC,true);
+        text("3 COMBATES + 2 ESQUIVAS + JEFE FINAL    Q MISIL    P PAUSA    M AUDIO    F2 MALLA",640,678,10,muted,true);
     }else{
-        image(scoreLabel,55,18,103.5f,36);
-        text(std::to_string(g.score),55,57,22,whiteC);
+        // One quiet information band; no target boxes or aim overlay.
+        quad(0,0,1280,83,{.012f,.016f,.02f,.8f});
+        text("PUNTOS",30,19,11,muted);text(std::to_string(g.score),30,42,22,whiteC);
+        if(g.multiplier>1)text("X"+std::to_string(g.multiplier),185,48,14,yellow);
+        const std::string stage=g.stage==Stage::Combat?"COMBATE "+std::to_string(g.wave)+" / 3":g.stage==Stage::Evasion?"ESQUIVA "+std::to_string(g.wave)+" / 2":"JEFE FINAL";
+        text(stage,640,20,14,whiteC,true);
+        if(g.stage==Stage::Evasion)
+            text("RESISTE  "+std::to_string(std::max(0,int(std::ceil(g.stageDuration-g.stageTime))))+" S",640,49,12,yellow,true);
+        else text(g.stage==Stage::Boss?"ACORAZADO":"HOSTILES  "+std::to_string(g.remaining()),640,49,11,muted,true);
+        text("VIDAS",1000,19,11,muted);
+        for(int i=0;i<3;++i)quad(1062+i*18.f,18,11,12,i<g.lives?blue:Color{.16f,.19f,.21f});
+        const char* weapons[]={"SIMPLE","DOBLE","TRIPLE","MISIL"};
+        text(g.stage==Stage::Evasion?"MODO  CABINA":"ARMA  "+std::string(weapons[int(g.weapon)]),1000,46,12,whiteC);
+        if(g.stage==Stage::Boss){
+            quad(460,88,360,5,{.2f,.13f,.11f});
+            quad(460,88,360.f*std::max(0,g.bossHealth)/std::max(1,g.bossMaxHealth),5,red);
+        }
+        quad(0,688,1280,32,{.012f,.016f,.02f,.75f});
+        text(g.stage==Stage::Evasion?"WASD / FLECHAS  ESQUIVAR":"WASD VOLAR   ESPACIO DISPARAR   1-4 ARMAS",30,700,10,muted);
+        text("P PAUSA   M AUDIO   F2 MALLA",640,700,10,muted,true);
+        text(g.stage==Stage::Evasion?"ARMAS EN ESPERA":g.specialCooldown<=0?"Q  MISIL LISTO":"Q  RECARGANDO",1062,700,10,g.stage!=Stage::Evasion&&g.specialCooldown<=0?yellow:muted);
+        if(g.stageTime<1.6f&&g.phase==Phase::Playing){
+            text(g.stage==Stage::Evasion?"CABINA - EVITA LOS ASTEROIDES":g.stage==Stage::Boss?"ACORAZADO EN APROXIMACION":"FORMACION EN APROXIMACION",640,111,15,yellow,true);
+        }
         if(g.phase==Phase::Paused||g.phase==Phase::Victory||g.phase==Phase::Defeat){
-            quad(0,100,1280,522,{0,0,.015f,.73f});quad(360,240,560,252,{.025f,.035f,.06f,.96f});border(360,240,560,252,{.24f,.3f,.4f});
-            text(g.phase==Phase::Paused?"PAUSA":g.phase==Phase::Victory?"RONDA SUPERADA":"GAME OVER",640,278,30,g.phase==Phase::Defeat?red:yellow,true);
-            text(g.phase==Phase::Paused?"TU NAVE TE ESPERA":"PUNTOS  "+std::to_string(g.score),640,345,17,whiteC,true);
-            text(g.phase==Phase::Paused?"P  CONTINUAR":"R  VOLVER A JUGAR",640,412,16,whiteC,true);text("ESC  ELEGIR NAVE",640,453,12,muted,true);
+            quad(0,83,1280,605,{0,0,0,.65f});quad(320,205,640,340,{.035f,.04f,.048f,.97f});border(320,205,640,340,{.24f,.28f,.31f});
+            text(g.phase==Phase::Paused?"PAUSA":g.phase==Phase::Victory?"SECTOR LIBERADO":"NAVE DESTRUIDA",640,247,30,g.phase==Phase::Defeat?red:yellow,true);
+            text(g.phase==Phase::Paused?"WASD / FLECHAS  MOVER EN X Y ALTURA":"PUNTOS  "+std::to_string(g.score),640,316,14,whiteC,true);
+            text(g.phase==Phase::Paused?"1 SIMPLE   2 DOBLE   3 TRIPLE   4 MISIL":"BAJAS  "+std::to_string(g.kills)+"    TIEMPO  "+std::to_string(int(g.time))+" S",640,356,12,muted,true);
+            text(g.phase==Phase::Paused?"ESPACIO DISPARAR   Q MISIL ESPECIAL":"RECORD  "+std::to_string(std::max(g.bestScore,g.score)),640,391,12,muted,true);
+            text(g.phase==Phase::Paused?"P  CONTINUAR":"R  VOLVER A JUGAR",640,452,18,whiteC,true);text("ESC  ELEGIR NAVE",640,503,12,muted,true);
         }
     }
     finish();
