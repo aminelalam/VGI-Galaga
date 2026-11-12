@@ -45,6 +45,10 @@ La galería Capturas/README.md muestra la selección de las tres naves, combate,
 
 El verificador usa el render OpenGL real. También recorre la campaña mediante entradas normales, captura cada etapa y comprueba victoria y derrota sin modificar vidas, enemigos ni resultados. El informe completo acompaña a las capturas.
 
+## Acta de seguimiento
+
+El [acta en PDF](Actes/Acta_seguiment_naves_curves.pdf) y el [Word editable](Actes/Acta_seguiment_naves_curves.docx) incorporan seis capturas y la discusión sobre las naves y el puzle de curvas. Conservan el catalán y el formato de las actas anteriores. La integración de las curvas figura como mejora propuesta.
+
 ## Compilar
 
 Windows x64 y Visual Studio 2022 o 2026 con C++ de escritorio, MFC y Windows SDK. Ejecuta build-demo.cmd para compilar, comprobar y preparar el paquete. El script selecciona el toolset instalado y usa la GPU del equipo. La opción -SoftwareRenderer prepara Mesa para equipos sin OpenGL 3.3; la primera descarga necesita conexión.
