@@ -44,6 +44,11 @@ float weaponCadence(Weapon weapon) {
     }
 }
 
+bool retired(const Bullet& bullet) {
+    return !bullet.alive || bullet.ttl <= 0 || bullet.pos.y > 55.f || bullet.pos.y < -5.3f ||
+        std::abs(bullet.pos.x) > 18.f || bullet.z < -12.f || bullet.z > 14.f;
+}
+
 float enemyHitTime(Vec2 start, Vec2 end, float startZ, float endZ,
     const Enemy& enemy, Vec2 enemyEnd, float enemyEndZ, float otherRadius) {
     if (enemy.type != 2) {
@@ -224,6 +229,7 @@ void Game3D::clearCombo() {
 void Game3D::damage() {
     if (invulnerable > 0 || respawn > 0 || lives <= 0) return;
     --lives;
+    damageFlash = .35f;
     clearCombo();
     addEffect(player, playerZ, true, 1.2f);
     respawn = .7f;
@@ -236,6 +242,7 @@ void Game3D::firePlayer(Weapon mode) {
         const float spread = index - (count - 1) * .5f;
         Bullet shot;
         shot.id = nextId++;
+        shot.salvo = shots + 1;
         shot.pos = {player.x + (mode == Weapon::Double ? spread * .56f : 0), player.y + .9f};
         shot.previous = shot.pos;
         shot.z = shot.previousZ = playerZ;
@@ -403,18 +410,24 @@ void Game3D::moveEnemies(float dt) {
 void Game3D::moveObstacles(float dt) {
     obstacleClock -= dt;
     if (obstacleClock <= 0 && stageTime < stageDuration - 4.4f) {
-        // Bounce at the edges: consecutive openings remain reachable at ship speed.
-        const int columnPhase = (obstacleBurst + wave) % 8;
+        // Shift successive groups in both axes: the old fixed grid left safe
+        // places between rocks and along the boundaries for the entire phase.
+        // The broad opening stays inside the flight limits and bounces gently.
+        const float offsetsX[]{-.95f, .95f, .95f, -.95f};
+        const float offsetsZ[]{-.825f, -.825f, .825f, .825f};
+        const float offsetX = offsetsX[obstacleBurst % 4];
+        const float offsetZ = offsetsZ[obstacleBurst % 4];
+        const int columnPhase = obstacleBurst % 4;
         const int rowPhase = (obstacleBurst / 2 + wave - 1) % 4;
-        const int gapColumn = columnPhase <= 4 ? columnPhase : 8 - columnPhase;
+        const int gapColumn = 1 + (columnPhase <= 2 ? columnPhase : 4 - columnPhase);
         const int gapRow = rowPhase <= 2 ? rowPhase : 4 - rowPhase;
         for (int row = 0; row < 3; ++row) {
             for (int column = 0; column < 5; ++column) {
                 if (column == gapColumn && row == gapRow) continue;
                 Obstacle obstacle;
                 obstacle.id = nextId++;
-                obstacle.pos = obstacle.previous = {(column - 2) * 3.f, 40.f};
-                obstacle.z = obstacle.previousZ = -2.f + row * 3.3f;
+                obstacle.pos = obstacle.previous = {(column - 2) * 3.f + offsetX, 40.f};
+                obstacle.z = obstacle.previousZ = -2.35f + row * 3.f + offsetZ;
                 obstacles.push_back(obstacle);
             }
         }
@@ -485,6 +498,11 @@ void Game3D::resolveContacts(float dt) {
             auto& enemy = enemies[contact.second];
             if (!bullet.alive || !enemy.alive) continue;
             bullet.alive = false;
+            ++hits;
+            // A double/triple trigger is one attempt. Its unused pellets must
+            // not cancel the reward earned by a pellet that actually hit.
+            if (bullet.salvo > 0) for (auto& sibling : bullets)
+                if (sibling.ally && sibling.salvo == bullet.salvo) sibling.salvoHit = true;
             enemy.hp = std::max(0, enemy.hp - bullet.damage);
             enemy.hitFlash = .12f;
             addEffect(bullet.pos, bullet.z, false, enemy.hp == 0 ? .9f : .35f);
@@ -526,6 +544,7 @@ void Game3D::update(const Input& input, float dt) {
     if (phase != Phase::Playing || !std::isfinite(dt) || dt <= 0) return;
     time += dt;
     stageTime += dt;
+    damageFlash = std::max(0.f, damageFlash - dt);
     for (auto& effect : sparks) effect.age += dt;
     sparks.erase(std::remove_if(sparks.begin(), sparks.end(), [](const Spark& effect) {
         return effect.age >= effect.duration;
@@ -548,12 +567,13 @@ void Game3D::update(const Input& input, float dt) {
     }
     resolveContacts(dt);
     for (const auto& bullet : bullets) {
-        if (bullet.ally && bullet.alive && (bullet.ttl <= 0 || bullet.pos.y > 55.f)) clearCombo();
+        if (!bullet.ally || !bullet.alive || !retired(bullet) || bullet.salvoHit) continue;
+        const bool pending = bullet.salvo > 0 && std::any_of(bullets.begin(), bullets.end(), [&](const Bullet& sibling) {
+            return sibling.ally && sibling.salvo == bullet.salvo && !retired(sibling);
+        });
+        if (!pending) clearCombo();
     }
-    bullets.erase(std::remove_if(bullets.begin(), bullets.end(), [](const Bullet& bullet) {
-        return !bullet.alive || bullet.ttl <= 0 || bullet.pos.y > 55.f || bullet.pos.y < -5.3f ||
-            std::abs(bullet.pos.x) > 18.f || bullet.z < -12.f || bullet.z > 14.f;
-    }), bullets.end());
+    bullets.erase(std::remove_if(bullets.begin(), bullets.end(), retired), bullets.end());
     obstacles.erase(std::remove_if(obstacles.begin(), obstacles.end(), [](const Obstacle& obstacle) {
         return !obstacle.alive || obstacle.pos.y < -6.f;
     }), obstacles.end());

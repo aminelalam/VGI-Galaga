@@ -33,6 +33,8 @@ struct Bullet {
     float velocityX = 0, velocityY = 0;
     int kind = 0, damage = 1;
     float radius = .12f;
+    int salvo = 0;
+    bool salvoHit = false;
     float forwardSpeed() const;
 };
 struct Spark {
@@ -46,7 +48,7 @@ struct Obstacle {
     bool alive = true;
     Vec2 pos, previous;
     float z = 0, previousZ = 0;
-    float radius = 1.f, velocityY = -11.f;
+    float radius = 1.12f, velocityY = -11.f;
 };
 
 // Fixed-step simulation in world XYZ coordinates, independent of MFC and OpenGL.
@@ -72,11 +74,12 @@ public:
     Weapon weapon = Weapon::Single;
     Vec2 player{0, -4}, previousPlayer{0, -4};
     float playerZ = 0, previousPlayerZ = 0;
-    int lives = 3, score = 0, shots = 0, kills = 0;
+    int lives = 3, score = 0, shots = 0, hits = 0, kills = 0;
     int selectedShip = 0, bestScore = 0, hitStreak = 0, multiplier = 1;
     int wave = 1, bossHealth = 0, bossMaxHealth = 36;
     float time = 0, stageTime = 0, stageDuration = 0;
     float invulnerable = 1.5f, respawn = 0, specialCooldown = 0;
+    float damageFlash = 0;
     std::vector<Enemy> enemies;
     std::vector<Bullet> bullets;
     std::vector<Spark> sparks;

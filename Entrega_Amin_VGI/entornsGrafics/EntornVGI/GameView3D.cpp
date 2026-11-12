@@ -65,7 +65,7 @@ void CEntornVGIView::GameTick() {
     gameAccumulator+=std::min(elapsed,.1);
     galaga::Input input{gameKeys['A']||gameKeys[VK_LEFT],gameKeys['D']||gameKeys[VK_RIGHT],gameKeys[VK_SPACE],
         gameKeys['W']||gameKeys[VK_UP],gameKeys['S']||gameKeys[VK_DOWN],gameKeys['Q']};
-    const int oldShots=game.shots,oldKills=game.kills,oldLives=game.lives,oldWave=game.wave,oldBoss=game.bossHealth;
+    const int oldShots=game.shots,oldHits=game.hits,oldLives=game.lives,oldWave=game.wave;
     const auto oldStage=game.stage;
     int steps=0;
     while(gameAccumulator>=galaga::Game3D::Step && steps++<5) {
@@ -74,7 +74,7 @@ void CEntornVGIView::GameTick() {
     }
     if(gameAccumulator>=galaga::Game3D::Step)gameAccumulator=std::fmod(gameAccumulator,double(galaga::Game3D::Step));
     if(game.shots>oldShots)gameAudio.play(galaga::SoundEvent::Shot);
-    if(game.kills>oldKills||game.bossHealth<oldBoss)gameAudio.play(galaga::SoundEvent::Hit);
+    if(game.hits>oldHits)gameAudio.play(galaga::SoundEvent::Hit);
     if(game.lives<oldLives)gameAudio.play(galaga::SoundEvent::Damage);
     if(game.stage!=oldStage||game.wave!=oldWave)gameAudio.play(galaga::SoundEvent::Transition);
     if(game.phase==galaga::Phase::Victory)gameAudio.play(galaga::SoundEvent::Victory);

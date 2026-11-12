@@ -123,9 +123,12 @@ void Renderer3D::draw(const Game3D& g,int width,int height){
             model=glm::rotate(model,std::clamp(e.velocityX*.025f,-.32f,.32f),glm::vec3(0,1,0));
             model=glm::scale(model,glm::vec3(e.type==2?Game3D::BossScale:Game3D::EnemyScale));
             const bool warning=e.phase==EnemyPhase::Warning;
+            const float warningPulse=warning?.5f-.5f*std::cos(e.timer*15.707963f):0.f;
             const auto& mesh=e.type<2&&e.pos.y-g.player.y>10.f?models.distantEnemies[e.type]:models.enemies[std::clamp(e.type,0,2)];
+            // Signal the attack on the actual hull, without a target marker.
+            const glm::vec4 warningTint(1.f+.6f*warningPulse,1.f+.4f*warningPulse,1.f-.55f*warningPulse,1);
             instance(mesh,model,
-                e.hitFlash>0?glm::vec4(1.5f):glm::vec4(1),e.hitFlash>0?.65f:warning?.25f:0.f);
+                e.hitFlash>0?glm::vec4(1.5f):warningTint,e.hitFlash>0?.65f:warning?.2f+.55f*warningPulse:0.f);
         }
         for(const auto& b:g.bullets)if(b.alive){
             auto model=transform({b.pos.x,b.pos.y,b.z});

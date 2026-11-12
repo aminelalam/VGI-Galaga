@@ -12,9 +12,13 @@ La cámara sigue a la nave desde detrás durante los combates y pasa a la cabina
 
 [Instrucciones, arquitectura y verificación](DEMO_3D.md) · [Solución Visual Studio 2022](Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln)
 
+La revisión de diseño del 12 de noviembre corrige los combos del disparo doble/triple y las posiciones que permitían superar la esquiva sin moverse. Añade avisos de daño y protección, segundos de recarga y pulsos de preparación de ataque sobre los enemigos. Release pasa 77 comprobaciones de reglas y la verificación gráfica; los hallazgos, pruebas y límites están en [REVISION_JUEGO.txt](REVISION_JUEGO.txt).
+
 ![Combate en tercera persona, captura del ejecutable](Recursos_Galaga3D/previews/Mallas/Partida.png)
 
 [Vista desde la cabina](Recursos_Galaga3D/previews/Mallas/Cabina.png) · [Modelos sólidos](Recursos_Galaga3D/previews/Mallas/Modelos.png) · [Triángulos de las mallas](Recursos_Galaga3D/previews/Mallas/Mallas.png) · [Informe gráfico Release](Recursos_Galaga3D/previews/Mallas/Verificacion_Release.txt)
+
+[Aviso de picado](Recursos_Galaga3D/previews/Mallas/Aviso_picado.png) · [Daño en cabina](Recursos_Galaga3D/previews/Mallas/Dano_cabina.png) · [Paso entre asteroides](Recursos_Galaga3D/previews/Mallas/Paso_asteroides.png)
 
 [Guía del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Documenta la revisión del 1 de noviembre de 2026; sus listados y alcance son anteriores a esta campaña. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt). Las instrucciones de la implementación actual están en [DEMO_3D.md](DEMO_3D.md).
 

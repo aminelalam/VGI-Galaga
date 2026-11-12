@@ -128,6 +128,10 @@ void Renderer2D::overlay(const Game3D& g,int width,int height){
         for(int i=0;i<3;++i)quad(1062+i*18.f,18,11,12,i<g.lives?blue:Color{.16f,.19f,.21f});
         const char* weapons[]={"SIMPLE","DOBLE","TRIPLE","MISIL"};
         text(g.stage==Stage::Evasion?"MODO  CABINA":"ARMA  "+std::string(weapons[int(g.weapon)]),1000,46,12,whiteC);
+        if(g.lives>0){
+            if(g.respawn>0)text("REAPARECIENDO",1000,67,9,red);
+            else if(g.invulnerable>0)text("ESCUDO  "+std::to_string(int(std::ceil(g.invulnerable)))+" S",1000,67,9,blue);
+        }
         if(g.stage==Stage::Boss){
             quad(460,88,360,5,{.2f,.13f,.11f});
             quad(460,88,360.f*std::max(0,g.bossHealth)/std::max(1,g.bossMaxHealth),5,red);
@@ -135,16 +139,23 @@ void Renderer2D::overlay(const Game3D& g,int width,int height){
         quad(0,688,1280,32,{.012f,.016f,.02f,.75f});
         text(g.stage==Stage::Evasion?"WASD / FLECHAS  ESQUIVAR":"WASD VOLAR   ESPACIO DISPARAR   1-4 ARMAS",30,700,10,muted);
         text("P PAUSA   M AUDIO   F2 MALLA",640,700,10,muted,true);
-        text(g.stage==Stage::Evasion?"ARMAS EN ESPERA":g.specialCooldown<=0?"Q  MISIL LISTO":"Q  RECARGANDO",1062,700,10,g.stage!=Stage::Evasion&&g.specialCooldown<=0?yellow:muted);
-        if(g.stageTime<1.6f&&g.phase==Phase::Playing){
-            text(g.stage==Stage::Evasion?"CABINA - EVITA LOS ASTEROIDES":g.stage==Stage::Boss?"ACORAZADO EN APROXIMACION":"FORMACION EN APROXIMACION",640,111,15,yellow,true);
+        const std::string special=g.specialCooldown<=0?"Q  MISIL LISTO":"Q  RECARGA "+std::to_string(int(std::ceil(g.specialCooldown)))+" S";
+        text(g.stage==Stage::Evasion?"ARMAS EN ESPERA":special,1062,700,10,g.stage!=Stage::Evasion&&g.specialCooldown<=0?yellow:muted);
+        if(g.stageTime<(g.stage==Stage::Evasion?2.4f:1.6f)&&g.phase==Phase::Playing){
+            text(g.stage==Stage::Evasion?"CABINA - BUSCA LOS HUECOS":g.stage==Stage::Boss?"ACORAZADO EN APROXIMACION":"FORMACION EN APROXIMACION",640,111,15,yellow,true);
+        }
+        if(g.damageFlash>0&&g.phase==Phase::Playing){
+            const Color damage{1,.19f,.08f,.8f*g.damageFlash/.35f};
+            quad(0,83,1280,5,damage);quad(0,683,1280,5,damage);
+            quad(0,88,5,595,damage);quad(1275,88,5,595,damage);
         }
         if(g.phase==Phase::Paused||g.phase==Phase::Victory||g.phase==Phase::Defeat){
             quad(0,83,1280,605,{0,0,0,.65f});quad(320,205,640,340,{.035f,.04f,.048f,.97f});border(320,205,640,340,{.24f,.28f,.31f});
             text(g.phase==Phase::Paused?"PAUSA":g.phase==Phase::Victory?"SECTOR LIBERADO":"NAVE DESTRUIDA",640,247,30,g.phase==Phase::Defeat?red:yellow,true);
             text(g.phase==Phase::Paused?"WASD / FLECHAS  MOVER EN X Y ALTURA":"PUNTOS  "+std::to_string(g.score),640,316,14,whiteC,true);
-            text(g.phase==Phase::Paused?"1 SIMPLE   2 DOBLE   3 TRIPLE   4 MISIL":"BAJAS  "+std::to_string(g.kills)+"    TIEMPO  "+std::to_string(int(g.time))+" S",640,356,12,muted,true);
-            text(g.phase==Phase::Paused?"ESPACIO DISPARAR   Q MISIL ESPECIAL":"RECORD  "+std::to_string(std::max(g.bestScore,g.score)),640,391,12,muted,true);
+            const bool evasionPause=g.phase==Phase::Paused&&g.stage==Stage::Evasion;
+            text(g.phase==Phase::Paused?(evasionPause?"BUSCA UN HUECO ENTRE LOS ASTEROIDES":"1 SIMPLE   2 DOBLE   3 TRIPLE   4 MISIL"):"BAJAS  "+std::to_string(g.kills)+"    TIEMPO  "+std::to_string(int(g.time))+" S",640,356,12,muted,true);
+            text(g.phase==Phase::Paused?(evasionPause?"ARMAS EN ESPERA DURANTE LA ESQUIVA":"ESPACIO DISPARAR   Q MISIL ESPECIAL"):"RECORD  "+std::to_string(std::max(g.bestScore,g.score)),640,391,12,muted,true);
             text(g.phase==Phase::Paused?"P  CONTINUAR":"R  VOLVER A JUGAR",640,452,18,whiteC,true);text("ESC  ELEGIR NAVE",640,503,12,muted,true);
         }
     }

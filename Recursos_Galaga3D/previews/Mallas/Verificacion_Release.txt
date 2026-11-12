@@ -45,10 +45,33 @@ PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation
 PASS 15-weapon-4 1280x720; 155252 depth pixels
 PASS framing at player X=0, Z=0; smallest stationary target 41.5551px; formation width 327.592px
 PASS 16-enemy-dive 1280x720; 155409 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 41.9385px; formation width 307.282px
+PASS 19-warning-start 1280x720; 155095 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 41.8798px; formation width 309.633px
+PASS 20-warning-pulse 1280x720; 155109 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1298px; formation width 295.585px
+PASS 21-damage-combat 1280x720; 150383 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1193px; formation width 301.176px
+PASS 22-protected-flight 1280x720; 155068 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 42.1193px; formation width 301.176px
+PASS 22-protected-flight-4x3 1024x768; 99250 depth pixels
 PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
-PASS 17-cockpit-evasion 1280x720; 285125 depth pixels
+PASS 17-cockpit-evasion 1280x720; 291784 depth pixels
 PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
-PASS 17-cockpit-4x3 1024x768; 182433 depth pixels
+PASS 17-cockpit-4x3 1024x768; 186670 depth pixels
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 23-damage-cockpit 1280x720; 292192 depth pixels
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 24-protected-cockpit 1024x768; 211509 depth pixels
+PASS 25-cockpit-pause 1280x720; 291784 depth pixels
+PASS framing at player X=7.68, Z=4.6; cockpit or no stationary targets (image inspection required)
+PASS 27-cockpit-upper-right 1280x720; 302068 depth pixels
+PASS framing at player X=-7.68, Z=-3.2; cockpit or no stationary targets (image inspection required)
+PASS 27-cockpit-lower-left 1280x720; 296233 depth pixels
+PASS framing at player X=-3.95, Z=-3.175; cockpit or no stationary targets (image inspection required)
+PASS 28-cockpit-opening-close 1280x720; 441986 depth pixels
+PASS framing at player X=0, Z=0; smallest stationary target 41.8845px; formation width 309.436px
+PASS 26-special-recharge 1280x720; 154575 depth pixels
 PASS framing at player X=0, Z=0; smallest stationary target 156.623px; formation width 156.623px
 PASS 18-boss 1280x720; 152457 depth pixels
 PASS 06-pause 1280x720; 154973 depth pixels
@@ -58,8 +81,8 @@ PASS 09-models-front 1280x720; 165293 depth pixels
 PASS 10-models-side 1280x720; 111139 depth pixels
 PASS 14-models-wireframe 1280x720; 83252 depth pixels
 PASS model matrix: rotated solid meshes produce different frames
-Average render (60 frames, 1280x720): 22.9013 ms
-Average render (60 frames, 960x540): 17.7589 ms
+Average render (60 frames, 1280x720): 6.02701 ms
+Average render (60 frames, 960x540): 4.6494 ms
 PASS 3D GPU meshes: 15 static uploads, 32816 triangles; static VBO/EBO, VAO attributes 0/1/2/3/4; model/view/projection uniforms active
 PASS MFC handlers: XYZ flight keys / 4 weapons / audio / 3 ships / start / pause / resume / focus loss / menu / restart
 PASS static meshes reused through all captures and 60 frames; XYZ depth buffer active

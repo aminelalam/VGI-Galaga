@@ -1,3 +1,52 @@
+REVISIÓN CON GAME DESIGNER · 12 de noviembre de 2026
+
+Base revisada: 4affc52, rama codex/mallas-3d-escenario. Esta sección describe las correcciones posteriores a esa base. Se revisaron las reglas de Game3D, la entrada y el audio de GameView3D, el render de Renderer3D/Renderer2D, las pruebas y las capturas actuales. No es una certificación de cada ruta del entorno docente ni de todas las bibliotecas.
+
+Hallazgos y correcciones
+
+1. IMPORTANTE · COMPROBADO: el doble y el triple penalizaban un acierto.
+   Síntoma: acertar con una bala aumentaba la racha, pero al salir las otras balas de la pantalla la racha desaparecía. La regresión nueva falló contra la implementación anterior y pasó después de corregirla.
+   Efecto: elegir un arma de varios proyectiles perjudicaba el multiplicador incluso haciendo un disparo útil.
+   Causa: update() evaluaba cada bala que caducaba como un intento fallido independiente.
+   Corrección: firePlayer() asigna el mismo identificador salvo a los proyectiles de una descarga. Un contacto marca salvoHit en sus proyectiles restantes. Solo una descarga sin impactos y sin proyectiles pendientes rompe el combo. La retirada utiliza los mismos límites que la limpieza de balas.
+   Verificación: doble y triple conservan x2 después de acertar y dejar pasar los proyectiles restantes; una descarga posterior totalmente fallada vuelve a x1. Se mantienen las pruebas de contactos, alturas y puntuación única.
+
+2. IMPORTANTE · COMPROBADO: la esquiva se podía superar sin esquivar.
+   Síntoma: permanecer en X=7,68, Z=0 conservaba las tres vidas durante la primera esquiva. La prueba de esa estrategia falló antes de cambiar la generación.
+   Efecto: quedarse en un borde evitaba la decisión principal de esta fase. La cuadrícula fija también dejaba intersticios permanentes.
+   Corrección: los grupos de 14 asteroides alternan desplazamientos en X y Z; el hueco amplio rebota entre posiciones interiores. El radio pasa de 1 a 1,12 y la malla se escala con el mismo valor. No se añaden paredes de colisión invisibles. Los asteroides siguen trayectorias rectas hacia el jugador, sin perseguirlo.
+   Verificación: el caso del borde ahora recibe daño. En ambas fases, 12.245 posiciones muestreadas, incluidos los límites, quedan amenazadas por al menos un grupo. Esto es un muestreo, no una demostración de cobertura de todo punto continuo. Un piloto que deduce el hueco a partir de las posiciones observadas completa ambas fases sin daño, con invulnerabilidad inicial desactivada y usando los controles normales. Se comprueba el recorrido entre huecos descontando el tiempo de paso de la pared anterior.
+
+3. IMPORTANTE · COMPROBADO: algunos impactos no emitían el evento de audio.
+   Síntoma: GameView3D detectaba bajas o daño al jefe, pero no el primer impacto contra un enemigo normal de dos puntos de vida.
+   Efecto: el mismo tipo de contacto no producía una confirmación sonora consistente.
+   Corrección: Game3D cuenta los impactos válidos y GameTick emite SoundEvent::Hit cuando ese contador aumenta, independientemente de la baja.
+   Verificación: un disparo deja al enemigo de armadura con una vida, cero bajas y un impacto registrado. El enlace del evento se revisa en código. La audibilidad y mezcla subjetiva no se han valorado escuchando una partida en esta revisión.
+
+4. MEJORA · CAMBIO COMPROBADO: daño, protección y recarga más explícitos.
+   Antes: la cabina no mostraba la desaparición de la nave exterior al perder una vida; la protección carecía de texto y Q solo indicaba que estaba recargando. La pausa de esquiva anunciaba controles de disparo desactivados.
+   Ahora: borde rojo de 0,35 segundos que se desvanece, REAPARECIENDO y ESCUDO con segundos restantes; Q informa de la espera. La pausa de esquiva explica su objetivo y que las armas están en espera. El borde deja libre la visión central y utiliza el HUD existente.
+   Verificación: daño real por bala y por asteroide en fixtures, final del destello, protección posterior y congelación durante pausa. Capturas 21 a 27 comprobadas en 16:9 y 4:3. No se restaura el marcador de objetivo.
+
+5. MEJORA · CAMBIO VISUAL COMPROBADO; EFICACIA CON JUGADORES SIN VERIFICAR.
+   El aviso de picado anterior era un incremento constante de emisión. Ahora el casco emite dos pulsos cálidos durante los 0,8 segundos de preparación, usando color y emisión del shader existente. Las capturas 19 y 20 permiten revisar el estado inicial y el pulso. El aviso se distingue de los vecinos en la captura; hace falta observar a jugadores para saber si anticipan el ataque con suficiente facilidad. El jefe conserva su propio tiempo de aviso y utiliza el mismo efecto visual.
+
+Qué se conserva
+La campaña, las cuatro armas, los controles X/Z, las cámaras trasera y de cabina, las mallas con volumen, los materiales, VAO/VBO/EBO, model/view/projection y el HUD discreto. El escenario sigue fuera del corredor de combate. No se rediseña el arte ni se incorporan las propuestas de economía o skins.
+
+Evidencia de esta revisión
+- build-demo.cmd -Configuration Release -Verify -Package completado.
+- 77 comprobaciones de lógica; piloto completo: 75,6183 s, 46 bajas, tres vidas.
+- Verificación gráfica en la aplicación MFC: shaders, matrices, profundidad, buffers, entrada, fases, pausa y reinicio; capturas nuevas de avisos y cabina.
+- Comparación de la cabina a los tres segundos de la fase con la captura de la base; inspección adicional de paso cercano por un hueco, extremos y 4:3. El mayor tamaño visible de las rocas corresponde a su nueva escala, no a editar la captura.
+- Mesa LLVMpipe, GL 4.6: 6,02701 ms a 1280x720 y 4,6494 ms a 960x540, medias de 60 imágenes de la formación. Sin control de carga entre revisiones: no se atribuye una mejora de rendimiento a estos cambios.
+- Ejecutable actualizado en dist/Galaga3D. Informes y capturas completos en bin/x64/Release/verification; una selección está en Recursos_Galaga3D/previews/Mallas.
+
+Límites y siguiente valoración
+No se ha completado una partida manual: las herramientas de control de ventanas fallaron al inicializarse con «failed to write kernel assets / El sistema no puede encontrar la ruta especificada». No se ha modificado Windows para sortearlo. El verificador gráfico propio sí ejecutó la aplicación y terminó correctamente. Quedan sin verificar la comprensión inicial, la percepción del aviso de picado y la mezcla sonora en una partida real. La complejidad visual de varios grupos de rocas superpuestos merece observarse con jugadores antes de añadir más indicadores. No se declara resuelto por ello el fallo intermitente de arranque MFC del historial.
+
+HISTORIAL
+
 CAMPAÑA 3D Y REVISIÓN VISUAL · 11 de noviembre de 2026
 
 Esta sección describe la implementación actual. Las revisiones posteriores de este archivo conservan el historial de las demos anteriores.

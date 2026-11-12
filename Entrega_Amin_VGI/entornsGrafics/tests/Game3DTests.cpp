@@ -28,31 +28,46 @@ Game3D fixture() {
     return game;
 }
 
+// Infer the missing position from the observed wall, not the spawn sequence.
+Vec2 openingAt(const Game3D& game, float wallY) {
+    std::vector<float> xs, zs;
+    for (const auto& obstacle : game.obstacles) {
+        if (!obstacle.alive || std::abs(obstacle.pos.y - wallY) > .1f) continue;
+        if (std::none_of(xs.begin(), xs.end(), [&](float x) { return std::abs(x - obstacle.pos.x) < .01f; })) xs.push_back(obstacle.pos.x);
+        if (std::none_of(zs.begin(), zs.end(), [&](float z) { return std::abs(z - obstacle.z) < .01f; })) zs.push_back(obstacle.z);
+    }
+    Vec2 target{game.player.x, game.playerZ};
+    float bestDistance = 1e9f;
+    for (float z : zs) {
+        for (float x : xs) {
+            bool free = true;
+            for (const auto& obstacle : game.obstacles) {
+                if (!obstacle.alive || std::abs(obstacle.pos.y - wallY) > .1f) continue;
+                const float dx = x - obstacle.pos.x, dz = z - obstacle.z;
+                const float radius = obstacle.radius + Game3D::PlayerRadius + .15f;
+                if (dx * dx + dz * dz < radius * radius) free = false;
+            }
+            const float dx = x - game.player.x, dz = z - game.playerZ;
+            const float distance = dx * dx + dz * dz;
+            if (free && distance < bestDistance) {
+                bestDistance = distance;
+                target = {x, z};
+            }
+        }
+    }
+    return target;
+}
+
 Input pilot(const Game3D& game) {
     float targetX = game.player.x, targetZ = game.playerZ;
     if (game.stage == Stage::Evasion) {
         float nearestY = 1e9f;
         for (const auto& obstacle : game.obstacles)
-            if (obstacle.alive && obstacle.pos.y > game.player.y - 1.45f)
+            if (obstacle.alive && obstacle.pos.y > game.player.y - obstacle.radius - Game3D::PlayerRadius)
                 nearestY = std::min(nearestY, obstacle.pos.y);
-        float bestDistance = 1e9f;
-        for (float z : {-2.f, 1.3f, 4.6f}) {
-            for (float x : {-6.f, -3.f, 0.f, 3.f, 6.f}) {
-                bool free = true;
-                for (const auto& obstacle : game.obstacles) {
-                    if (!obstacle.alive || std::abs(obstacle.pos.y - nearestY) > .5f) continue;
-                    const float dx = x - obstacle.pos.x, dz = z - obstacle.z;
-                    if (dx * dx + dz * dz < 2.25f) free = false;
-                }
-                const float dx = x - game.player.x, dz = z - game.playerZ;
-                const float distance = dx * dx + dz * dz;
-                if (free && distance < bestDistance) {
-                    bestDistance = distance;
-                    targetX = x;
-                    targetZ = z;
-                }
-            }
-        }
+        const Vec2 opening = openingAt(game, nearestY);
+        targetX = opening.x;
+        targetZ = opening.y;
     } else {
         float closest = 1e9f;
         for (const auto& enemy : game.enemies) {
@@ -85,6 +100,45 @@ Input pilot(const Game3D& game) {
     return {game.player.x > targetX + .07f, game.player.x < targetX - .07f,
             game.stage != Stage::Evasion, game.playerZ < targetZ - .07f,
             game.playerZ > targetZ + .07f, game.stage == Stage::Boss};
+}
+
+void checkEvasion(Game3D game) {
+    std::vector<Obstacle> allRocks;
+    int lastWallId = -1, openings = 0;
+    Vec2 previousGap;
+    float longestGapMove = 0;
+    game.invulnerable = 0;
+    const int lives = game.lives;
+    for (int tick = 0; tick < 60 * 16 && game.stage == Stage::Evasion && game.phase == Phase::Playing; ++tick) {
+        const int oldLives = game.lives;
+        game.update(pilot(game));
+        if (game.lives < oldLives) std::cerr << "Evasion damage at " << game.stageTime << " player " << game.player.x << ',' << game.playerZ << '\n';
+        if (game.obstacles.empty() || game.obstacles.back().id <= lastWallId) continue;
+        lastWallId = game.obstacles.back().id;
+        const float wallY = game.obstacles.back().pos.y;
+        const Vec2 gap = openingAt(game, wallY);
+        check(gap.x >= -Game3D::PlayerLimitX && gap.x <= Game3D::PlayerLimitX &&
+            gap.y >= Game3D::PlayerMinZ && gap.y <= Game3D::PlayerMaxZ,
+            "asteroid opening remains inside the controllable flight area");
+        if (openings > 0) longestGapMove = std::max(longestGapMove, std::hypot(gap.x - previousGap.x, gap.y - previousGap.y));
+        previousGap = gap;
+        ++openings;
+        for (const auto& obstacle : game.obstacles)
+            if (std::abs(obstacle.pos.y - wallY) < .1f) allRocks.push_back(obstacle);
+    }
+    check(openings >= 4 && longestGapMove < 6.f * 1.5f,
+        "successive openings leave travel time after the preceding wall clears");
+    check(game.stage == Stage::Combat && game.lives == lives,
+        "observed openings can be flown with ordinary controls without damage or invulnerability");
+    bool allThreatened = true;
+    for (int column = 0; column <= 154; ++column) for (int row = 0; row <= 78; ++row) {
+        const float x = -Game3D::PlayerLimitX + 2 * Game3D::PlayerLimitX * column / 154;
+        const float z = Game3D::PlayerMinZ + (Game3D::PlayerMaxZ - Game3D::PlayerMinZ) * row / 78;
+        allThreatened &= std::any_of(allRocks.begin(), allRocks.end(), [=](const Obstacle& obstacle) {
+            return std::hypot(x - obstacle.pos.x, z - obstacle.z) < obstacle.radius + Game3D::PlayerRadius;
+        });
+    }
+    check(allThreatened, "no permanent safe spot across 12245 sampled positions including flight boundaries");
 }
 }
 
@@ -198,10 +252,38 @@ int main() {
         game.bullets = {{1003, true, true, {0, 54}, {0, 54}, .001f}};
         game.update({});
         check(game.hitStreak == 0 && game.multiplier == 1 && game.score == 1100, "a missed shot resets the combo without removing earned points");
+
+        // Reproduce a successful spread shot whose unused pellets leave the scene.
+        for (int weapon : {1, 2}) {
+            game = fixture();
+            game.enemies.front().slot.y = game.enemies.front().pos.y = game.enemies.front().previous.y = 18.f;
+            Enemy distant = game.enemies.front();
+            distant.id = 1;
+            distant.slot = distant.pos = distant.previous = {6, 30};
+            distant.slotZ = distant.z = distant.previousZ = 4;
+            game.enemies.push_back(distant);
+            game.hitStreak = 2;
+            game.selectWeapon(weapon);
+            game.update({false, false, true});
+            ticks(game, 115);
+            check(game.kills == 1 && game.hitStreak == 3 && game.multiplier == 2,
+                "a successful double or triple salvo keeps its combo after the other pellets miss");
+            game.playerZ = game.previousPlayerZ = -3;
+            game.update({false, false, true});
+            ticks(game, 115);
+            check(game.hitStreak == 0 && game.multiplier == 1,
+                "an entirely missed later salvo still resets the combo");
+        }
         game = fixture();
         game.bullets = {{100, true, true, {0, 7}, {0, 7}, 0}};
         game.update({});
         check(game.kills == 0, "expired projectiles cannot hit");
+        game = fixture();
+        game.enemies.front().hp = game.enemies.front().maxHp = 2;
+        game.update({false, false, true});
+        ticks(game, 25);
+        check(game.hits == 1 && game.kills == 0 && game.enemies.front().hp == 1,
+            "a nonlethal armored hit is reported to audio independently of kills");
         game.reset();
         game.invulnerable = 0;
         Bullet expiring;
@@ -218,13 +300,26 @@ int main() {
         game.bullets = {{100, false, true, game.player, game.player}, {101, false, true, game.player, game.player}};
         game.update({});
         check(game.lives == 2 && game.respawn > 0, "simultaneous hostile hits cost one life");
+        check(game.damageFlash > 0, "damage starts visible feedback even in cockpit view");
+        game.pause();
+        const float pausedFlash = game.damageFlash;
+        ticks(game, 30);
+        check(game.damageFlash == pausedFlash, "pause freezes damage feedback with gameplay");
+        game.pause();
         ticks(game, 45);
         check(game.player.x == 0 && game.playerZ == 0 && game.invulnerable > 0, "respawn resets both axes with protection");
+        check(game.damageFlash == 0, "damage flash clears before protected flight resumes");
 
         game.reset();
         for (auto& enemy : game.enemies) enemy.alive = false;
         game.update({});
         check(game.stage == Stage::Evasion && game.stageDuration == 12.f, "first combat leads to a timed cockpit evasion");
+        checkEvasion(game);
+        Game3D camper = game;
+        camper.player.x = Game3D::PlayerLimitX;
+        camper.previousPlayer = camper.player;
+        while (camper.stage == Stage::Evasion && camper.phase == Phase::Playing) camper.update({});
+        check(camper.lives < 3, "remaining still at the right boundary no longer bypasses evasion");
         ticks(game, 65);
         check(game.obstacles.size() == 14, "asteroid wall leaves one clear three-dimensional opening");
         const float obstacleY = game.obstacles.front().pos.y;
@@ -242,32 +337,7 @@ int main() {
         for (auto& enemy : game.enemies) enemy.alive = false;
         game.update({});
         check(game.stage == Stage::Evasion && game.stageDuration == 15.f, "second evasion is a distinct timed phase");
-        Game3D corridor = game;
-        int lastWallId = -1, openings = 0;
-        float previousGapX = 0, previousGapZ = 0, longestGapMove = 0;
-        for (int tick = 0; tick < 60 * 15; ++tick) {
-            corridor.update(pilot(corridor));
-            if (corridor.obstacles.empty() || corridor.obstacles.back().id <= lastWallId) continue;
-            lastWallId = corridor.obstacles.back().id;
-            const float wallY = corridor.obstacles.back().pos.y;
-            for (float z : {-2.f, 1.3f, 4.6f}) {
-                for (float x : {-6.f, -3.f, 0.f, 3.f, 6.f}) {
-                    const bool occupied = std::any_of(corridor.obstacles.begin(), corridor.obstacles.end(), [=](const Obstacle& obstacle) {
-                        return std::abs(obstacle.pos.y - wallY) < .1f &&
-                            std::abs(obstacle.pos.x - x) < .1f && std::abs(obstacle.z - z) < .1f;
-                    });
-                    if (occupied) continue;
-                    if (openings > 0) {
-                        const float dx = x - previousGapX, dz = z - previousGapZ;
-                        longestGapMove = std::max(longestGapMove, std::sqrt(dx * dx + dz * dz));
-                    }
-                    previousGapX = x;
-                    previousGapZ = z;
-                    ++openings;
-                }
-            }
-        }
-        check(openings == 6 && longestGapMove < 6.f * 1.8f, "consecutive asteroid openings are reachable before the next wall");
+        checkEvasion(game);
         while (game.stage == Stage::Evasion) game.update(pilot(game));
         check(game.wave == 3 && game.remaining() == 18, "third wave has eighteen enemies");
         for (auto& enemy : game.enemies) enemy.alive = false;

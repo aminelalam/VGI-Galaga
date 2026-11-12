@@ -27,6 +27,10 @@ Perder el foco de la ventana pausa la simulación. La selección de nave y de ar
 
 El HUD ocupa los bordes: puntos, etapa, vidas, arma y estado del misil especial. Durante las esquivas informa del tiempo restante; ante el jefe muestra su salud. Los mensajes de llegada de una etapa son temporales.
 
+Al perder una vida aparece brevemente un borde rojo y el mensaje «REAPARECIENDO». Después, «ESCUDO» indica los segundos de protección. Q muestra los segundos que faltan para volver a lanzar el misil. La pausa explica los controles de la fase actual: durante la esquiva recuerda que las armas están desactivadas.
+
+Los grupos de asteroides cambian su posición horizontal y vertical de una pasada a otra. Cada grupo conserva un hueco amplio y los siguientes huecos se pueden alcanzar a la velocidad de la nave. Mantenerse siempre en el borde ya no permite evitar toda la fase. Los enemigos que van a realizar un picado emiten dos pulsos cálidos sobre su propia malla durante el aviso previo.
+
 ## Espacio 3D, cámara y disparos
 
 El mundo usa **X para izquierda/derecha, Y para avance y Z para altura**. El jugador controla X y Z de manera continua, con la velocidad diagonal normalizada. La Y del jugador permanece fija dentro del sistema relativo al vuelo. El desplazamiento de las estrellas, las entradas y picados de los enemigos y la aproximación de los obstáculos representan el avance. No hay un control manual de aceleración ni vuelo libre en seis direcciones.
@@ -36,6 +40,8 @@ Los objetos tienen geometría tridimensional y posiciones XYZ. La cámara de com
 El disparo simple avanza hacia +Y. El doble dispara dos proyectiles paralelos desde posiciones laterales distintas. El triple abre tres trayectorias en abanico. Para acertar con estas armas hay que alinear la nave con la altura y la posición lateral del enemigo.
 
 El misil hace cuatro puntos de daño y tiene una cadencia menor. Al salir puede orientarse hacia un enemigo que esté cerca de la línea de tiro; después conserva su dirección, sin perseguirlo durante el vuelo. Q usa ese mismo tipo de proyectil con una recarga independiente. Los enemigos apuntan hacia la posición del jugador al emitir su disparo.
+
+Tres bajas consecutivas activan puntos dobles y seis activan puntos triples. Recibir daño o fallar una descarga completa rompe la racha. El doble y el triple cuentan como una descarga: si algún proyectil acierta, los restantes pueden pasar de largo sin cancelar el combo. Se espera a que termine la descarga para decidir que ha fallado. Los impactos contra enemigos con armadura también emiten el evento de sonido de impacto aunque no los destruyan.
 
 Las colisiones se calculan con volúmenes esféricos en XYZ y el recorrido entre la posición anterior y la actual. El jefe usa un elipsoide: su anchura, profundidad y altura tienen límites distintos, para que una bala que pase por encima de la nave no cuente como impacto. El contacto se resuelve por el primer instante válido del recorrido. Las mallas visibles no son los volúmenes de colisión: el juego utiliza estas formas simplificadas para mantener el cálculo comprensible y económico. Los destellos, efectos y sonidos comunican impactos y daño.
 
@@ -95,9 +101,11 @@ Sin argumentos, el script realiza la misma operación que la segunda orden: comp
 
 Los ejecutables de desarrollo quedan en `Entrega_Amin_VGI/entornsGrafics/bin/x64/Release` o `Debug`. Las pruebas de lógica se ejecutan desde `bin/tests/<configuración>/Game3DTests.exe`. Los informes y capturas de verificación gráfica quedan en `bin/x64/<configuración>/verification`; los mensajes de arranque están junto al ejecutable en `startup.log` y `context.log`.
 
-Verificación del 11 de noviembre de 2026: **Release y Debug pasan 53 comprobaciones de lógica y la verificación gráfica**. El piloto de prueba completa las tres oleadas, ambas esquivas y el jefe en aproximadamente 75 segundos mediante entradas normales; el jugador inmóvil pierde. Se inspeccionaron las capturas del ejecutable, incluidas las esquinas del movimiento, la cabina y los modelos sólidos y en malla. La valoración manual de dificultad y de la mezcla de sonido sigue pendiente.
+Verificación del 12 de noviembre de 2026: **Release pasa 77 comprobaciones de lógica y la verificación gráfica**. El piloto completa las tres oleadas, ambas esquivas y el jefe en 75,62 segundos, con tres vidas y mediante entradas normales. Ambas esquivas se prueban también por separado sin invulnerabilidad ni pérdida de vidas. Un barrido de 12.245 posiciones por fase comprueba que ninguna de las posiciones muestreadas sea segura durante toda la fase. Se incluyen regresiones del combo, impactos no letales, daño y pausa, y capturas del aviso de picado, daño, protección, recarga, cabina, extremos y formato 4:3. Las 53 comprobaciones de Debug del 11 de noviembre corresponden a la revisión anterior; no se atribuyen a estos cambios.
 
-En este equipo, el render de referencia Release con Mesa LLVMpipe pasó de unos 49 a **22,9 ms por imagen a 1280×720** al introducir índices y detalle reducido para los enemigos lejanos. A 960×540 se midieron 17,8 ms. Son medias de 60 imágenes de la formación de referencia, no una garantía de FPS para todos los equipos o fases. El [informe conservado](Recursos_Galaga3D/previews/Mallas/Verificacion_Release.txt) identifica el renderizador y las comprobaciones.
+La inspección visual se ha realizado sobre capturas del ejecutable, sin superposiciones ni recortes de edición. No se ha realizado una partida manual en esta revisión: la herramienta de automatización de ventanas no pudo inicializarse. Las pruebas y el piloto demuestran los recorridos descritos, no la comprensión de un jugador nuevo ni el balance subjetivo del juego o de su sonido. El detalle de hallazgos y límites está al principio de [REVISION_JUEGO.txt](REVISION_JUEGO.txt).
+
+El 11 de noviembre se midieron 22,9 ms por imagen a 1280×720 y 17,8 ms a 960×540 con Mesa LLVMpipe, después de introducir índices y detalle reducido. El registro Release del 12 de noviembre mide 6,03 ms y 4,65 ms respectivamente. No se ha controlado la carga del equipo entre ambas ejecuciones, por lo que esa diferencia no se atribuye a las correcciones de diseño. Son medias de 60 imágenes de la formación de referencia, no una garantía de FPS para todos los equipos o fases. El [informe conservado](Recursos_Galaga3D/previews/Mallas/Verificacion_Release.txt) identifica el renderizador y las comprobaciones.
 
 El paquete incluye Mesa LLVMpipe local para equipos cuyo controlador solo expone OpenGL 1.1. En esa configuración el rasterizado se realiza en CPU. Conserva `opengl32.dll` y los recursos del paquete. Su origen, hashes y licencias están en `Entrega_Amin_VGI/entornsGrafics/third_party/mesa`.
 
