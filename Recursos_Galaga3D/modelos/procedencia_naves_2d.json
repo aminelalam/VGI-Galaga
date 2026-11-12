@@ -1,0 +1,598 @@
+{
+  "version": 1,
+  "estado": "PASS",
+  "fuente_2d_original": {
+    "archivo": "Galaga2D_Entidades.blend",
+    "sha256": "638f85533765208735bd465db106a1945979fd128ac3b299c2c3fce050306513",
+    "sha256_modelos_json": "752af1a7fc803d95b3d89d343a197e47c4f76870dfef291ae14b666efffe40f6",
+    "sprites": [
+      {
+        "id": "nave_flecha",
+        "archivo": "sprites/naves/nave_flecha.png",
+        "tamano": [
+          128,
+          128
+        ],
+        "pivot": [
+          64.0,
+          64.0
+        ],
+        "familia": "naves",
+        "pixeles_por_unidad": 48,
+        "orientacion": "arriba",
+        "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+        "modelo": "nave_flecha",
+        "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+        "bbox_alpha": [
+          23,
+          23,
+          106,
+          105
+        ],
+        "sha256": "84f1b1b833e0295f0c888cdeb907659166d29eca4d0877569377cea55c274866"
+      },
+      {
+        "id": "nave_delta",
+        "archivo": "sprites/naves/nave_delta.png",
+        "tamano": [
+          128,
+          128
+        ],
+        "pivot": [
+          64.0,
+          64.0
+        ],
+        "familia": "naves",
+        "pixeles_por_unidad": 48,
+        "orientacion": "arriba",
+        "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+        "modelo": "nave_delta",
+        "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+        "bbox_alpha": [
+          23,
+          23,
+          105,
+          105
+        ],
+        "sha256": "8a3ab270b64b0a79220f46f34f9c3c2c0d9770eeda9d842f32e4523d454e227b"
+      },
+      {
+        "id": "nave_doble_motor",
+        "archivo": "sprites/naves/nave_doble_motor.png",
+        "tamano": [
+          128,
+          128
+        ],
+        "pivot": [
+          64.0,
+          64.0
+        ],
+        "familia": "naves",
+        "pixeles_por_unidad": 48,
+        "orientacion": "arriba",
+        "fuente": "../Recursos_Galaga3D/scripts/retro_modelos.py",
+        "modelo": "nave_doble_motor",
+        "fuente_sha256": "7509744aaeb7eaf1320ec4526dac3fbebbea0fb344dfbe360fec3259aac809b5",
+        "bbox_alpha": [
+          26,
+          26,
+          102,
+          102
+        ],
+        "sha256": "15542477db56207e02afcba329744fd4f5e1ef49fadaff4f14b4be3ad6ed9a9a"
+      }
+    ]
+  },
+  "fuente_blender_dedicada": {
+    "archivo": "blender\\Naves_2D_fuente.blend",
+    "sha256": "037aab3e8791f31dc091bb5afbeb31ebf39f36af4f3c35f35f2c27d981bfb40e"
+  },
+  "script": {
+    "archivo": "scripts\\exportar_naves_2d.py",
+    "sha256": "14c51859e9db044fc068d4f77771e748fdd30c5e7b7df72f077d9f2ea8cc8df8"
+  },
+  "base_juego": "cc3ced6",
+  "mapeo": "OBJ = escala uniforme 0.75 * root.matrix_world * parte.local * vertice",
+  "color": "La paleta lineal de Blender se convierte a sRGB para el shader antiguo sin conversion gamma; no se altera la fuente.",
+  "alcance": "Solo las tres naves; enemigos, jefe, escenario y reglas del juego anterior se conservan.",
+  "pruebas": [
+    "Coincidencia con hashes de sprites originales",
+    "Solo tres escenas de naves en copia Blender",
+    "Coincidencia de coordenadas de la fuente a escala uniforme",
+    "Pivot XY centrado igual que sprite",
+    "Piezas cerradas y volumen firmado positivo",
+    "Triangulos sin degeneraciones y normales exteriores",
+    "Profundidad real en XYZ y materiales originales"
+  ],
+  "naves": [
+    {
+      "archivo": "nave_flecha.obj",
+      "sha256_obj": "5cad5d629b719e177820abf302dbd2e64a91a055160e1a50f37de4755c41c8f8",
+      "sha256_mtl": "f2b32c2ec3970ca56f5e0300f47581e44eee33d91a8d3d6991f49fb5d613a8ad",
+      "vertices": 58,
+      "triangulos": 92,
+      "piezas_cerradas": 6,
+      "min": [
+        -0.637499988079071,
+        -0.6299999952316284,
+        -0.1274999976158142
+      ],
+      "max": [
+        0.637499988079071,
+        0.6299998760223389,
+        0.2775000035762787
+      ],
+      "escala_uniforme": 0.75,
+      "max_error_coordenada_fuente_escalada": 6.664652624284791e-08,
+      "orientacion": "+Y proa, +Z altura",
+      "partes": [
+        {
+          "pieza": "nave_flecha__ala_derecha",
+          "triangulos": 14,
+          "volumen_firmado": 0.03029400660307147,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_flecha__ala_izquierda",
+          "triangulos": 14,
+          "volumen_firmado": 0.030294006418747202,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_flecha__cabina",
+          "triangulos": 18,
+          "volumen_firmado": 0.005352187600995725,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_flecha__fuselaje",
+          "triangulos": 18,
+          "volumen_firmado": 0.059907369439315517,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_flecha__motor_derecho",
+          "triangulos": 14,
+          "volumen_firmado": 0.003924985228271301,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_flecha__motor_izquierdo",
+          "triangulos": 14,
+          "volumen_firmado": 0.003924985643000885,
+          "aristas_compartidas_dos_veces": true
+        }
+      ],
+      "materiales": [
+        {
+          "nombre": "Retro_blue",
+          "color_lineal_blender": [
+            0.04373503103852272,
+            0.20507873594760895,
+            0.7230551242828369
+          ],
+          "color_srgb_mtl": [
+            0.23137255388019295,
+            0.49019607794098646,
+            0.8666666642027389
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_cockpit",
+          "color_lineal_blender": [
+            0.2788942754268646,
+            0.6307571530342102,
+            0.7230551242828369
+          ],
+          "color_srgb_mtl": [
+            0.56470589341675,
+            0.8156862841081017,
+            0.8666666642027389
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_engine",
+          "color_lineal_blender": [
+            0.8148465752601624,
+            0.2581828534603119,
+            0.04817182570695877
+          ],
+          "color_srgb_mtl": [
+            0.9137254917039592,
+            0.5450980397374134,
+            0.2431372587187131
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_white",
+          "color_lineal_blender": [
+            0.8962693810462952,
+            0.8549926280975342,
+            0.7083757519721985
+          ],
+          "color_srgb_mtl": [
+            0.9529411894371965,
+            0.9333333429534352,
+            0.8588235144047313
+          ],
+          "roughness_blender": 0.4000000059604645
+        }
+      ],
+      "validacion_obj_serializado": [
+        {
+          "pieza": "nave_flecha__ala_derecha",
+          "volumen_firmado_obj": 0.030294001509901133,
+          "max_error_normal_obj": 1.7120130796843852e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_flecha__ala_izquierda",
+          "volumen_firmado_obj": 0.03029400258916818,
+          "max_error_normal_obj": 2.9950963321688443e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_flecha__cabina",
+          "volumen_firmado_obj": 0.005352187765917431,
+          "max_error_normal_obj": 1.228781230931777e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_flecha__fuselaje",
+          "volumen_firmado_obj": 0.05990736708918121,
+          "max_error_normal_obj": 2.1750719214968382e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_flecha__motor_derecho",
+          "volumen_firmado_obj": 0.003924983346223598,
+          "max_error_normal_obj": 1.4901161193847656e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_flecha__motor_izquierdo",
+          "volumen_firmado_obj": 0.0039249821699437835,
+          "max_error_normal_obj": 1.4901161193847656e-07,
+          "estado": "PASS"
+        }
+      ]
+    },
+    {
+      "archivo": "nave_delta.obj",
+      "sha256_obj": "2382c18b7ec10f3b90c46d408e9d64fc9acd254ea9e43d2801c6b3179a6ebb13",
+      "sha256_mtl": "d4fba72e6daab86cbb85b536238464ed6908459b3efe38a41477ab2de4678322",
+      "vertices": 61,
+      "triangulos": 94,
+      "piezas_cerradas": 7,
+      "min": [
+        -0.637499988079071,
+        -0.6299999952316284,
+        -0.15000000596046448
+      ],
+      "max": [
+        0.637499988079071,
+        0.6299999952316284,
+        0.29249998927116394
+      ],
+      "escala_uniforme": 0.75,
+      "max_error_coordenada_fuente_escalada": 5.963374150388733e-08,
+      "orientacion": "+Y proa, +Z altura",
+      "partes": [
+        {
+          "pieza": "nave_delta__ala_delta",
+          "triangulos": 10,
+          "volumen_firmado": 0.14232587798809013,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_delta__cabina",
+          "triangulos": 18,
+          "volumen_firmado": 0.005630131985526532,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_delta__fuselaje",
+          "triangulos": 18,
+          "volumen_firmado": 0.06048478064864563,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_delta__motor_derecho",
+          "triangulos": 14,
+          "volumen_firmado": 0.002324531533910582,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_delta__motor_izquierdo",
+          "triangulos": 14,
+          "volumen_firmado": 0.0023245309518339728,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_delta__panel_derecho",
+          "triangulos": 10,
+          "volumen_firmado": 0.0016829997208939556,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_delta__panel_izquierdo",
+          "triangulos": 10,
+          "volumen_firmado": 0.0016830003272237566,
+          "aristas_compartidas_dos_veces": true
+        }
+      ],
+      "materiales": [
+        {
+          "nombre": "Retro_cockpit",
+          "color_lineal_blender": [
+            0.2788942754268646,
+            0.6307571530342102,
+            0.7230551242828369
+          ],
+          "color_srgb_mtl": [
+            0.56470589341675,
+            0.8156862841081017,
+            0.8666666642027389
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_engine",
+          "color_lineal_blender": [
+            0.8148465752601624,
+            0.2581828534603119,
+            0.04817182570695877
+          ],
+          "color_srgb_mtl": [
+            0.9137254917039592,
+            0.5450980397374134,
+            0.2431372587187131
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_red",
+          "color_lineal_blender": [
+            0.6938717365264893,
+            0.07227185368537903,
+            0.06480326503515244
+          ],
+          "color_srgb_mtl": [
+            0.8509803786835168,
+            0.29803922179860404,
+            0.2823529375806644
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_white",
+          "color_lineal_blender": [
+            0.8962693810462952,
+            0.8549926280975342,
+            0.7083757519721985
+          ],
+          "color_srgb_mtl": [
+            0.9529411894371965,
+            0.9333333429534352,
+            0.8588235144047313
+          ],
+          "roughness_blender": 0.4000000059604645
+        }
+      ],
+      "validacion_obj_serializado": [
+        {
+          "pieza": "nave_delta__ala_delta",
+          "volumen_firmado_obj": 0.14232587317625683,
+          "max_error_normal_obj": 2.1490760299348766e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_delta__cabina",
+          "volumen_firmado_obj": 0.005630132101941853,
+          "max_error_normal_obj": 1.2334311851220805e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_delta__fuselaje",
+          "volumen_firmado_obj": 0.06048477814571621,
+          "max_error_normal_obj": 1.1920928955078125e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_delta__motor_derecho",
+          "volumen_firmado_obj": 0.002324531330183769,
+          "max_error_normal_obj": 2.086162567138672e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_delta__motor_izquierdo",
+          "volumen_firmado_obj": 0.002324530476471409,
+          "max_error_normal_obj": 2.086162567138672e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_delta__panel_derecho",
+          "volumen_firmado_obj": 0.0016829999343220454,
+          "max_error_normal_obj": 1.3978528260658472e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_delta__panel_izquierdo",
+          "volumen_firmado_obj": 0.0016830003272237566,
+          "max_error_normal_obj": 9.424321830774485e-08,
+          "estado": "PASS"
+        }
+      ]
+    },
+    {
+      "archivo": "nave_doble_motor.obj",
+      "sha256_obj": "63d0992c54c63028eb9a54beba0e5fa80ba45d9c182e24f31bd825115ff99104",
+      "sha256_mtl": "9f3569538fb5b6a7f8ea94abb662b48364d8efa4f31afbc666c564521d4f0c34",
+      "vertices": 71,
+      "triangulos": 114,
+      "piezas_cerradas": 7,
+      "min": [
+        -0.5699999928474426,
+        -0.5737500190734863,
+        -0.17249999940395355
+      ],
+      "max": [
+        0.5699999928474426,
+        0.5737500190734863,
+        0.29249998927116394
+      ],
+      "escala_uniforme": 0.75,
+      "max_error_coordenada_fuente_escalada": 5.960464477539063e-08,
+      "orientacion": "+Y proa, +Z altura",
+      "partes": [
+        {
+          "pieza": "nave_doble_motor__barquilla_derecha",
+          "triangulos": 22,
+          "volumen_firmado": 0.06968024675734343,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_doble_motor__barquilla_izquierda",
+          "triangulos": 22,
+          "volumen_firmado": 0.0696802419455101,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_doble_motor__cabina",
+          "triangulos": 14,
+          "volumen_firmado": 0.006945750483282609,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_doble_motor__fuselaje",
+          "triangulos": 14,
+          "volumen_firmado": 0.09448256871352592,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_doble_motor__motor_derecho",
+          "triangulos": 14,
+          "volumen_firmado": 0.003514219638115418,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_doble_motor__motor_izquierdo",
+          "triangulos": 14,
+          "volumen_firmado": 0.0035142205694379904,
+          "aristas_compartidas_dos_veces": true
+        },
+        {
+          "pieza": "nave_doble_motor__travesano",
+          "triangulos": 14,
+          "volumen_firmado": 0.029987996938871223,
+          "aristas_compartidas_dos_veces": true
+        }
+      ],
+      "materiales": [
+        {
+          "nombre": "Retro_cockpit",
+          "color_lineal_blender": [
+            0.2788942754268646,
+            0.6307571530342102,
+            0.7230551242828369
+          ],
+          "color_srgb_mtl": [
+            0.56470589341675,
+            0.8156862841081017,
+            0.8666666642027389
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_engine",
+          "color_lineal_blender": [
+            0.8148465752601624,
+            0.2581828534603119,
+            0.04817182570695877
+          ],
+          "color_srgb_mtl": [
+            0.9137254917039592,
+            0.5450980397374134,
+            0.2431372587187131
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_green",
+          "color_lineal_blender": [
+            0.12477181851863861,
+            0.42869049310684204,
+            0.16202937066555023
+          ],
+          "color_srgb_mtl": [
+            0.38823529553517194,
+            0.6862745072771398,
+            0.4392156799536093
+          ],
+          "roughness_blender": 0.4000000059604645
+        },
+        {
+          "nombre": "Retro_metal",
+          "color_lineal_blender": [
+            0.17464740574359894,
+            0.20863686501979828,
+            0.25015828013420105
+          ],
+          "color_srgb_mtl": [
+            0.45490196332438965,
+            0.49411764143805453,
+            0.5372548974272265
+          ],
+          "roughness_blender": 0.4000000059604645
+        }
+      ],
+      "validacion_obj_serializado": [
+        {
+          "pieza": "nave_doble_motor__barquilla_derecha",
+          "volumen_firmado_obj": 0.06968024939609072,
+          "max_error_normal_obj": 2.5288109106536417e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_doble_motor__barquilla_izquierda",
+          "volumen_firmado_obj": 0.06968024687375875,
+          "max_error_normal_obj": 2.5288109106536417e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_doble_motor__cabina",
+          "volumen_firmado_obj": 0.006945750235293721,
+          "max_error_normal_obj": 8.429369702178807e-08,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_doble_motor__fuselaje",
+          "volumen_firmado_obj": 0.09448256312559049,
+          "max_error_normal_obj": 1.1920928955078125e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_doble_motor__motor_derecho",
+          "volumen_firmado_obj": 0.003514219812738399,
+          "max_error_normal_obj": 2.5288109106536417e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_doble_motor__motor_izquierdo",
+          "volumen_firmado_obj": 0.0035142192306617903,
+          "max_error_normal_obj": 2.5288109106536417e-07,
+          "estado": "PASS"
+        },
+        {
+          "pieza": "nave_doble_motor__travesano",
+          "volumen_firmado_obj": 0.029987999470904466,
+          "max_error_normal_obj": 5.960464477539063e-08,
+          "estado": "PASS"
+        }
+      ]
+    }
+  ]
+}

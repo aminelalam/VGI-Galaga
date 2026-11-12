@@ -1,122 +1,52 @@
-# Galaga 3D · VGI
+# Galaga 3D anterior con nuestras naves
 
-Juego nativo en C++/MFC/OpenGL, integrado en la estructura de EntornVGI. La campaña encadena **tres combates, dos tramos de esquiva desde la cabina y un jefe final**. Puedes elegir entre tres naves y moverte a izquierda, derecha, arriba y abajo. Los enemigos entran en formación a diferentes distancias y alturas, disparan y realizan picados en el espacio 3D.
+Adaptación del Galaga3D anterior de [Releases](https://github.com/aminelalam/VGI-Galaga/releases/tag/comparativa-2026-11-12), basado en el commit cc3ced65878d21a25af445dcc3eb670e831aa792. Reutiliza las mallas exactas de Flecha, Delta y Doble Motor del juego 2D, con sus siluetas y colores originales y una escala uniforme para encajarlas en la escena 3D.
 
-Las naves, enemigos y escenario son [mallas OBJ/MTL cargadas por el juego](Recursos_Galaga3D/modelos/README.md), con vértices, triángulos y normales. Se pueden editar en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend). La perspectiva, las ocultaciones y la iluminación muestran su volumen; **F2** permite inspeccionar los triángulos durante el juego.
+## Descargar y jugar
 
-Esta implementación está en la rama **`codex/mallas-3d-escenario`**. Ejecuta **`build-demo.cmd`** desde su copia local para compilar, lanzar las comprobaciones y preparar **`dist/Galaga3D/Galaga3D.exe`**. Conserva toda la carpeta `dist/Galaga3D` al distribuir el juego. Incluye Mesa local para ejecutar OpenGL cuando el controlador del equipo no ofrece la versión necesaria.
+Descarga el [paquete Windows](https://github.com/aminelalam/VGI-Galaga/raw/refs/heads/codex/galaga3d-anterior-naves/Version_anterior_naves/Galaga3D-Anterior-Naves-Windows.zip), extrae toda la carpeta y abre INICIAR.cmd o Galaga3D.exe. No hace falta instalar Visual Studio para jugar.
 
-**Controles:** en el menú, 1/2/3 eligen nave y Enter empieza. En partida, WASD o flechas mueven en horizontal y altura; Espacio dispara; 1/2/3/4 eligen disparo simple, doble paralelo, triple o misil; Q lanza el misil especial con recarga. P pausa, M activa o silencia el audio y F2 alterna la vista de malla. R reinicia tras el resultado; Esc pausa o regresa al menú desde pausa o resultados.
+En la copia de código, INICIAR.cmd abre el juego después de ejecutar build-demo.cmd. El paquete se prepara en dist/Galaga3D-Anterior-Naves.
 
-La cámara sigue a la nave desde detrás durante los combates y pasa a la cabina en las esquivas. El avance se representa en un sistema de coordenadas relativo al vuelo: controlas **X** y **Z**, mientras las trayectorias y el desplazamiento del entorno expresan el avance en **Y**. El HUD discreto informa de puntos, etapa, vidas, arma y recarga, con una barra de salud para el jefe. La música y los efectos son [audio original generado matemáticamente](Recursos_Galaga3D/audio/README.md).
+## Las naves del 2D en el 3D
 
-[Instrucciones, arquitectura y verificación](DEMO_3D.md) · [Solución Visual Studio 2022](Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln)
+Se han sustituido los tres OBJ/MTL de las naves por los sólidos que ya se usaban para renderizar los sprites 2D. Se conserva su geometría, el centrado, los colores y la orientación: proa hacia +Y y grosor en Z. La escala es 0,75 para mantener un tamaño compatible con el corredor y las colisiones del juego anterior.
 
-La revisión de diseño del 12 de noviembre corrige los combos del disparo doble/triple y las posiciones que permitían superar la esquiva sin moverse. Añade avisos de daño y protección, segundos de recarga y pulsos de preparación de ataque sobre los enemigos. Release pasa 77 comprobaciones de reglas y la verificación gráfica; los hallazgos, pruebas y límites están en [REVISION_JUEGO.txt](REVISION_JUEGO.txt).
+| Nave | Geometría | Rasgos conservados |
+| --- | --- | --- |
+| Flecha | 92 triángulos, 6 piezas | Cuerpo azul y alas blancas |
+| Delta | 94 triángulos, 7 piezas | Silueta triangular roja |
+| Doble Motor | 114 triángulos, 7 piezas | Cuerpo verde y dos barquillas |
 
-![Combate en tercera persona, captura del ejecutable](Recursos_Galaga3D/previews/Mallas/Partida.png)
+La fuente editable está en Recursos_Galaga3D/blender/Naves_2D_fuente.blend. El script Recursos_Galaga3D/scripts/exportar_naves_2d.py permite regenerar los OBJ/MTL desde ese archivo. El manifiesto Recursos_Galaga3D/modelos/procedencia_naves_2d.json registra hashes, dimensiones y comprobaciones de geometría. Se verifican las piezas cerradas, las normales exteriores y la coincidencia con los vértices de la fuente.
 
-[Vista desde la cabina](Recursos_Galaga3D/previews/Mallas/Cabina.png) · [Modelos sólidos](Recursos_Galaga3D/previews/Mallas/Modelos.png) · [Triángulos de las mallas](Recursos_Galaga3D/previews/Mallas/Mallas.png) · [Informe gráfico Release](Recursos_Galaga3D/previews/Mallas/Verificacion_Release.txt)
+El render mantiene VAO/VBO/EBO, materiales, iluminación, perspectiva y profundidad de la versión anterior. Las naves se cargan una vez y se reutilizan mediante sus matrices de modelo.
 
-[Aviso de picado](Recursos_Galaga3D/previews/Mallas/Aviso_picado.png) · [Daño en cabina](Recursos_Galaga3D/previews/Mallas/Dano_cabina.png) · [Paso entre asteroides](Recursos_Galaga3D/previews/Mallas/Paso_asteroides.png)
+## Qué conserva el juego anterior
 
-[Guía del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Documenta la revisión del 1 de noviembre de 2026; sus listados y alcance son anteriores a esta campaña. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt). Las instrucciones de la implementación actual están en [DEMO_3D.md](DEMO_3D.md).
+Movimiento directo en X y Z, tres combates, dos tramos de esquiva con cámara de cabina y un jefe final. Hay armas simple, doble, triple y misil, vidas, protección temporal, puntuación y audio. Las tres naves comparten reglas. Los enemigos, el escenario y las reglas de campaña proceden de la versión anterior.
 
-Los modelos se cargan una vez en VBO/EBO/VAO. Los enemigos lejanos usan una variante de menor detalle y al acercarse recuperan la malla completa. Cada instancia envía su matriz `model` y la matriz normal al shader; `view` y `projection` definen la cámara. El atributo 4 transporta los parámetros de superficie derivados de `Ks` y `Ns` del MTL. La iluminación Phong sigue los términos de luz y material de GL-6. Los detalles y su relación con GL-3 y GL-4 se explican en [DEMO_3D.md](DEMO_3D.md).
-
-Los PDF, actas y hojas de cálculo originales se conservan como documentación de referencia. Algunos describen propuestas anteriores, incluidos los planos A/B. La campaña actual usa movimiento continuo en horizontal y altura. El MVP privado aparte queda fuera de esta entrega y de su publicación.
-
-## 📊 Un Excel para mantener el proyecto
-
-El libro integral conecta **52 requisitos, 60 casos de prueba y 40 tareas**.
-
-| Hoja | Para qué sirve |
+| Acción | Tecla |
 | --- | --- |
-| 🏠 Inicio | Fechas, semana de consulta, avance, alertas y gráfico de carga. |
-| ✅ Tareas | Responsables, apoyos, horas, dependencias, entregables y evidencias. |
-| 🎯 Requisitos | Alcance, criterios verificables y aceptación de cada entrega. |
-| 🧪 Pruebas | Preparación, pasos, resultado esperado, build y evidencia. |
-| 🗓️ Calendario | Vista automática de tareas por semana. |
-| 👥 Equipo | Disponibilidad, carga pendiente y sobrecargas. |
-| 💬 Acuerdos | Decisiones, riesgos y cambios de criterio. |
-| 📖 Guia | Instrucciones de uso y mantenimiento. |
+| Elegir nave y empezar | 1/2/3 y Enter |
+| Moverse y subir o bajar | WASD o flechas |
+| Disparar | Espacio |
+| Cambiar arma | 1/2/3/4 durante la partida |
+| Misil especial | Q |
+| Pausar o continuar | P |
+| Pausar o volver al menú | Esc |
+| Activar o silenciar audio | M |
+| Ver triángulos de las mallas | F2 |
+| Reiniciar tras un resultado | R |
 
-**Rutina de cada reunión:** actualizar fecha y semana → revisar las tareas de cada persona → resolver bloqueos y carga → registrar pruebas y acuerdos.
+## Capturas y comprobaciones
 
-- 🟨 **Ámbar:** entradas editables.
-- 🟦 **Azul claro:** cálculos que se deben conservar.
-- 📎 Una tarea `Hecha` necesita **evidencia, revisor y fecha** para contar como aceptada.
-- 🧪 Un requisito necesita tarea aceptada, pruebas válidas y aceptación registrada.
-- 🔢 Conservar los ids al ordenar o filtrar. Añadir registros dentro de las tablas.
-- 🤝 Mantener **una única copia compartida** del Excel.
+La galería Capturas/README.md muestra la selección de las tres naves, combate, armas, picados, daño, protección, esquiva, jefe, pausa y resultados. Cada imagen indica si corresponde a una partida recorrida con controles normales o a un estado preparado para inspeccionar un efecto concreto.
 
-La planificación propone **209 horas P0/P1 en 13 semanas**, con **8 h por persona y semana** por confirmar. Activar P2 añade 11 horas. Las fechas reales, disponibilidad y alcance se acuerdan con el equipo y el enunciado del curso.
+El verificador usa el render OpenGL real. También recorre la campaña mediante entradas normales, captura cada etapa y comprueba victoria y derrota sin modificar vidas, enemigos ni resultados. El informe completo acompaña a las capturas.
 
-📖 [Guía completa de uso](Entrega_Amin_VGI/Gestion_y_diseno/LEEME.md) · 🔍 [Informe de revisión](Entrega_Amin_VGI/Gestion_y_diseno/Revision_de_la_entrega.md)
+## Compilar
 
-## 👥 Equipo y coordinación
+Windows x64 y Visual Studio 2022 o 2026 con C++ de escritorio, MFC y Windows SDK. Ejecuta build-demo.cmd para compilar, comprobar y preparar el paquete. El script selecciona el toolset instalado y usa la GPU del equipo. La opción -SoftwareRenderer prepara Mesa para equipos sin OpenGL 3.3; la primera descarga necesita conexión.
 
-| Persona | Área que coordina |
-| --- | --- |
-| Pablo | 🔎 Estado del arte |
-| Amin | 🧠 Diseño de aplicación |
-| Ferran | 🖥️ Interfaz |
-| Iker | 🛠️ Implementación |
-| Uri / Oriol | 🧪 Pruebas |
-| David | 📝 Memoria y presentación |
-
-La aportación principal de Amin consiste en concretar **reglas, estados, entidades, rutas, oleadas, colisiones y profundidad**, y preparar sus criterios de verificación. El acta recoge también su apoyo a las otras áreas.
-
-## 🖥️ Abrir los materiales en tu ordenador
-
-1. En GitHub, pulsa **Code → Download ZIP**, o clona el repositorio:
-
-   ```bash
-   git clone https://github.com/aminelalam/VGI-Galaga.git
-   ```
-
-2. Extrae la carpeta completa si descargaste el ZIP.
-3. Abre `Entrega_Amin_VGI/INICIO.html` en tu navegador.
-4. Abre los PDF para leer y los archivos Word/Excel para editar.
-
-La portada, diagramas, maqueta y tráiler descargado funcionan localmente. Los enlaces a fuentes externas requieren internet. El HTML se debe abrir desde la copia descargada; en GitHub se muestra su código.
-
-## 📁 Organización
-
-Los modelos editables de Blender, OBJ/MTL, audio, sprites PNG/SVG y atlas están en [Recursos_Galaga3D](Recursos_Galaga3D/README.md). Los materiales gráficos de propuestas anteriores se conservan junto a los recursos del juego. La implementación C++ de la campaña está en `Entrega_Amin_VGI/entornsGrafics/EntornVGI`.
-
-```text
-Entrega_Amin_VGI/
-├── Resumen_Amin_VGI.pdf              # Tu parte en una página
-├── INICIO.html                      # Portada, maqueta y recursos
-├── Dossier_Amin_Galaga3D.pdf          # Dossier de consulta
-├── Dossier_editable.md               # Versión de texto editable
-├── Guion_reunion.md
-├── Tareas_para_el_grupo.md
-├── CREDITOS.md
-├── Gestion_y_diseno/
-│   ├── 01_Gestion_integral_Galaga3D.xlsx
-│   ├── 03_Diseno_detallado_Amin.xlsx
-│   ├── Diseno_tecnico_Galaga3D_Amin.docx
-│   ├── Diseno_tecnico_Galaga3D_Amin.pdf
-│   ├── LEEME.md
-│   ├── Revision_de_la_entrega.md
-│   └── figuras/
-└── recursos/                        # Acta, imágenes, diagramas y vídeo
-```
-
-## 🧭 Alcance y comprobación
-
-La implementación incluye la secuencia de campaña, cuatro armas, misil especial, vuelo en X/Z, combates en tercera persona, esquivas desde cabina y audio. Las mallas y los shaders se integran en la plantilla de VGI. Las skins, las cajas de recompensas y una economía de partida siguen como propuestas de las actas.
-
-`build-demo.cmd` ejecuta las pruebas de lógica y la verificación gráfica antes de preparar el paquete. En la revisión del 11 de noviembre de 2026, Release y Debug pasan 53 comprobaciones de lógica, incluida una campaña completa con entradas normales, y la verificación del pipeline OpenGL. Las capturas se han inspeccionado; la dificultad y la mezcla de sonido quedan pendientes de una sesión manual.
-
-## 🎨 Fuentes y créditos
-
-El referente es **Galaga**, de Bandai Namco. Los valores concretos de balance y las ampliaciones son propuestas de diseño del proyecto. Las imágenes y el tráiler externos conservan sus atribuciones en [CREDITOS.md](Entrega_Amin_VGI/CREDITOS.md). Las fuentes técnicas se recogen en el Word/PDF.
-
-📋 [Acta original del grupo](Entrega_Amin_VGI/recursos/acta_original.pdf)
-
----
-
-**🚀 Un diseño que podamos explicar, implementar y comprobar juntos.**
+La solución es Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln. Game3D mantiene la simulación del commit anterior; Mesh3D carga los OBJ/MTL y Renderer3D los dibuja. La adaptación de recursos y la verificación se han preparado con asistencia de Codex.

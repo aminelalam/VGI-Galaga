@@ -1,0 +1,111 @@
+OpenGL: 4.6.0 Core Profile Context 25.20.32.06.251214
+Renderer: AMD Radeon(TM) 840M Graphics
+PASS 3D GPU meshes: 15 static uploads, 25204 triangles; static VBO/EBO, VAO attributes 0/1/2/3/4; model/view/projection uniforms active
+PASS GL-6 shader term ambient
+PASS GL-6 shader term Lambert front
+PASS GL-6 shader term unlit back
+PASS GL-6 shader term Phong reflection
+PASS GL-6 shader term emissive
+PASS GL-6 shader term additive terms
+PASS 01-menu 1280x720; 35296 depth pixels; origin=fixture: prepared render and control checks
+PASS 02-delta-selected 1280x720; 35309 depth pixels; origin=fixture: prepared render and control checks
+PASS 02-doble-motor-selected 1280x720; 35916 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 03-combat 1280x720; 155814 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 04-combat-4x3 1024x768; 99720 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 03-combat-flecha 1280x720; 154472 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 03-combat-delta 1280x720; 155262 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=-7.68, Z=0; smallest stationary target 42.1243px; formation width 323.983px
+PASS 04-left-limit 1280x720; 163719 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=7.68, Z=0; smallest stationary target 42.1243px; formation width 309.571px
+PASS 04-right-limit 1280x720; 155671 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=7.68, Z=4.6; smallest stationary target 41.8383px; formation width 306.734px
+PASS 04-upper-right-limit 1280x720; 167782 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=-7.68, Z=-3.2; smallest stationary target 42.3256px; formation width 326.171px
+PASS 04-lower-left-limit 1280x720; 150000 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 05-depth-levels 1280x720; 155814 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1243px; formation width 295.505px
+PASS 05-static-repeat 1280x720; 155814 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=-1.22358, Z=-1.60144; smallest stationary target 42.2248px; formation width 297.733px
+PASS 11-aligned-shot 1280x720; 146654 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=-1.22358, Z=-1.60144; smallest stationary target 42.3407px; formation width 299.915px
+PASS 12-shot-in-flight 1280x720; 146713 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=-1.22358, Z=-1.60144; smallest stationary target 42.2645px; formation width 302.248px
+PASS 13-confirmed-hit 1280x720; 146083 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-1 1280x720; 155908 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-2 1280x720; 155889 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-3 1280x720; 155945 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1956px; formation width 296.714px
+PASS 15-weapon-4 1280x720; 156093 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 41.5551px; formation width 327.592px
+PASS 16-enemy-dive 1280x720; 156250 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 41.9385px; formation width 307.282px
+PASS 19-warning-start 1280x720; 155936 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 41.8798px; formation width 309.633px
+PASS 20-warning-pulse 1280x720; 155950 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1298px; formation width 295.585px
+PASS 21-damage-combat 1280x720; 150384 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1193px; formation width 301.176px
+PASS 22-protected-flight 1280x720; 155909 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 42.1193px; formation width 301.176px
+PASS 22-protected-flight-4x3 1024x768; 99794 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 17-cockpit-evasion 1280x720; 291784 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 17-cockpit-4x3 1024x768; 186670 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 23-damage-cockpit 1280x720; 292192 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 24-protected-cockpit 1024x768; 211509 depth pixels; origin=fixture: prepared render and control checks
+PASS 25-cockpit-pause 1280x720; 291784 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=7.68, Z=4.6; cockpit or no stationary targets (image inspection required)
+PASS 27-cockpit-upper-right 1280x720; 302068 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=-7.68, Z=-3.2; cockpit or no stationary targets (image inspection required)
+PASS 27-cockpit-lower-left 1280x720; 296233 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=-3.95, Z=-3.175; cockpit or no stationary targets (image inspection required)
+PASS 28-cockpit-opening-close 1280x720; 441988 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 41.8845px; formation width 309.436px
+PASS 26-special-recharge 1280x720; 155416 depth pixels; origin=fixture: prepared render and control checks
+PASS framing at player X=0, Z=0; smallest stationary target 156.623px; formation width 156.623px
+PASS 18-boss 1280x720; 153298 depth pixels; origin=fixture: prepared render and control checks
+PASS 06-pause 1280x720; 155814 depth pixels; origin=fixture: prepared render and control checks
+PASS 07-victory-fixture 1280x720; 147271 depth pixels; origin=fixture: prepared render and control checks
+PASS 08-defeat-fixture 1280x720; 147271 depth pixels; origin=fixture: prepared render and control checks
+PASS 09-models-front 1280x720; 162730 depth pixels; origin=fixture: prepared render and control checks
+PASS 10-models-side 1280x720; 113003 depth pixels; origin=fixture: prepared render and control checks
+PASS 14-models-wireframe 1280x720; 58597 depth pixels; origin=fixture: prepared render and control checks
+PASS model matrix: rotated solid meshes produce different frames
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 30-natural-campaign-start 1280x720; 147271 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS framing at player X=0, Z=0; cockpit or no stationary targets (image inspection required)
+PASS 31-natural-wave-1-combat 1280x720; 153730 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS natural stage transition: wave=1 stage=1 time=13.1666 lives=3
+PASS framing at player X=-1.78284, Z=-3.12548; cockpit or no stationary targets (image inspection required)
+PASS 31-natural-wave-1-evasion 1280x720; 270757 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS natural stage transition: wave=2 stage=0 time=25.1831 lives=3
+PASS framing at player X=-0.912994, Z=1.44437; cockpit or no stationary targets (image inspection required)
+PASS 31-natural-wave-2-combat 1280x720; 152672 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS natural stage transition: wave=2 stage=1 time=38.3496 lives=3
+PASS framing at player X=-2.98284, Z=-0.18112; cockpit or no stationary targets (image inspection required)
+PASS 31-natural-wave-2-evasion 1280x720; 268574 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS natural stage transition: wave=3 stage=0 time=53.366 lives=3
+PASS framing at player X=0.917157, Z=-0.181121; cockpit or no stationary targets (image inspection required)
+PASS 31-natural-wave-3-combat 1280x720; 158369 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS natural stage transition: wave=3 stage=2 time=68.2334 lives=3
+PASS framing at player X=7.65355, Z=2.00553; cockpit or no stationary targets (image inspection required)
+PASS 31-natural-wave-3-boss 1280x720; 159805 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS 32-natural-victory 1280x720; 152674 depth pixels; origin=natural campaign: ordinary inputs, no injected gameplay state
+PASS natural campaign: 46 kills, 3 lives, 7825 points, 75.6183 simulated seconds; six stages and victory captured
+PASS 33-natural-defeat 1280x720; 150381 depth pixels; origin=natural idle run: no inputs and no injected gameplay state
+Average render (60 frames, 1280x720): 0.765043 ms
+Average render (60 frames, 960x540): 0.571113 ms
+PASS 3D GPU meshes: 15 static uploads, 25204 triangles; static VBO/EBO, VAO attributes 0/1/2/3/4; model/view/projection uniforms active
+PASS MFC handlers: XYZ flight keys / 4 weapons / audio / 3 ships / start / pause / resume / focus loss / menu / restart
+PASS static meshes reused through all captures and 60 frames; XYZ depth buffer active

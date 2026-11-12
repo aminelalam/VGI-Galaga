@@ -1,16 +1,16 @@
-# Mallas 3D del juego
+# Mallas 3D del juego anterior con las naves de la prueba 2D
 
-[Mallas_Galaga3D.blend](../blender/Mallas_Galaga3D.blend) contiene los modelos editables. Son geometría con profundidad: cada fuselaje, ala, motor, cabina y pieza de armadura tiene una superficie cerrada. No se usan imágenes planas para representar las naves.
+Flecha, Delta y Doble Motor proceden de las mismas mallas de Blender con las que se renderizaron los sprites de la prueba 2D. Sus formas y piezas se conservan; se exportan a escala uniforme 0,75 para usarlas en el juego anterior basado en `cc3ced6`. Los enemigos, el jefe, el escenario y la cabina mantienen los OBJ/MTL de esa versión.
 
-## Modelos y escenas
+[Naves_2D_fuente.blend](../blender/Naves_2D_fuente.blend) contiene una copia dedicada de las tres escenas originales. Cada nave tiene un objeto raíz y piezas sólidas cerradas. [procedencia_naves_2d.json](procedencia_naves_2d.json) registra la fuente, los hashes de los sprites, la transformación aplicada y los resultados de la comprobación geométrica.
 
-La escena `01_Modelos` reúne las tres naves, los dos enemigos y el jefe. `02_Sector_espacial` contiene un planeta, una estación con forma de anillo y asteroides laterales. Una formación de ejemplo permite revisar la escala. `03_Cabina_y_obstaculos` contiene el asteroide de la fase de esquiva y el marco físico de la vista en primera persona.
+## Archivos
 
 | Archivo | Triángulos | Piezas cerradas |
 | --- | ---: | ---: |
-| nave_flecha.obj | 2780 | 23 |
-| nave_delta.obj | 2344 | 20 |
-| nave_doble_motor.obj | 2788 | 23 |
+| nave_flecha.obj | 92 | 6 |
+| nave_delta.obj | 94 | 7 |
+| nave_doble_motor.obj | 114 | 7 |
 | enemigo_abeja.obj | 3204 | 22 |
 | enemigo_escarabajo.obj | 3220 | 20 |
 | jefe_acorazado.obj | 4568 | 27 |
@@ -18,65 +18,55 @@ La escena `01_Modelos` reúne las tres naves, los dos enemigos y el jefe. `02_Se
 | cockpit_marco.obj | 332 | 9 |
 | obstaculo_asteroide.obj | 80 | 1 |
 
-Los nueve archivos suman 27.252 triángulos. Cada OBJ tiene su MTL. `catalogo.json` recoge los recuentos y los límites exactos de cada modelo. Las distintas piezas pueden solaparse para formar un conjunto; cada pieza, por separado, es un sólido cerrado y orientado hacia fuera.
+Estos nueve archivos suman 19.640 triángulos. Cada OBJ tiene su MTL. [catalogo.json](catalogo.json) recoge los recuentos, los límites de los modelos y la procedencia de las tres naves sustituidas. Las piezas pueden solaparse entre sí; cada pieza, por separado, tiene volumen y una superficie cerrada orientada hacia fuera.
 
-Para dibujar enemigos lejanos se incluyen dos versiones de menor detalle, llamadas LOD:
+Para los enemigos lejanos se conservan las dos variantes de menor detalle de la versión anterior:
 
 | Archivo | Triángulos | Piezas cerradas | Modelo original |
 | --- | ---: | ---: | --- |
 | enemigo_abeja_lod.obj | 932 | 22 | enemigo_abeja.obj |
 | enemigo_escarabajo_lod.obj | 924 | 20 | enemigo_escarabajo.obj |
 
-Estos dos archivos reducen aproximadamente un 71 % los triángulos de los enemigos. Conservan las alas y las placas pequeñas, el volumen cerrado de todas las piezas, sus límites espaciales y los mismos materiales. Los cuerpos curvos, ojos y articulaciones usan menos triángulos. Los modelos detallados se mantienen para las vistas cercanas; las variantes LOD se destinan al dibujo a más de diez unidades del jugador. La selección de geometría no cambia las reglas de movimiento, disparo ni colisión.
+Los once OBJ suman 21.496 triángulos almacenados. El modelo detallado y su LOD son alternativas de dibujo; el juego usa el reducido a más de diez unidades del jugador. Conservan los mismos materiales y límites espaciales.
 
-Los once OBJ suman 29.108 triángulos almacenados. El modelo completo y su LOD son alternativas de dibujo: no se superponen. Los originales editables del archivo Blender permanecen intactos; las variantes se calculan sobre copias temporales y se exportan como archivos independientes.
+## Forma y materiales de las naves
 
-Las naves se construyen con secciones elípticas de diferente tamaño, que forman el fuselaje, y perfiles de ala que conservan grosor en sus bordes. Las toberas son anillos cerrados con interior y núcleo, las cabinas son superficies curvas y las aletas tienen caras por ambos lados. Las placas de armadura siguen el perfil de las alas. Las bandas de los insectos y de los motores se asignan a las caras de la propia superficie.
+Flecha tiene un fuselaje azul alargado y alas blancas. Delta conserva el ala triangular roja con paneles blancos. Doble Motor mantiene el cuerpo verde rectangular y las dos barquillas largas. Son los sólidos originales de pocas piezas, con caras planas y tejados inclinados que forman su volumen.
 
-Los fuselajes, cabinas y toberas usan normales suaves. Las alas, placas y rocas conservan aristas visibles. Así se distingue una superficie curva de una placa de metal sin aumentar innecesariamente los triángulos. Los materiales incluyen `Kd` para el color, `Ks` para la intensidad del brillo y `Ns` para su concentración; el vidrio, el metal y la roca responden de forma distinta a la iluminación Phong.
+El exportador conserva los materiales de la fuente. Convierte sus valores de color lineales de Blender a sRGB para el shader del juego anterior, que no realiza esa conversión al presentar la imagen. El manifiesto guarda ambos valores. Las naves usan `Ks = 0,16` y `Ns = 8` para un acabado mate. Los materiales y las normales de los demás modelos permanecen como en la versión anterior.
 
 ## Coordenadas
 
-X es lateral, Y es avance y Z es altura. Las naves apuntan a +Y; los enemigos y el jefe apuntan a -Y. El objeto raíz del catálogo se coloca en una cuadrícula solo para editarlo: su posición no se exporta.
+X es lateral, Y es avance y Z es altura. Las naves apuntan a +Y; los enemigos y el jefe apuntan a -Y. En las tres naves se incluye la transformación del objeto raíz para conservar el mismo centrado XY que tenían sus sprites. Después se aplica la escala 0,75 por igual a los tres ejes, sin deformar las proporciones.
 
-Las naves normales miden aproximadamente 1,3 unidades de ancho y 1,4 de largo. El jefe ocupa X entre -1,34 y 1,34; el juego puede ampliarlo con su matriz `model`. El asteroide individual está centrado en el origen y cabe aproximadamente en una esfera de radio 1,02.
+| Nave | Ancho | Largo | Intervalo Z |
+| --- | ---: | ---: | --- |
+| Flecha | 1,275 | 1,260 | −0,1275 a 0,2775 |
+| Delta | 1,275 | 1,260 | −0,1500 a 0,2925 |
+| Doble Motor | 1,140 | 1,1475 | −0,1725 a 0,2925 |
 
-El escenario se exporta directamente en coordenadas del mundo. El planeta está en (-29, 78, 21) y tiene radio 18. El anillo está en (23, 62, 6), con radio 8. Las masas principales quedan fuera del corredor central de combate. El marco de cabina mira hacia +Y; tiene la consola debajo y los montantes a los lados para dejar libre la visión frontal.
+El jefe conserva X entre −1,34 y 1,34; su matriz `model` puede ampliarlo durante el juego. El escenario mantiene el planeta en (−29, 78, 21), con radio 18, y el anillo en (23, 62, 6), con radio 8. Sus masas principales quedan fuera del corredor central de combate.
 
-## Editar y exportar
+## Editar y exportar las tres naves
 
-Abre el archivo Blender y selecciona una escena. Las piezas cuelgan de un objeto raíz con la propiedad `export_obj`. Edita las piezas en coordenadas locales y conserva ese objeto raíz. Las instancias de ejemplo comparten las mallas del catálogo.
+Abre `Recursos_Galaga3D/blender/Naves_2D_fuente.blend` y elige la escena `nave_flecha`, `nave_delta` o `nave_doble_motor`. Conserva el objeto raíz y sus piezas. El archivo dedicado mantiene las dimensiones originales; el exportador aplica la escala al escribir los OBJ.
 
-Para exportar los cambios guardados en Blender desde la raíz del repositorio:
-
-```powershell
-blender --background Recursos_Galaga3D/blender/Mallas_Galaga3D.blend --python-exit-code 1 --python Recursos_Galaga3D/scripts/generar_mallas_juego.py -- --export-only
-```
-
-Aplica los modificadores antes de exportar. El exportador triangula las caras y escribe posiciones, UV y normales en el formato `v/vt/vn`. Cada UV se obtiene de X/Y como coordenada básica; estos modelos se colorean con materiales sólidos. Para cada triángulo se conservan las normales suaves o las normales de cara que correspondan a la pieza.
-
-Antes de escribir cada archivo, el exportador comprueba que las coordenadas sean finitas, que cada arista tenga exactamente dos caras con sentidos opuestos, que el volumen firmado sea positivo y que no haya triángulos degenerados. Un fallo detiene la exportación con el nombre de la pieza.
-
-Para reconstruir los diseños desde los scripts:
+Desde la raíz de esta copia, ejecuta con Blender en el PATH:
 
 ```powershell
-blender --background --factory-startup --python-exit-code 1 --python Recursos_Galaga3D/scripts/generar_mallas_juego.py
+blender --background --factory-startup --python-exit-code 1 --python Recursos_Galaga3D/scripts/exportar_naves_2d.py
 ```
 
-Este último comando sustituye el archivo Blender y los OBJ/MTL. Guarda aparte las ediciones manuales que quieras conservar. `scripts/mallas_volumetricas.py` define la geometría; `scripts/generar_mallas_juego.py` prepara las escenas, los materiales, la exportación y las comprobaciones.
+La orden utiliza únicamente el Blender dedicado incluido en esta carpeta. Regenera los tres pares OBJ/MTL, actualiza sus entradas en el catálogo y escribe el manifiesto de procedencia. No vuelve a renderizar los sprites ni necesita los directorios del proyecto 2D.
 
-Para regenerar exclusivamente los dos LOD a partir del archivo Blender existente:
+El exportador escribe caras trianguladas en formato `v/vt/vn`. Comprueba coordenadas finitas, piezas cerradas, orientación exterior, volumen firmado positivo y ausencia de triángulos degenerados. Después relee los OBJ para verificar sus normales y su topología, y compara los vértices guardados con la fuente transformada. La exportación comprobada tiene un error máximo inferior a `1e-6` unidades.
 
-```powershell
-blender --background Recursos_Galaga3D/blender/Mallas_Galaga3D.blend --python-exit-code 1 --python Recursos_Galaga3D/scripts/generar_mallas_juego.py -- --lod-only
-```
-
-Esta opción escribe únicamente los dos pares OBJ/MTL reducidos y actualiza `catalogo.json`; no guarda el archivo Blender ni reexporta los nueve modelos originales. Aplica el modificador Decimate a copias independientes, conserva las piezas que definen el contorno y ajusta los extremos de cada pieza a sus límites originales. Después ejecuta las mismas comprobaciones de cierre, orientación, volumen y triángulos degenerados que usa el exportador normal. También comprueba que cada LOD tenga entre 800 y 1.100 triángulos. La generación completa y la opción `--export-only` producen igualmente los dos LOD.
+Los scripts `generar_mallas_juego.py` y `mallas_volumetricas.py` corresponden a los diseños de la versión anterior. Una regeneración completa con ellos sustituye también las tres naves; para recuperar esta adaptación, ejecuta después `exportar_naves_2d.py`. La copia dedicada de las naves no se modifica durante la exportación normal.
 
 ## Relación con OpenGL y VGI
 
-El juego lee las mallas OBJ y los materiales MTL, transforma los datos al formato intercalado de sus vértices y los sube a la GPU. Los VBO contienen los datos; los VAO describen sus atributos. Las matrices `model`, `view` y `projection` permiten colocar el mismo modelo en distintos puntos del espacio sin reconstruirlo. La matriz normal permite iluminar correctamente las superficies después de transformar el modelo. El buffer de profundidad resuelve qué cara queda delante.
+El juego lee los OBJ y MTL, prepara sus vértices e índices y los carga una vez en buffers estáticos. Los VAO describen los atributos. Cada instancia reutiliza esa geometría y envía las matrices `model`, `view` y `projection`; la matriz normal permite calcular la iluminación y el buffer de profundidad resuelve las ocultaciones.
 
-El archivo Blender permite revisar y editar los sólidos; la apariencia y la lectura durante la partida deben comprobarse también en el ejecutable, porque la cámara y la iluminación del juego son diferentes de las de Blender.
+Las comprobaciones del exportador validan los archivos. La lectura de las naves durante la partida se revisa también en el ejecutable, porque su cámara e iluminación son distintas de las del render ortográfico 2D.
 
-El modelado y la exportación se han realizado con asistencia de Codex. El código docente y los constructores anteriores del proyecto conservan sus créditos.
+La adaptación y su exportación se han realizado con asistencia de Codex. Se conservan los créditos del código docente y de los constructores anteriores del proyecto.

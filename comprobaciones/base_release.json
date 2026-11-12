@@ -1,0 +1,49 @@
+{
+  "base_commit": "cc3ced65878d21a25af445dcc3eb670e831aa792",
+  "release_download_sha256": "5c7423dd1cf195baf765d109bc2e1dfad6c663b0a74180bba04a0efb28b1818d",
+  "unchanged_game_and_renderer": [
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Game3D.cpp",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Game3D.h",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/GameView3D.cpp",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Renderer3D.cpp",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Renderer3D.h",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Mesh3D.cpp",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Mesh3D.h",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Renderer2D.cpp",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/Renderer2D.h",
+      "identical_content": true
+    },
+    {
+      "file": "Entrega_Amin_VGI/entornsGrafics/EntornVGI/GameAudio.cpp",
+      "identical_content": true
+    }
+  ],
+  "logic_tests": 77,
+  "natural_campaign_completed": true,
+  "ship_source": "Recursos_Galaga3D/blender/Naves_2D_fuente.blend"
+}

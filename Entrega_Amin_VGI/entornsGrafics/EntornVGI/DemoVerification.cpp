@@ -3,8 +3,87 @@
 #include "EntornVGIView.h"
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <fstream>
 #include <stdexcept>
+
+namespace {
+// Read the opening from the visible wall; do not predict the spawn sequence.
+galaga::Vec2 openingAt(const galaga::Game3D& game, float wallY) {
+    std::vector<float> xs, zs;
+    for (const auto& obstacle : game.obstacles) {
+        if (!obstacle.alive || std::abs(obstacle.pos.y - wallY) > .1f) continue;
+        if (std::none_of(xs.begin(), xs.end(), [&](float x) { return std::abs(x - obstacle.pos.x) < .01f; }))
+            xs.push_back(obstacle.pos.x);
+        if (std::none_of(zs.begin(), zs.end(), [&](float z) { return std::abs(z - obstacle.z) < .01f; }))
+            zs.push_back(obstacle.z);
+    }
+    galaga::Vec2 target{game.player.x, game.playerZ};
+    float bestDistance = 1e9f;
+    for (float z : zs) for (float x : xs) {
+        bool free = true;
+        for (const auto& obstacle : game.obstacles) {
+            if (!obstacle.alive || std::abs(obstacle.pos.y - wallY) > .1f) continue;
+            const float dx = x - obstacle.pos.x, dz = z - obstacle.z;
+            const float radius = obstacle.radius + galaga::Game3D::PlayerRadius + .15f;
+            if (dx * dx + dz * dz < radius * radius) free = false;
+        }
+        const float dx = x - game.player.x, dz = z - game.playerZ;
+        const float distance = dx * dx + dz * dz;
+        if (free && distance < bestDistance) {
+            bestDistance = distance;
+            target = {x, z};
+        }
+    }
+    return target;
+}
+
+// Same ordinary-input pilot used by Game3DTests: no state or collider changes.
+galaga::Input campaignInput(const galaga::Game3D& game) {
+    float targetX = game.player.x, targetZ = game.playerZ;
+    if (game.stage == galaga::Stage::Evasion) {
+        float nearestY = 1e9f;
+        for (const auto& obstacle : game.obstacles)
+            if (obstacle.alive && obstacle.pos.y > game.player.y - obstacle.radius - galaga::Game3D::PlayerRadius)
+                nearestY = std::min(nearestY, obstacle.pos.y);
+        const auto opening = openingAt(game, nearestY);
+        targetX = opening.x;
+        targetZ = opening.y;
+    } else {
+        float closest = 1e9f;
+        for (const auto& enemy : game.enemies) {
+            if (!enemy.alive || enemy.timer < 0 || enemy.phase == galaga::EnemyPhase::Entering ||
+                enemy.phase == galaga::EnemyPhase::Returning) continue;
+            const float flight = std::max(0.f, (enemy.pos.y - game.player.y) / galaga::Game3D::PlayerShotSpeed);
+            const float x = enemy.pos.x + enemy.velocityX * flight;
+            const float z = enemy.z + enemy.velocityZ * flight;
+            const float dx = x - game.player.x, dz = z - game.playerZ;
+            float distance = dx * dx + dz * dz;
+            if (enemy.phase == galaga::EnemyPhase::Diving) distance += 30;
+            if (distance < closest) {
+                closest = distance;
+                targetX = std::clamp(x, -galaga::Game3D::PlayerLimitX, galaga::Game3D::PlayerLimitX);
+                targetZ = std::clamp(z, galaga::Game3D::PlayerMinZ, galaga::Game3D::PlayerMaxZ);
+            }
+        }
+        for (const auto& bullet : game.bullets) {
+            if (bullet.ally || !bullet.alive || bullet.forwardSpeed() >= 0) continue;
+            const float flight = (game.player.y - bullet.pos.y) / bullet.forwardSpeed();
+            if (flight < 0 || flight > .75f) continue;
+            const float x = bullet.pos.x + bullet.velocityX * flight;
+            const float z = bullet.z + bullet.velocityZ * flight;
+            const float dx = game.player.x - x, dz = game.playerZ - z;
+            if (dx * dx + dz * dz < 1.1f) {
+                targetZ = game.playerZ < .7f ? game.playerZ + 1.8f : game.playerZ - 1.8f;
+                targetX = game.player.x < 0 ? game.player.x + 1.5f : game.player.x - 1.5f;
+            }
+        }
+    }
+    return {game.player.x > targetX + .07f, game.player.x < targetX - .07f,
+        game.stage != galaga::Stage::Evasion, game.playerZ < targetZ - .07f,
+        game.playerZ > targetZ + .07f, game.stage == galaga::Stage::Boss};
+}
+}
 
 // /verify-render exercises the real shader/VAO/VBO pipeline in an offscreen FBO.
 // No desktop screenshots or synthetic OS input; MFC handlers are invoked directly.
@@ -34,6 +113,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         };
         target(64,64);
         if(!gameRenderer.verifyLighting(report))throw std::runtime_error("GL-6 lighting verification failed");
+        const char* captureOrigin="fixture: prepared render and control checks";
         auto capture=[&](const char* name,int width,int height,bool gallery=false,float angle=0.f,bool wireframe=false) {
             target(width,height);
             if(!gallery && game.phase==galaga::Phase::Playing && !gameRenderer.verifyFraming(game,report))
@@ -56,7 +136,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
             size_t samples=std::count_if(z.begin(),z.end(),[](float v){return v<.99999f;});
             if(gameRenderer.drawCount()>0&&samples<30)throw std::runtime_error("solid meshes did not write depth");
             unsigned long long hash=1469598103934665603ull;for(auto c:data)hash=(hash^c)*1099511628211ull;
-            report<<"PASS "<<name<<" "<<width<<"x"<<height<<"; "<<samples<<" depth pixels\n";
+            report<<"PASS "<<name<<" "<<width<<"x"<<height<<"; "<<samples<<" depth pixels; origin="<<captureOrigin<<"\n";
             return hash;
         };
         auto key=[&](UINT code){GameKeyDown(code,0);OnKeyUp(code,1,0);};
@@ -72,6 +152,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         key('2');if(game.selectedShip!=1)throw std::runtime_error("ship selection failed");
         capture("02-delta-selected",1280,720);
         key('3');if(game.selectedShip!=2)throw std::runtime_error("third ship selection failed");
+        capture("02-doble-motor-selected",1280,720);
         key(VK_RETURN);if(game.phase!=galaga::Phase::Playing||game.selectedShip!=2)throw std::runtime_error("Enter did not preserve selected ship");
         for(int i=0;i<220;++i)game.update({});
         capture("03-combat",1280,720);capture("04-combat-4x3",1024,768);
@@ -177,6 +258,48 @@ bool CEntornVGIView::VerifyDemoRendering() {
         if(front==side)throw std::runtime_error("model matrix rotation did not alter rendering");
         capture("14-models-wireframe",1280,720,true,.25f,true);
         report<<"PASS model matrix: rotated solid meshes produce different frames\n";
+
+        // A separate campaign starts at the menu and advances only through inputs.
+        // Rendering happens once per stage after two seconds, not at every tick.
+        captureOrigin="natural campaign: ordinary inputs, no injected gameplay state";
+        game.returnToMenu();
+        key('1');key(VK_RETURN);key('3');
+        int lastWave=game.wave;
+        auto lastStage=game.stage;
+        bool capturedStage=false;
+        int naturalCaptures=0;
+        capture("30-natural-campaign-start",1280,720);
+        for(int tick=0;tick<60*300&&game.phase==galaga::Phase::Playing;++tick){
+            if(game.stage==galaga::Stage::Boss)game.selectWeapon(1);
+            game.update(campaignInput(game));
+            if(game.wave!=lastWave||game.stage!=lastStage){
+                report<<"PASS natural stage transition: wave="<<game.wave
+                      <<" stage="<<int(game.stage)<<" time="<<game.time<<" lives="<<game.lives<<"\n";
+                lastWave=game.wave;lastStage=game.stage;capturedStage=false;
+            }
+            if(game.phase==galaga::Phase::Playing&&!capturedStage&&game.stageTime>=2.f){
+                const char* stage=game.stage==galaga::Stage::Evasion?"evasion":
+                    game.stage==galaga::Stage::Boss?"boss":"combat";
+                const std::string name="31-natural-wave-"+std::to_string(game.wave)+"-"+stage;
+                capture(name.c_str(),1280,720);
+                capturedStage=true;
+                ++naturalCaptures;
+            }
+        }
+        if(game.phase!=galaga::Phase::Victory||game.bossHealth!=0||game.wave!=3||naturalCaptures!=6)
+            throw std::runtime_error("ordinary-input campaign did not complete all six stages");
+        capture("32-natural-victory",1280,720);
+        report<<"PASS natural campaign: "<<game.kills<<" kills, "<<game.lives<<" lives, "
+              <<game.score<<" points, "<<game.time<<" simulated seconds; six stages and victory captured\n";
+
+        // Also record the loss condition without preparing a defeat state.
+        key('R');
+        for(int tick=0;tick<60*90&&game.phase==galaga::Phase::Playing;++tick)game.update({});
+        if(game.phase!=galaga::Phase::Defeat||game.lives!=0)
+            throw std::runtime_error("idle campaign did not reach a natural defeat");
+        captureOrigin="natural idle run: no inputs and no injected gameplay state";
+        capture("33-natural-defeat",1280,720);
+
         game.reset();for(int i=0;i<220;++i)game.update({});
         for(int benchmarkWidth:{1280,960}){
             const int benchmarkHeight=benchmarkWidth*9/16;
@@ -191,6 +314,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("OpenGL error after verification");
         report<<"PASS MFC handlers: XYZ flight keys / 4 weapons / audio / 3 ships / start / pause / resume / focus loss / menu / restart\n";
         report<<"PASS static meshes reused through all captures and 60 frames; XYZ depth buffer active\n";
+        game.returnToMenu();ClearGameInput();
         cleanup();return true;
     }catch(const std::exception& e){report<<"FAIL "<<e.what()<<"\n";}
     cleanup();return false;
