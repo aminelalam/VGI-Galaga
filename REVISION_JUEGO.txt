@@ -1,3 +1,54 @@
+REVISIÓN DE DIRECCIÓN VISUAL Y VUELO · 12 de noviembre de 2026
+
+Base: cc3ced6, rama codex/mallas-3d-escenario. Esta primera sección documenta la versión vigente. Las secciones que siguen son un historial: sus números, pendientes y controles no sustituyen el estado actual.
+
+Petición y decisiones
+El usuario pide mejorar naves, escenario, HUD y jugabilidad con una dirección más cercana a los juegos de vuelo espacial como Squadrons, conservando Galaga. Se mantienen campaña breve, formaciones, picados, puntuación, movimiento X/Z y estructura C++/MFC/OpenGL de VGI. Se añade cabina opcional en combate, energía, inercia, impulso, casco, escudo y calor. No se restablece el recuadro de objetivo retirado por el usuario. El MVP continúa privado.
+
+Referencias consultadas
+- EA, Pilot Briefing: Gameplay Overview: https://www.ea.com/ea-studios/motive/news/pilot-briefing-gameplay-overview
+- StarWars.com, entrevista a los creadores de Squadrons: https://www.starwars.com/news/star-wars-squadrons-interview
+Las fuentes describen decisiones de pilotaje y subsistemas. Su adaptación al corredor limitado y todos los valores concretos son decisiones del proyecto. No se importan imágenes, modelos, efectos ni música de Star Wars al juego.
+
+Hallazgos y cambios
+
+1. MEJORA VISUAL COMPROBADA: los cascos anteriores se leían como insectos de colores.
+   Se rediseñan tres cazas, dos enemigos y una fragata: fuselajes angulares, cabinas, alas con grosor, armas y motores sujetos a la estructura. Metal, pintura, vidrio y reactores se separan por color, brillo y emisión. Se conservan OBJ/MTL, Blender editable, variantes de detalle y exportación reproducible. La revisión desde atrás añadió paneles de popa y corrigió el encaje de las toberas del jefe. Galería, vistas laterales, alámbrico y captura de combate son evidencias distintas; el aspecto dentro del juego tiene prioridad.
+
+2. MEJORA VISUAL COMPROBADA: escenario sin referencia suficiente de escala.
+   El sector incorpora planeta, carguero y astillero lateral con estructuras de soporte. El centro queda disponible para la formación y los obstáculos. La primera exportación del planeta parecía una cuadrícula porque asignaba tierra por cara: se sustituye por superficies curvas con costas continuas. Se revisa también que esos parches no penetren la esfera. La decoración y las amenazas tienen materiales distintos; juzgar si un jugador nuevo las distingue de inmediato sigue siendo una hipótesis que requiere observarlo.
+
+3. IMPORTANTE, CORREGIDO VISUALMENTE: información pequeña y superposiciones.
+   Se sustituye la fuente de píxeles por un atlas con métricas proporcionales de Bitstream Vera, licencia incluida. Se reorganizan objetivo, estado de nave, energía, arma e impulso en los bordes. Durante la inspección se detectaron solapamiento del modelo con su nombre en el menú, una etiqueta de calor demasiado larga y una instrucción de pausa fuera de su panel; se corrigieron antes del empaquetado. Las rayas luminosas fijas de la consola se retiraron porque no correspondían a instrumentos reales. Las lecturas activas del HUD provienen del estado de Game3D.
+
+4. CAMBIO DE REGLAS COMPROBADO: el vuelo responde con aceleración y frenada.
+   Game3D mantiene velocityX/velocityZ, normaliza diagonales y detiene el desplazamiento contra los límites. Shift con dirección consume carga para impulsar; no da inmunidad y bloquea las armas mientras está activo. La inclinación y el escape usan la velocidad y el impulso reales. Perder foco o pausar limpia las entradas y el movimiento pendiente. No se convierte el corredor en un simulador de seis ejes.
+
+5. CAMBIO DE REGLAS COMPROBADO: recursos y prioridades crean decisiones.
+   E alterna equilibrada, motores, armas y escudos, con intercambios entre velocidad, cadencia, enfriamiento y regeneración. El casco tiene 100 puntos y el escudo 60; se regenera tras cuatro segundos sin impactos. Una descarga láser calienta y el arma se bloquea a 100 hasta bajar a 35. Q y el misil normal conservan sus cadencias. Cambiar de fase no restaura recursos; perder una nave sí los restaura al desplegar la reserva. Los números están en DEMO_3D.md y se verifican con comparaciones de comportamiento, daño y recorridos completos.
+
+6. MEJORA DE RESPUESTA COMPROBADA EN CÓDIGO Y CAPTURAS.
+   El láser es una malla tubular con núcleo y halo; el misil tiene cuerpo y aletas. Los escapes se instancian en las toberas con la matriz inclinada de la nave. El shader recibe Ke por atributo 5 y añade relleno suave para distinguir los cascos oscuros. Escudo y casco producen avisos de color y eventos de audio distintos. Los nuevos fondos sonoros y ocho WAV son originales y reproducibles; su audibilidad y agrado no se deducen del análisis de niveles.
+
+Aplicación de las skills
+Se utiliza game-design-review para reglas, claridad y evidencia. Se crea game-art-direction en C:/Users/amine/.codex/skills, con criterios sobre silueta funcional, material, escala, cámara e instrumentos vinculados a reglas. La nueva skill pasa su validador y una revisión independiente con capturas del estado previo: señaló forma funcional, separación de materiales, cabina despejada, lectura de amenazas y necesidad de comprobar imágenes del ejecutable. Ninguna skill sustituye las pruebas ni autoriza por sí sola una publicación.
+
+Una segunda revisión independiente de la integración detectó dos defectos visibles: la ayuda «LASER BLOQUEADO» parecía un estado actual con el arma fría, y las estructuras grises del astillero competían con los enemigos desde la esquina inferior izquierda de cabina. La ayuda pasa a ser condicional; el astillero recibe materiales propios más oscuros, sin modificar los materiales compartidos por las naves ni el planeta. Se comprueban ambas correcciones en las capturas del ejecutable.
+
+Verificación actual
+- Release: 108 comprobaciones de simulación. Una campaña completa mediante controles normales termina en aproximadamente 119 s, con 46 bajas y tres naves; no usa invulnerabilidad añadida ni teletransporte.
+- Pruebas específicas de inercia, frenada, diagonal, límites, consumo/recuperación del impulso, armas bloqueadas durante impulso, calor, escudo/daño sobrante, prioridades, pausa, reinicio y cámara.
+- Se conservan los casos de combos por descarga, contacto barrido en XYZ, elipsoide del jefe, posiciones de esquiva amenazadas y huecos alcanzables. Ambas esquivas se completan por separado sin daño mediante un piloto de entradas.
+- Contexto MFC/OpenGL real, matrices, profundidad, 17 mallas estáticas, atributos 0–5, seis términos aislados de GL-6 y emisión Ke. Se verifica reutilización de buffers y ausencia de errores OpenGL.
+- Capturas de menú, tres naves, armas, fases, daño, pausa, resultados, galería, bordes y 4:3; añadidas cabina de combate, cuatro prioridades, calor máximo, escudo e impulso. Capturas reales, sin edición de su contenido.
+- Audio: formato/reproducibilidad, extremos de bucle y mezcla sintética sin saturación. No equivale a escucha de una partida.
+- Tiempos y renderizador en Recursos_Galaga3D/previews/Mallas/Verificacion_Release.txt. Medias de 60 fotogramas sincronizados de la formación; no se atribuyen diferencias entre revisiones a una única causa.
+
+Límites de la revisión
+No se ha realizado una partida manual completa ni una escucha subjetiva. El runtime de control de ventanas volvió a fallar al inicializar con «failed to write kernel assets / El sistema no puede encontrar la ruta especificada». La aplicación sí se ejecutó con su verificador gráfico propio y el piloto de simulación completa la campaña. Quedan por valorar con jugadores la comodidad de la inercia, el balance de prioridades y armas, y la comprensión de peligros en cabina. No se afirma realismo físico, calidad fotográfica ni equivalencia con el alcance comercial de Squadrons. El historial de arranque MFC intermitente no se declara resuelto por estos cambios.
+
+HISTORIAL DE LA CORRECCIÓN PREVIA
+
 REVISIÓN CON GAME DESIGNER · 12 de noviembre de 2026
 
 Base revisada: 4affc52, rama codex/mallas-3d-escenario. Esta sección describe las correcciones posteriores a esa base. Se revisaron las reglas de Game3D, la entrada y el audio de GameView3D, el render de Renderer3D/Renderer2D, las pruebas y las capturas actuales. No es una certificación de cada ruta del entorno docente ni de todas las bibliotecas.
@@ -49,7 +100,7 @@ HISTORIAL
 
 CAMPAÑA 3D Y REVISIÓN VISUAL · 11 de noviembre de 2026
 
-Esta sección describe la implementación actual. Las revisiones posteriores de este archivo conservan el historial de las demos anteriores.
+Esta sección describe la implementación del 11 de noviembre. El estado vigente está al principio de este archivo.
 
 Decisiones actuales del usuario
 - Movimiento horizontal y vertical (X/Z), con cámara trasera en combate.

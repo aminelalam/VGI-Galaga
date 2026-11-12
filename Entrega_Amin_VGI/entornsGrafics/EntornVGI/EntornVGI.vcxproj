@@ -83,7 +83,7 @@
     <ClCompile Include="GameAudio.cpp"><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
     <ClInclude Include="GameAudio.h"/>
     <ClCompile Include="Renderer2D.cpp"/><ClCompile Include="Renderer3D.cpp"/><ClCompile Include="Mesh3D.cpp"/><ClCompile Include="GameView3D.cpp"/><ClCompile Include="DemoVerification.cpp"/>
-    <ClInclude Include="Game3D.h"/><ClInclude Include="Renderer2D.h"/><ClInclude Include="Renderer3D.h"/><ClInclude Include="Mesh3D.h"/>
+    <ClInclude Include="Game3D.h"/><ClInclude Include="Renderer2D.h"/><ClInclude Include="RendererFont.h"/><ClInclude Include="Renderer3D.h"/><ClInclude Include="Mesh3D.h"/>
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

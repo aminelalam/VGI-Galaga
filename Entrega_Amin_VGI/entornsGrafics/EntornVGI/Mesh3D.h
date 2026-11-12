@@ -13,6 +13,7 @@ struct MeshVertex {
     glm::vec2 uv;
     glm::vec4 color;
     glm::vec2 surface{1.f, 1.f}; // Specular gain and shininess relative to the GL-6 material.
+    glm::vec3 emission{0.f}; // MTL Ke: small engine cores and physical instruments.
 };
 
 class Mesh3D {
@@ -23,7 +24,7 @@ public:
     void upload(const std::vector<MeshVertex>& vertices);
     void loadObj(const std::filesystem::path& path);
     void draw() const;
-    // Inspects actual GPU storage and all five VAO attributes; restores bindings.
+    // Inspects actual GPU storage and all six VAO attributes; restores bindings.
     bool verifyGpu() const;
     // Call while the owning OpenGL context is current.
     void release();
@@ -39,13 +40,14 @@ private:
 
 class ModelLibrary {
 public:
-    static constexpr unsigned int MeshCount = 15;
+    static constexpr unsigned int MeshCount = 17;
     Mesh3D ships[3];       // Flecha, Delta, Doble Motor; noses point to +Y.
     Mesh3D enemies[3];     // Abeja, Escarabajo, Jefe; heads point to -Y.
     Mesh3D distantEnemies[2]; // Closed lower-detail versions for small distant targets.
     Mesh3D scenery;
     Mesh3D asteroid, cockpit, stars;
     Mesh3D shot, enemyShot, particle;
+    Mesh3D missile, exhaust;
     void initialize(const std::filesystem::path& folder);
     void release();
     bool verifyGpu() const;

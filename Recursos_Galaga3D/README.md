@@ -1,8 +1,10 @@
-# Interfaz de Galaga 3D
+# Recursos de Galaga 3D
 
 ## Mallas integradas en el juego
 
-La entrega del 11 de noviembre incluye [tres naves, dos enemigos, el modelo del jefe y un escenario orbital](modelos/README.md). Son archivos OBJ/MTL cargados por la demo C++ en VAO/VBO estáticos. [Mallas_Galaga3D.blend](blender/Mallas_Galaga3D.blend) contiene los modelos editables y el escenario con las naves en posición.
+La revisión del 12 de noviembre incluye [tres cazas, dos enemigos, una fragata y un sector industrial orbital](modelos/README.md), además de la cabina y los asteroides. Son archivos OBJ/MTL cargados por la demo C++ en VAO/VBO/EBO estáticos. [Mallas_Galaga3D.blend](blender/Mallas_Galaga3D.blend) contiene los modelos editables. El catálogo suma 24.800 triángulos, incluidas las dos variantes de menor detalle.
+
+El HUD actual se dibuja desde C++ con el atlas `hud/instrument_font.png` y las métricas de `RendererFont.h`, generados por `scripts/generar_fuente_hud.py` a partir de Bitstream Vera. La fuente y su licencia están en `fonts`. El [audio actual](audio/README.md) contiene ocho WAV originales de ambiente y efectos. Las [capturas de partida](previews/Mallas/Partida.png) pertenecen al ejecutable; las presentaciones siguientes son recursos históricos.
 
 Las secciones siguientes documentan los prototipos anteriores de interfaz y sus recursos.
 
@@ -75,7 +77,7 @@ Dibujar fondo, relleno y marco de las barras en ese orden. Recortar el relleno s
 
 `previews/hud_transparente.png` es una composición completa de ejemplo con alpha. Los contadores de esa imagen están fijados: para mostrar valores de la partida hay que usar los componentes y cifras, o dibujar textos desde la aplicación. `previews/interfaz_galaga.png` e `interfaz_pausa.png` son presentaciones con fondo. `previews/verificacion_estado.png` muestra la prueba de 2 vidas, jefe 12/24 y plano B.
 
-**La integración en C++/MFC/OpenGL está pendiente.** El `.blend` y sus scripts permiten editar y comprobar el diseño; no implementan la lógica ni los controles del juego.
+Este prototipo histórico de interfaz no implementa la lógica ni los controles del juego. La integración C++ vigente utiliza las mallas y el HUD descritos al principio de este documento.
 
 ## Regenerar y verificar
 

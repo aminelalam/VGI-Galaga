@@ -1,18 +1,22 @@
 # Galaga 3D · VGI
 
-Juego nativo en C++/MFC/OpenGL, integrado en la estructura de EntornVGI. La campaña encadena **tres combates, dos tramos de esquiva desde la cabina y un jefe final**. Puedes elegir entre tres naves y moverte a izquierda, derecha, arriba y abajo. Los enemigos entran en formación a diferentes distancias y alturas, disparan y realizan picados en el espacio 3D.
+Juego nativo en C++/MFC/OpenGL, integrado en la estructura de EntornVGI. La campaña encadena **tres combates, dos tramos de esquiva desde la cabina y un jefe final**. Puedes elegir entre tres cazas y moverte a izquierda, derecha, arriba y abajo. Los enemigos entran en formación a diferentes distancias y alturas, disparan y realizan picados en el espacio 3D.
+
+La revisión de dirección visual incorpora cascos industriales, alas y armas con grosor, toberas, superficies metálicas y cristales. El sector contiene un planeta, un astillero lateral y un carguero. El HUD organiza casco, escudo, armas y movilidad alrededor de la vista de vuelo. La gestión de energía, el calor del láser y el impulso añaden decisiones durante las formaciones de Galaga.
 
 Las naves, enemigos y escenario son [mallas OBJ/MTL cargadas por el juego](Recursos_Galaga3D/modelos/README.md), con vértices, triángulos y normales. Se pueden editar en [Mallas_Galaga3D.blend](Recursos_Galaga3D/blender/Mallas_Galaga3D.blend). La perspectiva, las ocultaciones y la iluminación muestran su volumen; **F2** permite inspeccionar los triángulos durante el juego.
 
 Esta implementación está en la rama **`codex/mallas-3d-escenario`**. Ejecuta **`build-demo.cmd`** desde su copia local para compilar, lanzar las comprobaciones y preparar **`dist/Galaga3D/Galaga3D.exe`**. Conserva toda la carpeta `dist/Galaga3D` al distribuir el juego. Incluye Mesa local para ejecutar OpenGL cuando el controlador del equipo no ofrece la versión necesaria.
 
-**Controles:** en el menú, 1/2/3 eligen nave y Enter empieza. En partida, WASD o flechas mueven en horizontal y altura; Espacio dispara; 1/2/3/4 eligen disparo simple, doble paralelo, triple o misil; Q lanza el misil especial con recarga. P pausa, M activa o silencia el audio y F2 alterna la vista de malla. R reinicia tras el resultado; Esc pausa o regresa al menú desde pausa o resultados.
+**Controles:** en el menú, 1/2/3 eligen nave y Enter empieza. En partida, WASD o flechas mueven en horizontal y altura; **Shift + dirección** activa el impulso; **E** cambia la prioridad de energía y **C** alterna cámara trasera/cabina durante el combate. Espacio dispara; 1/2/3/4 eligen disparo simple, doble paralelo, triple o misil; Q lanza el misil auxiliar con recarga. P pausa, M activa o silencia el audio y F2 muestra la malla. R reinicia tras el resultado; Esc pausa o vuelve al menú.
 
-La cámara sigue a la nave desde detrás durante los combates y pasa a la cabina en las esquivas. El avance se representa en un sistema de coordenadas relativo al vuelo: controlas **X** y **Z**, mientras las trayectorias y el desplazamiento del entorno expresan el avance en **Y**. El HUD discreto informa de puntos, etapa, vidas, arma y recarga, con una barra de salud para el jefe. La música y los efectos son [audio original generado matemáticamente](Recursos_Galaga3D/audio/README.md).
+El movimiento acelera y frena de forma gradual. Priorizar motores, armas o escudos cambia velocidad, enfriamiento y recuperación; el impulso consume carga e impide disparar mientras está activo. El escudo absorbe daño y se regenera tras cuatro segundos sin recibir impactos. Solo destruir el casco consume una nave de reserva. El láser se bloquea si alcanza el calor máximo.
+
+El avance se representa en un sistema relativo al vuelo: controlas **X** y **Z**; las trayectorias y el desplazamiento del entorno expresan el avance en **Y**. La cabina es opcional en combate y obligatoria durante la esquiva. Se mantienen las formaciones, los picados, la puntuación y la campaña breve. El [audio original generado matemáticamente](Recursos_Galaga3D/audio/README.md) utiliza fondos sostenidos, pulsos graves y efectos de energía.
 
 [Instrucciones, arquitectura y verificación](DEMO_3D.md) · [Solución Visual Studio 2022](Entrega_Amin_VGI/entornsGrafics/Galaga3D.sln)
 
-La revisión de diseño del 12 de noviembre corrige los combos del disparo doble/triple y las posiciones que permitían superar la esquiva sin moverse. Añade avisos de daño y protección, segundos de recarga y pulsos de preparación de ataque sobre los enemigos. Release pasa 77 comprobaciones de reglas y la verificación gráfica; los hallazgos, pruebas y límites están en [REVISION_JUEGO.txt](REVISION_JUEGO.txt).
+La revisión del 12 de noviembre pasa **108 comprobaciones de reglas y la verificación gráfica Release**. Incluye una campaña completa mediante entradas normales y regresiones de inercia, energía, calor, escudos, impulso, colisiones y combos. Los hallazgos y los límites de esta evidencia están en [REVISION_JUEGO.txt](REVISION_JUEGO.txt).
 
 ![Combate en tercera persona, captura del ejecutable](Recursos_Galaga3D/previews/Mallas/Partida.png)
 
@@ -20,9 +24,11 @@ La revisión de diseño del 12 de noviembre corrige los combos del disparo doble
 
 [Aviso de picado](Recursos_Galaga3D/previews/Mallas/Aviso_picado.png) · [Daño en cabina](Recursos_Galaga3D/previews/Mallas/Dano_cabina.png) · [Paso entre asteroides](Recursos_Galaga3D/previews/Mallas/Paso_asteroides.png)
 
+[Cabina de combate](Recursos_Galaga3D/previews/Mallas/Cabina_combate.png) · [Energía](Recursos_Galaga3D/previews/Mallas/Energia.png) · [Calor del láser](Recursos_Galaga3D/previews/Mallas/Calor_laser.png) · [Impulso](Recursos_Galaga3D/previews/Mallas/Impulso.png)
+
 [Guía del código en PDF](docs/Guia_completa_codigo_Galaga3D.pdf). Documenta la revisión del 1 de noviembre de 2026; sus listados y alcance son anteriores a esta campaña. [Revisión técnica y relación con VGI](REVISION_JUEGO.txt). Las instrucciones de la implementación actual están en [DEMO_3D.md](DEMO_3D.md).
 
-Los modelos se cargan una vez en VBO/EBO/VAO. Los enemigos lejanos usan una variante de menor detalle y al acercarse recuperan la malla completa. Cada instancia envía su matriz `model` y la matriz normal al shader; `view` y `projection` definen la cámara. El atributo 4 transporta los parámetros de superficie derivados de `Ks` y `Ns` del MTL. La iluminación Phong sigue los términos de luz y material de GL-6. Los detalles y su relación con GL-3 y GL-4 se explican en [DEMO_3D.md](DEMO_3D.md).
+Los modelos se cargan una vez en VBO/EBO/VAO. Los enemigos lejanos usan una variante de menor detalle. Cada instancia envía `model` y la matriz normal al shader; `view` y `projection` definen la cámara. Los atributos 4 y 5 transportan brillo (`Ks`, `Ns`) y emisión (`Ke`). Se conserva la iluminación Phong de GL-6 y se añade un relleno ambiental suave. La implementación y su relación con GL-3, GL-4, GL-6 y GL-7 se explican en [DEMO_3D.md](DEMO_3D.md).
 
 Los PDF, actas y hojas de cálculo originales se conservan como documentación de referencia. Algunos describen propuestas anteriores, incluidos los planos A/B. La campaña actual usa movimiento continuo en horizontal y altura. El MVP privado aparte queda fuera de esta entrega y de su publicación.
 
@@ -69,10 +75,10 @@ La aportación principal de Amin consiste en concretar **reglas, estados, entida
 
 ## 🖥️ Abrir los materiales en tu ordenador
 
-1. En GitHub, pulsa **Code → Download ZIP**, o clona el repositorio:
+1. En GitHub, selecciona la rama **codex/mallas-3d-escenario** y pulsa **Code → Download ZIP**, o clona esa rama:
 
    ```bash
-   git clone https://github.com/aminelalam/VGI-Galaga.git
+   git clone --branch codex/mallas-3d-escenario https://github.com/aminelalam/VGI-Galaga.git
    ```
 
 2. Extrae la carpeta completa si descargaste el ZIP.
@@ -107,13 +113,15 @@ Entrega_Amin_VGI/
 
 ## 🧭 Alcance y comprobación
 
-La implementación incluye la secuencia de campaña, cuatro armas, misil especial, vuelo en X/Z, combates en tercera persona, esquivas desde cabina y audio. Las mallas y los shaders se integran en la plantilla de VGI. Las skins, las cajas de recompensas y una economía de partida siguen como propuestas de las actas.
+La implementación incluye campaña, cuatro armas, misil auxiliar, vuelo con inercia en X/Z, gestión de energía, casco y escudo, impulso, dos vistas de combate y esquivas desde cabina. Las mallas y los shaders se integran en la plantilla de VGI. Las skins, las cajas de recompensas y una economía de partida siguen como propuestas de las actas.
 
-`build-demo.cmd` ejecuta las pruebas de lógica y la verificación gráfica antes de preparar el paquete. En la revisión del 11 de noviembre de 2026, Release y Debug pasan 53 comprobaciones de lógica, incluida una campaña completa con entradas normales, y la verificación del pipeline OpenGL. Las capturas se han inspeccionado; la dificultad y la mezcla de sonido quedan pendientes de una sesión manual.
+`build-demo.cmd` ejecuta las pruebas de lógica y la verificación gráfica antes de preparar el paquete. Release pasa 108 comprobaciones en esta revisión. Las capturas del ejecutable se han inspeccionado; la comodidad de vuelo, dificultad percibida y mezcla de sonido quedan pendientes de una sesión manual. Las verificaciones Debug anteriores pertenecen a versiones anteriores.
 
 ## 🎨 Fuentes y créditos
 
-El referente es **Galaga**, de Bandai Namco. Los valores concretos de balance y las ampliaciones son propuestas de diseño del proyecto. Las imágenes y el tráiler externos conservan sus atribuciones en [CREDITOS.md](Entrega_Amin_VGI/CREDITOS.md). Las fuentes técnicas se recogen en el Word/PDF.
+El referente de formaciones y puntuación es **Galaga**, de Bandai Namco. Para esta revisión se estudió la [gestión de energía de Squadrons descrita por EA](https://www.ea.com/ea-studios/motive/news/pilot-briefing-gameplay-overview) y la [dirección de vuelo explicada por sus creadores](https://www.starwars.com/news/star-wars-squadrons-interview). La adaptación usa esos principios en el corredor del proyecto; conserva modelos y sonidos originales y no incorpora recursos de Star Wars. No es un simulador de vuelo libre en seis ejes. Los valores de balance son propios.
+
+El HUD usa la fuente Bitstream Vera incluida con su licencia en `Recursos_Galaga3D/fonts`; el atlas se puede regenerar con `scripts/generar_fuente_hud.py` dentro de Recursos_Galaga3D. Las imágenes y el tráiler externos de la documentación anterior conservan sus atribuciones en [CREDITOS.md](Entrega_Amin_VGI/CREDITOS.md).
 
 📋 [Acta original del grupo](Entrega_Amin_VGI/recursos/acta_original.pdf)
 

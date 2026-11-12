@@ -28,6 +28,173 @@ Game3D fixture() {
     return game;
 }
 
+// Isolate flight systems from enemy attacks without changing campaign rules.
+Game3D quietFlight() {
+    Game3D game;
+    game.reset();
+    game.invulnerable = 0;
+    game.enemies.resize(1);
+    game.enemies.front().timer = -1000.f;
+    return game;
+}
+
+void contactShot(Game3D& game) {
+    Bullet hostile;
+    hostile.id = 9000;
+    hostile.ally = false;
+    hostile.pos = hostile.previous = game.player;
+    hostile.z = hostile.previousZ = game.playerZ;
+    game.bullets.push_back(hostile);
+    game.update({});
+}
+
+void checkFlightSystems() {
+    Game3D flight = quietFlight();
+    flight.update({false, true});
+    check(flight.velocityX > 0 && flight.velocityX < 2.f, "first flight input accelerates progressively");
+    ticks(flight, 29, {false, true});
+    const float releaseX = flight.player.x;
+    flight.update({});
+    check(flight.velocityX > 0 && flight.velocityX < 6.f && flight.player.x > releaseX,
+        "releasing a key brakes progressively instead of stopping instantly");
+    ticks(flight, 15);
+    check(flight.velocityX == 0 && flight.player.x - releaseX < .6f,
+        "short braking stops the ship without a long uncontrolled drift");
+
+    Game3D balanced = quietFlight(), engines = quietFlight(), weapons = quietFlight(), shields = quietFlight();
+    engines.cyclePower();
+    weapons.cyclePower(); weapons.cyclePower();
+    shields.cyclePower(); shields.cyclePower(); shields.cyclePower();
+    for (Game3D* mode : {&balanced, &engines, &weapons, &shields}) {
+        mode->shield = 0;
+        mode->boostCharge = 0;
+        mode->weaponHeat = 90;
+        ticks(*mode, 30, {false, true});
+    }
+    check(engines.player.x > balanced.player.x && balanced.player.x > weapons.player.x,
+        "engine priority gains mobility while weapon priority sacrifices it");
+    check(engines.boostCharge > balanced.boostCharge && engines.shield < balanced.shield &&
+        engines.weaponHeat > balanced.weaponHeat, "engine priority trades shield recovery and cooling for boost recharge");
+    check(weapons.weaponHeat < balanced.weaponHeat && weapons.shield < balanced.shield,
+        "weapon priority improves cooling at the cost of defensive recovery");
+    check(shields.shield > balanced.shield && shields.player.x < balanced.player.x,
+        "shield priority improves recovery at the cost of mobility");
+    balanced = quietFlight();
+    shields = quietFlight();
+    shields.cyclePower(); shields.cyclePower(); shields.cyclePower();
+    ticks(balanced, 60, {false, false, true});
+    ticks(shields, 60, {false, false, true});
+    check(shields.shots < balanced.shots, "shield priority reduces firing cadence");
+    shields.cyclePower();
+    check(shields.powerMode == PowerMode::Balanced, "power cycling returns to balanced after four modes");
+
+    Game3D heat = quietFlight();
+    heat.selectWeapon(2);
+    for (int tick = 0; tick < 300 && !heat.overheated; ++tick) heat.update({false, false, true});
+    check(heat.overheated && heat.weaponHeat == 100.f, "a sustained laser burst reaches a visible overheating lock");
+    const int hotShots = heat.shots;
+    ticks(heat, 60, {false, false, true});
+    check(heat.overheated && heat.shots == hotShots && heat.weaponHeat > 35.f,
+        "holding fire cannot bypass the heat lock");
+    heat.update({false, false, false, false, false, true});
+    check(heat.shots == hotShots + 1 && heat.bullets.back().kind == 3,
+        "the special missile remains available during laser overheating");
+    heat.selectWeapon(3);
+    heat.update({false, false, true});
+    check(heat.shots == hotShots + 2 && heat.bullets.back().kind == 3,
+        "the selected missile weapon is independent of laser heat");
+    for (int tick = 0; tick < 600 && heat.overheated; ++tick) heat.update({});
+    check(!heat.overheated && heat.weaponHeat <= 35.f, "laser cooling releases the lock at the recovery threshold");
+    heat.selectWeapon(0);
+    const int recoveredShots = heat.shots;
+    heat.update({false, false, true});
+    check(heat.shots == recoveredShots + 1, "cooled lasers can fire again");
+
+    Game3D boost = quietFlight();
+    const Input boostAndFire{false, true, true, false, false, true, true};
+    ticks(boost, 30, boostAndFire);
+    check(boost.boosting && boost.velocityX > 6.f && boost.boostCharge < 100 && boost.shots == 0,
+        "boost spends charge for higher speed and disables both firing controls");
+    check(boost.invulnerable == 0, "boost never grants damage immunity");
+    Bullet incoming;
+    incoming.id = 9100;
+    incoming.ally = false;
+    incoming.pos = incoming.previous = boost.player;
+    incoming.z = incoming.previousZ = boost.playerZ;
+    boost.bullets.push_back(incoming);
+    boost.update(boostAndFire);
+    check(boost.shield == 25.f && boost.lives == 3 && boost.boosting,
+        "hostile contact still damages shields while boosting");
+    Game3D emptyBoost = quietFlight();
+    emptyBoost.boostCharge = 10;
+    emptyBoost.update({false, true, false, false, false, false, true});
+    check(!emptyBoost.boosting && emptyBoost.boostCharge > 10,
+        "an insufficient boost charge must recharge before activation");
+    emptyBoost = quietFlight();
+    ticks(emptyBoost, 157, {false, true, false, false, false, false, true});
+    check(!emptyBoost.boosting && emptyBoost.boostCharge < 20.f,
+        "sustained boost exhausts the charge and stops");
+
+    Game3D protection = quietFlight();
+    contactShot(protection);
+    check(protection.shield == 25.f && protection.hull == 100.f && protection.lives == 3 &&
+        protection.shieldFlash > 0 && protection.damageFlash == 0,
+        "shields absorb a projectile with separate feedback and no lost reserve");
+    contactShot(protection);
+    check(protection.shield == 25.f && protection.hull == 100.f,
+        "short contact protection prevents simultaneous repeated damage");
+    ticks(protection, 20);
+    contactShot(protection);
+    check(protection.shield == 0 && protection.hull == 90.f && protection.lives == 3 && protection.damageFlash > 0,
+        "damage exceeding the remaining shield reaches the hull without losing a reserve");
+    ticks(protection, 239);
+    check(protection.shield == 0, "shield recovery waits four seconds after the last contact");
+    ticks(protection, 3);
+    check(protection.shield > 0 && protection.hull == 90.f,
+        "shields regenerate after safety time while hull damage remains");
+
+    flight = quietFlight();
+    flight.toggleCockpit();
+    flight.cyclePower();
+    ticks(flight, 15, boostAndFire);
+    flight.pause();
+    const float pausedTime = flight.time, pausedCharge = flight.boostCharge, pausedHeat = flight.weaponHeat;
+    ticks(flight, 120, boostAndFire);
+    flight.cyclePower(); flight.toggleCockpit();
+    check(flight.time == pausedTime && flight.boostCharge == pausedCharge && flight.weaponHeat == pausedHeat &&
+        flight.powerMode == PowerMode::Engines && flight.cockpitView && !flight.boosting,
+        "pause freezes systems and ignores power or camera changes");
+    flight.pause();
+    const Vec2 stopped = flight.player;
+    flight.update({});
+    check(flight.velocityX == 0 && flight.velocityZ == 0 && flight.player.x == stopped.x && !flight.boosting,
+        "resuming after cleared keys does not restart thrust or retain drift");
+    ticks(flight, 10, boostAndFire);
+    flight.cancelInput();
+    const int cancelledShots = flight.shots;
+    const Vec2 cancelledPosition = flight.player;
+    flight.update({});
+    check(flight.shots == cancelledShots && flight.player.x == cancelledPosition.x && !flight.boosting,
+        "focus-loss cancellation clears boost and movement without firing a stale input");
+
+    flight = quietFlight();
+    flight.toggleCockpit();
+    flight.cyclePower();
+    flight.hull = 70; flight.shield = 20; flight.weaponHeat = 40; flight.boostCharge = 50;
+    for (auto& enemy : flight.enemies) enemy.alive = false;
+    flight.update({});
+    check(flight.stage == Stage::Evasion && flight.hull == 70 && flight.shield < 21 &&
+        flight.weaponHeat > 39 && flight.boostCharge < 51 && flight.cockpitView && flight.powerMode == PowerMode::Engines,
+        "stage transitions preserve tactical resources and player preferences");
+    flight.toggleCockpit();
+    check(flight.cockpitView, "forced evasion cockpit preserves the selected combat camera");
+    flight.reset();
+    check(flight.hull == Game3D::MaxHull && flight.shield == Game3D::MaxShield && flight.weaponHeat == 0 &&
+        flight.boostCharge == 100 && flight.powerMode == PowerMode::Balanced && !flight.cockpitView &&
+        !flight.overheated && !flight.boosting && flight.velocityX == 0 && flight.velocityZ == 0,
+        "restart restores a clean tactical flight state");
+}
+
 // Infer the missing position from the observed wall, not the spawn sequence.
 Vec2 openingAt(const Game3D& game, float wallY) {
     std::vector<float> xs, zs;
@@ -97,9 +264,12 @@ Input pilot(const Game3D& game) {
             }
         }
     }
-    return {game.player.x > targetX + .07f, game.player.x < targetX - .07f,
-            game.stage != Stage::Evasion, game.playerZ < targetZ - .07f,
-            game.playerZ > targetZ + .07f, game.stage == Stage::Boss};
+    // Anticipate the short stopping distance instead of reversing only after overshoot.
+    const float projectedX = game.player.x + game.velocityX * .1f;
+    const float projectedZ = game.playerZ + game.velocityZ * .1f;
+    return {projectedX > targetX + .07f, projectedX < targetX - .07f,
+            game.stage != Stage::Evasion && !game.overheated && game.weaponHeat < 85.f,
+            projectedZ < targetZ - .07f, projectedZ > targetZ + .07f, game.stage == Stage::Boss};
 }
 
 void checkEvasion(Game3D game) {
@@ -109,9 +279,12 @@ void checkEvasion(Game3D game) {
     float longestGapMove = 0;
     game.invulnerable = 0;
     const int lives = game.lives;
+    bool undamaged = true;
     for (int tick = 0; tick < 60 * 16 && game.stage == Stage::Evasion && game.phase == Phase::Playing; ++tick) {
         const int oldLives = game.lives;
+        const float oldHull = game.hull, oldShield = game.shield;
         game.update(pilot(game));
+        undamaged &= game.hull >= oldHull && game.shield >= oldShield;
         if (game.lives < oldLives) std::cerr << "Evasion damage at " << game.stageTime << " player " << game.player.x << ',' << game.playerZ << '\n';
         if (game.obstacles.empty() || game.obstacles.back().id <= lastWallId) continue;
         lastWallId = game.obstacles.back().id;
@@ -128,7 +301,7 @@ void checkEvasion(Game3D game) {
     }
     check(openings >= 4 && longestGapMove < 6.f * 1.5f,
         "successive openings leave travel time after the preceding wall clears");
-    check(game.stage == Stage::Combat && game.lives == lives,
+    check(game.stage == Stage::Combat && game.lives == lives && undamaged,
         "observed openings can be flown with ordinary controls without damage or invulnerability");
     bool allThreatened = true;
     for (int column = 0; column <= 154; ++column) for (int row = 0; row <= 78; ++row) {
@@ -148,13 +321,15 @@ int main() {
         game.reset();
         check(game.wave == 1 && game.stage == Stage::Combat && game.remaining() == 12 && game.lives == 3, "fresh campaign starts with 12 enemies and three lives");
         ticks(game, 30, {false, true, false});
-        check(std::abs(game.player.x - 3.f) < .001f, "lateral speed is six units per second");
+        const float lateralTravel = game.player.x;
+        check(game.player.x > 2.2f && game.player.x < 2.8f && std::abs(game.velocityX - 6.f) < .001f,
+            "short acceleration reaches six units per second without an instant velocity jump");
         game.reset();
         ticks(game, 30, {false, false, false, true});
-        check(std::abs(game.playerZ - 3.f) < .001f && game.player.y == -4, "vertical control changes world Z");
+        check(std::abs(game.playerZ - lateralTravel) < .001f && game.player.y == -4, "vertical control changes world Z at the same speed");
         game.reset();
         ticks(game, 30, {false, true, false, true});
-        check(std::abs(std::sqrt(game.player.x * game.player.x + game.playerZ * game.playerZ) - 3.f) < .001f, "diagonal movement is normalized");
+        check(std::abs(std::sqrt(game.player.x * game.player.x + game.playerZ * game.playerZ) - lateralTravel) < .001f, "diagonal movement is normalized");
         ticks(game, 120, {false, true, false, true});
         check(game.player.x == Game3D::PlayerLimitX && game.playerZ == Game3D::PlayerMaxZ, "upper right movement limits");
         ticks(game, 240, {true, false, false, false, true});
@@ -162,6 +337,8 @@ int main() {
         game.reset();
         ticks(game, 60, {true, true, false, true, true});
         check(game.player.x == 0 && game.playerZ == 0, "opposite controls cancel on both axes");
+
+        checkFlightSystems();
 
         game.reset();
         game.invulnerable = 999;
@@ -293,13 +470,17 @@ int main() {
         expiring.radius = .17f;
         expiring.ttl = .001f;
         game.bullets = {expiring};
+        game.velocityX = 6.f;
         game.update({false, true});
-        check(game.lives == 3, "a projectile cannot collide with movement after its expiry inside a step");
+        check(game.lives == 3 && game.hull == Game3D::MaxHull && game.shield == Game3D::MaxShield,
+            "a projectile cannot collide with movement after its expiry inside a step");
         game.reset();
         game.invulnerable = 0;
+        game.shield = 0;
+        game.hull = 20;
         game.bullets = {{100, false, true, game.player, game.player}, {101, false, true, game.player, game.player}};
         game.update({});
-        check(game.lives == 2 && game.respawn > 0, "simultaneous hostile hits cost one life");
+        check(game.lives == 2 && game.respawn > 0 && game.hull == 0, "simultaneous lethal hull hits cost one reserve");
         check(game.damageFlash > 0, "damage starts visible feedback even in cockpit view");
         game.pause();
         const float pausedFlash = game.damageFlash;
@@ -307,7 +488,9 @@ int main() {
         check(game.damageFlash == pausedFlash, "pause freezes damage feedback with gameplay");
         game.pause();
         ticks(game, 45);
-        check(game.player.x == 0 && game.playerZ == 0 && game.invulnerable > 0, "respawn resets both axes with protection");
+        check(game.player.x == 0 && game.playerZ == 0 && game.invulnerable > 0 &&
+            game.hull == Game3D::MaxHull && game.shield == Game3D::MaxShield,
+            "respawn restores flight systems and both axes with protection");
         check(game.damageFlash == 0, "damage flash clears before protected flight resumes");
 
         game.reset();
@@ -319,7 +502,8 @@ int main() {
         camper.player.x = Game3D::PlayerLimitX;
         camper.previousPlayer = camper.player;
         while (camper.stage == Stage::Evasion && camper.phase == Phase::Playing) camper.update({});
-        check(camper.lives < 3, "remaining still at the right boundary no longer bypasses evasion");
+        check(camper.lives < 3 || camper.hull < Game3D::MaxHull || camper.shield < Game3D::MaxShield,
+            "remaining still at the right boundary no longer bypasses evasion damage");
         ticks(game, 65);
         check(game.obstacles.size() == 14, "asteroid wall leaves one clear three-dimensional opening");
         const float obstacleY = game.obstacles.front().pos.y;
@@ -383,6 +567,8 @@ int main() {
         check(game.bossHealth == 32 && game.kills == 0 && game.enemies.front().hitFlash > 0, "boss takes damage over multiple hits with feedback");
         game.enemies.front().hp = game.bossHealth = 1;
         game.lives = 1;
+        game.hull = 20;
+        game.shield = 0;
         game.invulnerable = game.respawn = 0;
         shot.pos = shot.previous = game.enemies.front().pos;
         shot.z = shot.previousZ = game.enemies.front().z;

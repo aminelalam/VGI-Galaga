@@ -44,6 +44,26 @@ float weaponCadence(Weapon weapon) {
     }
 }
 
+struct PowerSettings {
+    float speed, cooling, shieldRegeneration, boostRegeneration, cadence;
+};
+
+PowerSettings powerSettings(PowerMode mode) {
+    switch (mode) {
+    case PowerMode::Engines: return {7.5f, 11.f, 4.f, 24.f, 1.05f};
+    case PowerMode::Weapons: return {5.4f, 32.f, 4.f, 9.f, .9f};
+    case PowerMode::Shields: return {5.7f, 15.f, 16.f, 10.f, 1.3f};
+    default: return {6.f, 18.f, 8.f, 14.f, 1.f};
+    }
+}
+
+float volleyHeat(Weapon weapon) {
+    if (weapon == Weapon::Missile) return 0;
+    if (weapon == Weapon::Triple) return 20.f;
+    if (weapon == Weapon::Double) return 15.f;
+    return 11.f;
+}
+
 bool retired(const Bullet& bullet) {
     return !bullet.alive || bullet.ttl <= 0 || bullet.pos.y > 55.f || bullet.pos.y < -5.3f ||
         std::abs(bullet.pos.x) > 18.f || bullet.z < -12.f || bullet.z > 14.f;
@@ -121,8 +141,27 @@ void Game3D::selectWeapon(int index) {
     if (index >= 0 && index < 4) weapon = static_cast<Weapon>(index);
 }
 
+void Game3D::cyclePower() {
+    if (phase == Phase::Playing)
+        powerMode = static_cast<PowerMode>((static_cast<int>(powerMode) + 1) % 4);
+}
+
+void Game3D::toggleCockpit() {
+    if (phase == Phase::Playing && stage != Stage::Evasion) cockpitView = !cockpitView;
+}
+
+void Game3D::cancelInput() {
+    velocityX = velocityZ = 0;
+    boosting = false;
+    previousPlayer = player;
+    previousPlayerZ = playerZ;
+}
+
 void Game3D::pause() {
-    if (phase == Phase::Playing) phase = Phase::Paused;
+    if (phase == Phase::Playing) {
+        phase = Phase::Paused;
+        cancelInput();
+    }
     else if (phase == Phase::Paused) phase = Phase::Playing;
 }
 
@@ -226,12 +265,24 @@ void Game3D::clearCombo() {
     multiplier = 1;
 }
 
-void Game3D::damage() {
-    if (invulnerable > 0 || respawn > 0 || lives <= 0) return;
-    --lives;
-    damageFlash = .35f;
+void Game3D::damage(float amount) {
+    // Every contact delays recovery, even during the short repeat-hit protection.
+    shieldRecovery = 4.f;
+    if (invulnerable > 0 || respawn > 0 || lives <= 0 || amount <= 0) return;
+    const float absorbed = std::min(shield, amount);
+    shield -= absorbed;
+    if (absorbed > 0) shieldFlash = .3f;
+    const float hullDamage = amount - absorbed;
+    hull = std::max(0.f, hull - hullDamage);
+    if (hullDamage > 0) {
+        damageFlash = .35f;
+        addEffect(player, playerZ, true, hull == 0 ? 1.2f : .55f);
+    }
     clearCombo();
-    addEffect(player, playerZ, true, 1.2f);
+    invulnerable = .3f;
+    if (hull > 0) return;
+    --lives;
+    cancelInput();
     respawn = .7f;
     invulnerable = 1.8f;
 }
@@ -266,6 +317,8 @@ void Game3D::firePlayer(Weapon mode) {
         bullets.push_back(shot);
     }
     ++shots;
+    weaponHeat = std::min(100.f, weaponHeat + volleyHeat(mode));
+    if (weaponHeat >= 100.f) overheated = true;
 }
 
 void Game3D::movePlayer(const Input& input, float dt) {
@@ -273,15 +326,28 @@ void Game3D::movePlayer(const Input& input, float dt) {
     previousPlayerZ = playerZ;
     fireClock = std::max(0.f, fireClock - dt);
     specialCooldown = std::max(0.f, specialCooldown - dt);
+    const PowerSettings power = powerSettings(powerMode);
+    weaponHeat = std::max(0.f, weaponHeat - power.cooling * dt);
+    if (overheated && weaponHeat <= 35.f) overheated = false;
+    shieldRecovery = std::max(0.f, shieldRecovery - dt);
     if (respawn > 0) {
+        cancelInput();
         respawn = std::max(0.f, respawn - dt);
         if (respawn == 0) {
             player = previousPlayer = {0, -4};
             playerZ = previousPlayerZ = 0;
+            hull = MaxHull;
+            shield = MaxShield;
+            weaponHeat = 0;
+            overheated = false;
+            boostCharge = 100;
+            fireClock = 0;
+            shieldRecovery = 0;
         }
         return;
     }
     invulnerable = std::max(0.f, invulnerable - dt);
+    if (shieldRecovery == 0) shield = std::min(MaxShield, shield + power.shieldRegeneration * dt);
     float dx = float(input.right) - float(input.left);
     float dz = float(input.up) - float(input.down);
     const float length = std::sqrt(dx * dx + dz * dz);
@@ -289,14 +355,31 @@ void Game3D::movePlayer(const Input& input, float dt) {
         dx /= length;
         dz /= length;
     }
-    player.x = std::clamp(player.x + dx * 6.f * dt, -PlayerLimitX, PlayerLimitX);
-    playerZ = std::clamp(playerZ + dz * 6.f * dt, PlayerMinZ, PlayerMaxZ);
-    if (stage == Stage::Evasion) return;
+    const bool requestedBoost = input.boost && length > 0;
+    boosting = requestedBoost && (boosting ? boostCharge > 0 : boostCharge >= 20.f);
+    if (boosting) boostCharge = std::max(0.f, boostCharge - 40.f * dt);
+    else boostCharge = std::min(100.f, boostCharge + power.boostRegeneration * dt);
+
+    const float speed = power.speed * (boosting ? 1.75f : 1.f);
+    const float changeX = dx * speed - velocityX;
+    const float changeZ = dz * speed - velocityZ;
+    const float changeLength = std::sqrt(changeX * changeX + changeZ * changeZ);
+    const float acceleration = speed / (length > 0 ? .20f : .16f);
+    const float fraction = changeLength > 0 ? std::min(1.f, acceleration * dt / changeLength) : 0.f;
+    velocityX += changeX * fraction;
+    velocityZ += changeZ * fraction;
+    const float nextX = player.x + velocityX * dt;
+    const float nextZ = playerZ + velocityZ * dt;
+    player.x = std::clamp(nextX, -PlayerLimitX, PlayerLimitX);
+    playerZ = std::clamp(nextZ, PlayerMinZ, PlayerMaxZ);
+    if (player.x != nextX) velocityX = 0;
+    if (playerZ != nextZ) velocityZ = 0;
+    if (stage == Stage::Evasion || boosting) return;
     const auto active = std::count_if(bullets.begin(), bullets.end(), [](const Bullet& bullet) { return bullet.alive && bullet.ally; });
     if (active >= 48) return;
-    if (input.fire && fireClock == 0) {
+    if (input.fire && fireClock == 0 && (weapon == Weapon::Missile || !overheated)) {
         firePlayer(weapon);
-        fireClock = weaponCadence(weapon);
+        fireClock = weaponCadence(weapon) * power.cadence;
     }
     if (input.special && specialCooldown == 0) {
         firePlayer(Weapon::Missile);
@@ -520,11 +603,11 @@ void Game3D::resolveContacts(float dt) {
             auto& bullet = bullets[contact.first];
             if (!bullet.alive) continue;
             bullet.alive = false;
-            damage();
+            damage(35.f);
         } else if (contact.kind == Kind::EnemyPlayer) {
             auto& enemy = enemies[contact.first];
             if (!enemy.alive) continue;
-            damage();
+            damage(enemy.type == 2 ? 90.f : 65.f);
             if (enemy.type != 2) {
                 enemy.alive = false;
                 ++kills;
@@ -534,7 +617,7 @@ void Game3D::resolveContacts(float dt) {
             auto& obstacle = obstacles[contact.first];
             if (!obstacle.alive) continue;
             obstacle.alive = false;
-            damage();
+            damage(70.f);
             addEffect(obstacle.pos, obstacle.z, false, 1.4f);
         }
     }
@@ -545,6 +628,7 @@ void Game3D::update(const Input& input, float dt) {
     time += dt;
     stageTime += dt;
     damageFlash = std::max(0.f, damageFlash - dt);
+    shieldFlash = std::max(0.f, shieldFlash - dt);
     for (auto& effect : sparks) effect.age += dt;
     sparks.erase(std::remove_if(sparks.begin(), sparks.end(), [](const Spark& effect) {
         return effect.age >= effect.duration;

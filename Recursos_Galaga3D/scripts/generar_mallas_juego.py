@@ -20,16 +20,19 @@ sys.path.insert(0, str(SCRIPTS))
 from mallas_volumetricas import build_ship, build_enemy, build_boss, build_space, build_obstacle, build_cockpit
 
 
-def material(name, color, roughness=.45, metallic=.3, specular=.45):
+def material(name, color, roughness=.48, metallic=.35, specular=.35, emission=(0,0,0)):
     result = bpy.data.materials.new(name)
     result.diffuse_color = (*color, 1)
     result.use_nodes = True
     result["phong_specular"] = specular
     result["phong_shininess"] = max(8, min(128, 2 / max(.12, roughness)**2 - 2))
+    result["emission_color"] = list(emission)
     shader = result.node_tree.nodes.get("Principled BSDF")
     shader.inputs["Base Color"].default_value = (*color, 1)
     shader.inputs["Roughness"].default_value = roughness
     shader.inputs["Metallic"].default_value = metallic
+    shader.inputs["Emission Color"].default_value = (*emission,1)
+    shader.inputs["Emission Strength"].default_value = 1
     return result
 
 
@@ -81,26 +84,31 @@ def build_library():
     catalog = bpy.context.scene
     catalog.name = "01_Modelos"
     colors = {
-        "white": (.76, .82, .90), "blue": (.045, .18, .55),
-        "red": (.68, .035, .045), "yellow": (.92, .54, .055),
-        "green": (.055, .41, .18), "purple": (.32, .08, .50),
-        "dark": (.022, .030, .046), "cockpit": (.035, .30, .48),
-        "engine": (1, .28, .055), "metal": (.20, .25, .32),
-        "planet": (.025, .11, .23), "planet_cloud": (.12, .24, .33),
-        "planet_deep": (.012, .045, .09), "station": (.075, .11, .16),
-        "signal": (.06, .45, .62), "rock": (.10, .085, .075),
-        "obstacle": (.40, .32, .24),
+        "white": (.66,.65,.60), "armor": (.33,.36,.36),
+        "blue": (.15,.22,.25), "red": (.35,.105,.075), "green": (.22,.26,.21),
+        "dark": (.025,.030,.033), "cockpit": (.018,.041,.050),
+        "metal": (.28,.31,.33), "engine_cold": (.12,.22,.26),
+        "engine_hot": (.24,.105,.038), "planet": (.07,.13,.16),
+        "station": (.17,.19,.20), "window": (.24,.22,.17),
+        "screen": (.018,.028,.031), "instrument": (.20,.16,.085),
+        "nav_red": (.22,.045,.028), "nav_green": (.035,.16,.09),
+        "rock": (.085,.085,.08), "obstacle": (.34,.32,.285),
     }
     materials = {name: material(name, color) for name, color in colors.items()}
-    for name in ("cockpit", "engine", "metal", "signal"):
+    for name in ("cockpit", "metal"):
         mat = materials[name]
-        mat["phong_specular"] = .9 if name == "cockpit" else .65
-        mat["phong_shininess"] = 96 if name == "cockpit" else 56
+        mat["phong_specular"] = .80 if name == "cockpit" else .55
+        mat["phong_shininess"] = 96 if name == "cockpit" else 48
         mat.node_tree.nodes.get("Principled BSDF").inputs["Roughness"].default_value = .22
-    for name in ("planet", "planet_cloud", "planet_deep", "rock", "obstacle"):
+    for name in ("planet", "rock", "obstacle"):
         materials[name]["phong_specular"] = .08
         materials[name]["phong_shininess"] = 12
         materials[name].node_tree.nodes.get("Principled BSDF").inputs["Roughness"].default_value = .85
+    for name,emission in {"engine_cold":(.30,.56,.72),"engine_hot":(.72,.30,.085),
+             "instrument":(.24,.17,.065),"window":(.25,.22,.16),
+             "nav_red":(.32,.045,.025),"nav_green":(.04,.25,.12)}.items():
+        materials[name]["emission_color"]=list(emission)
+        materials[name].node_tree.nodes.get("Principled BSDF").inputs["Emission Color"].default_value=(*emission,1)
     roots = []
     for index, name in enumerate(("nave_flecha", "nave_delta", "nave_doble_motor")):
         roots.append(build_ship(catalog.collection, name, index, materials))
@@ -151,6 +159,14 @@ def build_enemy_lods():
     roots = []
     for name in ("enemigo_abeja", "enemigo_escarabajo"):
         source = bpy.data.objects[name]
+        source_counts={}
+        for part in source.children:
+            if part.type=="MESH":
+                part.data.calc_loop_triangles()
+                source_counts[part.name]=len(part.data.loop_triangles)
+        preserved=sum(count for label,count in source_counts.items() if count<=32 or "_Ala_" in label)
+        reduced=sum(source_counts.values())-preserved
+        ratio=max(.15,min(.92,(1000-preserved)/max(1,reduced)))
         root = bpy.data.objects.new(name + "_lod", None)
         temporary_scene.collection.objects.link(root)
         root["export_obj"] = name + "_lod.obj"
@@ -169,18 +185,9 @@ def build_enemy_lods():
             original_max = [max(vertex.co[axis] for vertex in part.data.vertices) for axis in range(3)]
             part.data.calc_loop_triangles()
             # Keep the silhouettes of thin wings and the small armour plates.
-            # Rounded faces, eyes and joints supply most of the distant saving.
+            # Engine housings, glazing and mechanical fittings supply the saving.
             if len(part.data.loop_triangles) <= 32 or "_Ala_" in part.name:
                 continue
-            ratio = .20
-            if "_Abdomen" in part.name:
-                ratio = .32
-            elif "_Cabeza" in part.name:
-                ratio = .22
-            elif "_Mandibula_" in part.name or "_Cuerno_" in part.name:
-                ratio = .5
-            elif "_tobera" in part.name:
-                ratio = .30
             modifier = duplicate.modifiers.new("LOD_estatico", "DECIMATE")
             modifier.decimate_type = "COLLAPSE"
             modifier.ratio = ratio
@@ -279,6 +286,7 @@ def export_root(root):
                     "Kd " + " ".join(f"{value:.6f}" for value in mat.diffuse_color[:3]),
                     "Ka 0.37 0.37 0.37",
                     "Ks " + " ".join([f"{float(mat.get('phong_specular', .4)):.4f}"] * 3),
+                    "Ke " + " ".join(f"{float(value):.5f}" for value in mat.get('emission_color',(0,0,0))),
                     f"Ns {float(mat.get('phong_shininess', 32)):.2f}", "illum 2", ""])
     path.with_suffix(".mtl").write_text("\n".join(mtl), encoding="utf-8")
     return {"file": path.name, "triangles": triangle_count, "closed_parts": pieces,

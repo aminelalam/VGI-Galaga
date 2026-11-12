@@ -46,6 +46,7 @@ void Renderer3D::initialize(){
         lightDiffuseLocation=uniform("light.diffuse");
         lightSpecularLocation=uniform("light.specular");
         ambientLightLocation=uniform("ambientLight");
+        environmentFillLocation=uniform("environmentFill");
         models.initialize(Renderer2D::executableDirectory()/L"Recursos_Galaga3D"/L"modelos");hud.initialize();
     }catch(...){if(v)glDeleteShader(v);if(f)glDeleteShader(f);release();throw;}
 }
@@ -58,10 +59,11 @@ void Renderer3D::begin3D(){
     glUniformMatrix4fv(projectionLocation,1,GL_FALSE,glm::value_ptr(projection));
     glUniform3fv(eyeLocation,1,glm::value_ptr(eye));
     // One directional source, using the material/light uniforms from GL-6.
-    glUniform4f(lightPositionLocation,-.45f,-.7f,1.1f,0.f);
-    glUniform3f(lightDiffuseLocation,1.f,1.f,1.f);
-    glUniform3f(lightSpecularLocation,1.f,1.f,1.f);
+    glUniform4f(lightPositionLocation,-.65f,-.8f,1.1f,0.f);
+    glUniform3f(lightDiffuseLocation,1.f,.92f,.82f);
+    glUniform3f(lightSpecularLocation,1.f,.96f,.89f);
     glUniform3f(ambientLightLocation,1.f,1.f,1.f);
+    glUniform1f(environmentFillLocation,.6f);
 }
 void Renderer3D::camera(bool menu,float playerX,float playerZ,bool cockpit){
     if(menu){eye={0,0,12};view=glm::lookAt(eye,glm::vec3(0),glm::vec3(0,1,0));projection=glm::ortho(-6.4f,6.4f,-3.6f,3.6f,.1f,40.f);}
@@ -88,32 +90,31 @@ void Renderer3D::instance(const Mesh3D& mesh,const glm::mat4& model,glm::vec4 ti
     const float emissive = std::clamp(emission,0.f,1.f);
     const float reflected = 1.f-emissive;
     glUniform3f(emissionLocation,emissive,emissive,emissive);
-    glUniform3f(ambientLocation,.37f*reflected,.37f*reflected,.37f*reflected);
-    glUniform3f(diffuseLocation,.63f*reflected,.63f*reflected,.63f*reflected);
+    glUniform3f(ambientLocation,.19f*reflected,.19f*reflected,.19f*reflected);
+    glUniform3f(diffuseLocation,.72f*reflected,.72f*reflected,.72f*reflected);
     glUniform3f(specularLocation,.16f*reflected,.16f*reflected,.16f*reflected);
     glUniform1f(shininessLocation,32.f);
     mesh.draw();++draws;
 }
 void Renderer3D::draw(const Game3D& g,int width,int height){
     if(width<=0||height<=0||!program)return;
-    const bool cockpit=g.stage==Stage::Evasion;
+    const bool cockpit=g.stage==Stage::Evasion||g.cockpitView;
     hud.background(g,width,height);camera(g.phase==Phase::Menu,g.player.x,g.playerZ,cockpit);begin3D();
     if(wireframeMode)glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     if(g.phase==Phase::Menu){
-        for(int i=0;i<3;++i){
-            glm::mat4 model=glm::translate(glm::mat4(1),glm::vec3((i-1)*3.f,-.05f,0));
-            model=glm::rotate(model,glm::radians(-18.f),glm::vec3(1,0,0));
-            model=glm::rotate(model,glm::radians(i==g.selectedShip?20.f:-12.f),glm::vec3(0,1,0));
-            model=glm::scale(model,glm::vec3(1.2f));
-            instance(models.ships[i],model);
-        }
+        glm::mat4 model=glm::translate(glm::mat4(1),glm::vec3(2.4f,.65f,0));
+        model=glm::rotate(model,glm::radians(-32.f),glm::vec3(1,0,0));
+        model=glm::rotate(model,glm::radians(-21.f),glm::vec3(0,1,0));
+        model=glm::rotate(model,glm::radians(-28.f),glm::vec3(0,0,1));
+        model=glm::scale(model,glm::vec3(2.2f));
+        instance(models.ships[g.selectedShip],model);
     }else{
         // Real geometry with perspective, occlusion and parallax, kept outside
         // the combat corridor. The moving stars establish forward travel.
         const float travel=std::fmod(g.time*3.f,165.f);
         instance(models.stars,transform({0,-travel,0}),glm::vec4(1),1.f);
         instance(models.stars,transform({0,165.f-travel,0}),glm::vec4(1),1.f);
-        instance(models.scenery,glm::mat4(1),glm::vec4(.65f,.68f,.74f,1));
+        instance(models.scenery,glm::mat4(1),glm::vec4(.85f,.9f,1.f,1));
         for(const auto& e:g.enemies)if(e.alive&&e.timer>=0){
             auto model=transform({e.pos.x,e.pos.y,e.z});
             const glm::vec3 velocity(e.velocityX,e.velocityY,e.velocityZ);
@@ -135,7 +136,14 @@ void Renderer3D::draw(const Game3D& g,int width,int height){
             const glm::vec3 direction = glm::normalize(glm::vec3(b.velocityX,b.forwardSpeed(),b.velocityZ));
             model *= glm::toMat4(glm::rotation(glm::vec3(0,1,0),direction));
             model=glm::scale(model,glm::vec3(b.kind==3?2.4f:1.6f,b.kind==3?2.f:1.4f,b.kind==3?2.4f:1.6f));
-            instance(b.ally?models.shot:models.enemyShot,model,b.kind==3?glm::vec4(.8f,1,.5f,1):glm::vec4(1),1.f);
+            const auto& mesh=b.kind==3?models.missile:b.ally?models.shot:models.enemyShot;
+            const glm::vec4 color=b.kind==3?glm::vec4(1,.82f,.5f,1):glm::vec4(1);
+            if(b.kind!=3){
+                glEnable(GL_BLEND);glBlendFunc(GL_SRC_ALPHA,GL_ONE);glDepthMask(GL_FALSE);
+                instance(mesh,glm::scale(model,glm::vec3(2.4f,1.04f,2.4f)),glm::vec4(glm::vec3(color),.10f),1.f);
+                glDepthMask(GL_TRUE);glDisable(GL_BLEND);
+            }
+            instance(mesh,model,b.kind==3?glm::vec4(1):color,b.kind==3?.05f:1.f);
         }
         for(const auto& obstacle:g.obstacles)if(obstacle.alive){
             auto model=transform({obstacle.pos.x,obstacle.pos.y,obstacle.z});
@@ -157,11 +165,21 @@ void Renderer3D::draw(const Game3D& g,int width,int height){
         if(cockpit)instance(models.cockpit,transform({g.player.x,g.player.y,g.playerZ}));
         else if(g.respawn==0){
             auto model=transform({g.player.x,g.player.y,g.playerZ});
-            const float vx=(g.player.x-g.previousPlayer.x)/Game3D::Step;
-            const float vz=(g.playerZ-g.previousPlayerZ)/Game3D::Step;
+            const float vx=g.velocityX;
+            const float vz=g.velocityZ;
             model=glm::rotate(model,std::clamp(-vx*.045f,-.27f,.27f),glm::vec3(0,1,0));
             model=glm::rotate(model,std::clamp(vz*.035f,-.21f,.21f),glm::vec3(1,0,0));
-            instance(models.ships[g.selectedShip],model,glm::vec4(1),g.invulnerable>0?.15f+.12f*std::sin(g.time*15):0.f);
+            const glm::vec4 tint=g.shieldFlash>0?glm::vec4(.7f,1.15f,1.4f,1):glm::vec4(1);
+            instance(models.ships[g.selectedShip],model,tint,g.invulnerable>0?.12f+.07f*std::sin(g.time*12):0.f);
+            const float nozzleX[]={.28f,.31f,.49f},nozzleY[]={-.78f,-.78f,-.79f},nozzleZ[]={-.055f,-.065f,-.025f};
+            const float throttle=g.boosting?2.6f:.42f+.42f*std::min(1.f,std::hypot(vx,vz)/6.f);
+            glEnable(GL_BLEND);glBlendFunc(GL_SRC_ALPHA,GL_ONE);glDepthMask(GL_FALSE);
+            for(float side:{-1.f,1.f}){
+                auto plume=glm::translate(model,glm::vec3(side*nozzleX[g.selectedShip],nozzleY[g.selectedShip],nozzleZ[g.selectedShip]));
+                plume=glm::scale(plume,glm::vec3(1,throttle,1));
+                instance(models.exhaust,plume,glm::vec4(1,1,1,g.boosting?.8f:.45f),1.f);
+            }
+            glDepthMask(GL_TRUE);glDisable(GL_BLEND);
         }
     }
     glBindVertexArray(0);
@@ -171,7 +189,7 @@ bool Renderer3D::verifyGpu(std::ostream& report) const{
     GLint linked=0;glGetProgramiv(program,GL_LINK_STATUS,&linked);
     bool ok=linked&&models.verifyGpu()&&models.uploadCount()==ModelLibrary::MeshCount&&modelLocation>=0&&viewLocation>=0&&projectionLocation>=0;
     report<<(ok?"PASS ":"FAIL ")<<"3D GPU meshes: "<<models.uploadCount()<<" static uploads, "<<models.vertexCount()/3
-          <<" triangles; static VBO/EBO, VAO attributes 0/1/2/3/4; model/view/projection uniforms active\n";
+          <<" triangles; static VBO/EBO, VAO attributes 0/1/2/3/4/5; model/view/projection uniforms active\n";
     return ok;
 }
 bool Renderer3D::verifyLighting(std::ostream& report) {
@@ -180,6 +198,8 @@ bool Renderer3D::verifyLighting(std::ostream& report) {
     camera(true);
     glViewport(0,0,64,64);
     begin3D();
+    glUniform1f(environmentFillLocation,0);
+    glUniform3f(lightDiffuseLocation,1,1,1);glUniform3f(lightSpecularLocation,1,1,1);
     instance(models.particle,glm::scale(glm::mat4(1),glm::vec3(3)));
     struct Sample {
         const char* name;
@@ -212,11 +232,25 @@ bool Renderer3D::verifyLighting(std::ostream& report) {
         report<<(matches?"PASS ":"FAIL ")<<"GL-6 shader term "<<sample.name<<"\n";
         correct &= matches;
     }
+    Mesh3D emissiveProbe;
+    const glm::vec3 glow(.2f,.4f,.6f);
+    emissiveProbe.upload({{{-2,-2,0},{0,0,1},{0,0},{0,0,0,1},{1,1},glow},
+                          {{2,-2,0},{0,0,1},{1,0},{0,0,0,1},{1,1},glow},
+                          {{0,2,0},{0,0,1},{.5f,1},{0,0,0,1},{1,1},glow}});
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    instance(emissiveProbe,glm::mat4(1));
+    unsigned char glowingPixel[4]{};glReadPixels(32,32,1,1,GL_RGBA,GL_UNSIGNED_BYTE,glowingPixel);
+    bool emissionCorrect=true;
+    for(int channel=0;channel<3;++channel)emissionCorrect &= std::abs(glowingPixel[channel]-255.f*glow[channel])<2.f;
+    report<<(emissionCorrect?"PASS ":"FAIL ")<<"material Ke through static VAO attribute 5\n";
+    correct &= emissionCorrect;
+    emissiveProbe.release();
     glBindVertexArray(0);
     return correct && glGetError()==GL_NO_ERROR;
 }
 bool Renderer3D::verifyFraming(const Game3D& game,std::ostream& report) {
-    camera(false,game.player.x,game.playerZ,game.stage==Stage::Evasion);
+    const bool cockpit=game.stage==Stage::Evasion||game.cockpitView;
+    camera(false,game.player.x,game.playerZ,cockpit);
     auto project=[&](glm::vec3 point) {
         const glm::vec4 clip=projection*view*glm::vec4(point,1);
         return glm::vec2((clip.x/clip.w+1)*640,(1-clip.y/clip.w)*360);
@@ -234,14 +268,14 @@ bool Renderer3D::verifyFraming(const Game3D& game,std::ostream& report) {
         minimumWidth=std::min(minimumWidth,right.x-left.x);
         formationLeft=std::min(formationLeft,left.x);
         formationRight=std::max(formationRight,right.x);
-        readable &= screen.y>100 && screen.y<654 && left.x>20 && right.x<1260;
+        if(!cockpit)readable &= screen.y>100 && screen.y<654 && left.x>20 && right.x<1260;
     }
     const auto& ship = models.ships[game.selectedShip];
-    if(game.stage!=Stage::Evasion)for(float x:{ship.minimum().x,ship.maximum().x})for(float y:{ship.minimum().y,ship.maximum().y})for(float z:{ship.minimum().z,ship.maximum().z}) {
+    if(!cockpit)for(float x:{ship.minimum().x,ship.maximum().x})for(float y:{ship.minimum().y,ship.maximum().y})for(float z:{ship.minimum().z,ship.maximum().z}) {
         const auto corner=project(glm::vec3(game.player.x+x,game.player.y+y,game.playerZ+z));
         readable &= corner.x>12 && corner.x<1268 && corner.y>440 && corner.y<680;
     }
-    readable &= minimumWidth>=36;
+    if(!cockpit)readable &= minimumWidth>=36;
     report<<(readable?"PASS ":"FAIL ")<<"framing at player X="<<game.player.x<<", Z="<<game.playerZ;
     if(minimumWidth<1280)report<<"; smallest stationary target "<<minimumWidth<<"px; formation width "<<formationRight-formationLeft<<"px\n";
     else report<<"; cockpit or no stationary targets (image inspection required)\n";

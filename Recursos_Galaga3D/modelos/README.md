@@ -1,82 +1,107 @@
-# Mallas 3D del juego
+# Mallas industriales de Galaga 3D
 
-[Mallas_Galaga3D.blend](../blender/Mallas_Galaga3D.blend) contiene los modelos editables. Son geometría con profundidad: cada fuselaje, ala, motor, cabina y pieza de armadura tiene una superficie cerrada. No se usan imágenes planas para representar las naves.
+[Mallas_Galaga3D.blend](../blender/Mallas_Galaga3D.blend) contiene las naves y el entorno editables. Todos los vehículos son sólidos tridimensionales con caras superiores, inferiores y laterales. Los modelos actuales usan una estética industrial: fuselajes facetados, motores integrados, armas, cabinas oscuras y materiales marfil, gris y grafito con marcas apagadas.
 
-## Modelos y escenas
+La referencia de Squadrons sirve para diferenciar las funciones del casco, las armas y la propulsión, y para reconocer tipos de nave por su silueta. Los diseños y recursos de esta carpeta son originales. Referencias consultadas: [entrevista de StarWars.com](https://www.starwars.com/news/star-wars-squadrons-interview) y [presentación de jugabilidad de EA/Motive](https://www.ea.com/ea-studios/motive/news/pilot-briefing-gameplay-overview).
 
-La escena `01_Modelos` reúne las tres naves, los dos enemigos y el jefe. `02_Sector_espacial` contiene un planeta, una estación con forma de anillo y asteroides laterales. Una formación de ejemplo permite revisar la escala. `03_Cabina_y_obstaculos` contiene el asteroide de la fase de esquiva y el marco físico de la vista en primera persona.
+## Catálogo
 
-| Archivo | Triángulos | Piezas cerradas |
-| --- | ---: | ---: |
-| nave_flecha.obj | 2780 | 23 |
-| nave_delta.obj | 2344 | 20 |
-| nave_doble_motor.obj | 2788 | 23 |
-| enemigo_abeja.obj | 3204 | 22 |
-| enemigo_escarabajo.obj | 3220 | 20 |
-| jefe_acorazado.obj | 4568 | 27 |
-| escenario_orbital.obj | 7936 | 23 |
-| cockpit_marco.obj | 332 | 9 |
-| obstaculo_asteroide.obj | 80 | 1 |
+| Archivo | Diseño | Triángulos | Piezas cerradas |
+| --- | --- | ---: | ---: |
+| nave_flecha.obj | Interceptor de morro largo y alas barridas | 2040 | 36 |
+| nave_delta.obj | Caza de ala ancha y casco reforzado | 1856 | 38 |
+| nave_doble_motor.obj | Cabina central y dos góndolas de motor | 1916 | 39 |
+| enemigo_abeja.obj | Interceptor compacto | 1344 | 25 |
+| enemigo_escarabajo.obj | Bombardero con dos barquillas y carga ventral | 2172 | 31 |
+| jefe_acorazado.obj | Fragata con puente, baterías y tres reactores | 2544 | 39 |
+| escenario_orbital.obj | Planeta, astillero, carguero y rocas laterales | 9812 | 51 |
+| cockpit_marco.obj | Marcos finos, consola y vidrio oscuro | 828 | 17 |
+| obstaculo_asteroide.obj | Fragmento rocoso de la fase de esquiva | 320 | 1 |
+| enemigo_abeja_lod.obj | Interceptor reducido para distancia | 992 | 25 |
+| enemigo_escarabajo_lod.obj | Bombardero reducido para distancia | 976 | 31 |
 
-Los nueve archivos suman 27.252 triángulos. Cada OBJ tiene su MTL. `catalogo.json` recoge los recuentos y los límites exactos de cada modelo. Las distintas piezas pueden solaparse para formar un conjunto; cada pieza, por separado, es un sólido cerrado y orientado hacia fuera.
+Se conservan los nombres históricos `abeja` y `escarabajo` para mantener la compatibilidad del juego. Sus diseños actuales son naves mecánicas, sin ojos ni cabezas de insecto.
 
-Para dibujar enemigos lejanos se incluyen dos versiones de menor detalle, llamadas LOD:
+Los once OBJ suman **24.800 triángulos almacenados**. El modelo completo y su LOD son alternativas: no se dibujan superpuestos. `catalogo.json` registra el número de piezas y los límites espaciales exactos.
 
-| Archivo | Triángulos | Piezas cerradas | Modelo original |
-| --- | ---: | ---: | --- |
-| enemigo_abeja_lod.obj | 932 | 22 | enemigo_abeja.obj |
-| enemigo_escarabajo_lod.obj | 924 | 20 | enemigo_escarabajo.obj |
+Las escenas de Blender son:
 
-Estos dos archivos reducen aproximadamente un 71 % los triángulos de los enemigos. Conservan las alas y las placas pequeñas, el volumen cerrado de todas las piezas, sus límites espaciales y los mismos materiales. Los cuerpos curvos, ojos y articulaciones usan menos triángulos. Los modelos detallados se mantienen para las vistas cercanas; las variantes LOD se destinan al dibujo a más de diez unidades del jugador. La selección de geometría no cambia las reglas de movimiento, disparo ni colisión.
+- `01_Modelos`: las tres naves, los dos enemigos y la fragata.
+- `02_Sector_espacial`: entorno y una formación de ejemplo para revisar escala.
+- `03_Cabina_y_obstaculos`: marco de cabina y asteroide individual.
 
-Los once OBJ suman 29.108 triángulos almacenados. El modelo completo y su LOD son alternativas de dibujo: no se superponen. Los originales editables del archivo Blender permanecen intactos; las variantes se calculan sobre copias temporales y se exportan como archivos independientes.
+## Geometría y materiales
 
-Las naves se construyen con secciones elípticas de diferente tamaño, que forman el fuselaje, y perfiles de ala que conservan grosor en sus bordes. Las toberas son anillos cerrados con interior y núcleo, las cabinas son superficies curvas y las aletas tienen caras por ambos lados. Las placas de armadura siguen el perfil de las alas. Las bandas de los insectos y de los motores se asignan a las caras de la propia superficie.
+Los cascos se construyen con secciones biseladas de ocho lados. Las alas conservan grosor y un borde de ataque definido. Las toberas tienen labio exterior, garganta, núcleo y collar de unión. Las marcas principales se asignan a las caras del casco; los registros y rejillas son piezas que se apoyan en él.
 
-Los fuselajes, cabinas y toberas usan normales suaves. Las alas, placas y rocas conservan aristas visibles. Así se distingue una superficie curva de una placa de metal sin aumentar innecesariamente los triángulos. Los materiales incluyen `Kd` para el color, `Ks` para la intensidad del brillo y `Ns` para su concentración; el vidrio, el metal y la roca responden de forma distinta a la iluminación Phong.
+Las superficies de chapa usan normales por cara para conservar los cambios de plano. Las toberas y superficies curvas usan normales suaves. La esfera del planeta y sus continentes usan superficies curvas; los continentes son parches sólidos cerrados, con sus fondos dentro de la esfera y sus caras superiores fuera de ella. Las costas no dependen de una cuadrícula de colores. La iluminación y las normales producen la separación entre el lado iluminado y el lado oscuro.
 
-## Coordenadas
+Cada MTL contiene:
 
-X es lateral, Y es avance y Z es altura. Las naves apuntan a +Y; los enemigos y el jefe apuntan a -Y. El objeto raíz del catálogo se coloca en una cuadrícula solo para editarlo: su posición no se exporta.
+- `Kd`: color base.
+- `Ks` y `Ns`: intensidad y concentración del brillo Phong.
+- `Ke`: emisión de las pequeñas luces de navegación, núcleos de motor y ventanas.
 
-Las naves normales miden aproximadamente 1,3 unidades de ancho y 1,4 de largo. El jefe ocupa X entre -1,34 y 1,34; el juego puede ampliarlo con su matriz `model`. El asteroide individual está centrado en el origen y cabe aproximadamente en una esfera de radio 1,02.
+El metal, la pintura, el vidrio y la roca tienen respuestas distintas a la luz. La cabina del jugador conserva superficies de vidrio oscuro sin rayas ni indicadores luminosos decorativos: los datos de vuelo se presentan en el HUD del juego.
 
-El escenario se exporta directamente en coordenadas del mundo. El planeta está en (-29, 78, 21) y tiene radio 18. El anillo está en (23, 62, 6), con radio 8. Las masas principales quedan fuera del corredor central de combate. El marco de cabina mira hacia +Y; tiene la consola debajo y los montantes a los lados para dejar libre la visión frontal.
+El astillero utiliza copias propias de sus materiales con color base y brillo un 40 % menores, para separar sus estructuras de los enemigos sin cambiar los materiales de las naves, el planeta ni el carguero.
+
+## Escala y coordenadas
+
+X es lateral, Y es avance y Z es altura. Las naves apuntan a +Y; los enemigos y el jefe a -Y. La posición de cada objeto raíz dentro de la cuadrícula de edición no se exporta.
+
+| Nave | Ancho máximo X | Intervalo Y | Altura máxima Z |
+| --- | --- | --- | --- |
+| Flecha | ±0,78 | -0,78 a 0,88 | 0,31 |
+| Delta | ±0,79 | -0,78 a 0,77 | 0,293 |
+| Doble Motor | ±0,65 | -0,79 a 0,68 | 0,31 |
+
+Las bocas de las toberas del jugador están en estas coordenadas locales y miran hacia -Y:
+
+| Nave | X de los dos motores | Y | Z |
+| --- | --- | --- | --- |
+| Flecha | ±0,28 | -0,78 | -0,055 |
+| Delta | ±0,31 | -0,78 | -0,065 |
+| Doble Motor | ±0,49 | -0,79 | -0,025 |
+
+Los enemigos normales miden aproximadamente una unidad de ancho. El jefe ocupa X entre -1,23 y 1,23, Y entre -0,94 y 0,92 y Z entre -0,235 y 0,505. La escala de dibujo se aplica mediante la matriz `model`; los volúmenes de contacto pertenecen a la lógica del juego.
+
+El planeta está centrado en (-35, 92, 20), con radio base 22,5. El astillero ocupa principalmente el lateral derecho, entre X=20 y X=35; la grúa alcanza X=15,5 por encima del corredor. El carguero está alrededor de (-24, 92, -12). Estas masas quedan fuera del espacio central de combate.
 
 ## Editar y exportar
 
-Abre el archivo Blender y selecciona una escena. Las piezas cuelgan de un objeto raíz con la propiedad `export_obj`. Edita las piezas en coordenadas locales y conserva ese objeto raíz. Las instancias de ejemplo comparten las mallas del catálogo.
+Cada modelo cuelga de un objeto raíz con la propiedad `export_obj`. Conserva ese objeto y edita las piezas en coordenadas locales. Las instancias de ejemplo comparten las mallas del catálogo.
 
-Para exportar los cambios guardados en Blender desde la raíz del repositorio:
+Para exportar el archivo Blender guardado, desde la raíz del repositorio:
 
 ```powershell
 blender --background Recursos_Galaga3D/blender/Mallas_Galaga3D.blend --python-exit-code 1 --python Recursos_Galaga3D/scripts/generar_mallas_juego.py -- --export-only
 ```
 
-Aplica los modificadores antes de exportar. El exportador triangula las caras y escribe posiciones, UV y normales en el formato `v/vt/vn`. Cada UV se obtiene de X/Y como coordenada básica; estos modelos se colorean con materiales sólidos. Para cada triángulo se conservan las normales suaves o las normales de cara que correspondan a la pieza.
+El exportador escribe triángulos con índices `v/vt/vn`: posiciones, UV y normales. Las UV se obtienen de X/Y como coordenadas básicas; esta colección se colorea con materiales sólidos. Aplica los modificadores antes de exportar.
 
-Antes de escribir cada archivo, el exportador comprueba que las coordenadas sean finitas, que cada arista tenga exactamente dos caras con sentidos opuestos, que el volumen firmado sea positivo y que no haya triángulos degenerados. Un fallo detiene la exportación con el nombre de la pieza.
-
-Para reconstruir los diseños desde los scripts:
+Para reconstruir todo desde los scripts:
 
 ```powershell
 blender --background --factory-startup --python-exit-code 1 --python Recursos_Galaga3D/scripts/generar_mallas_juego.py
 ```
 
-Este último comando sustituye el archivo Blender y los OBJ/MTL. Guarda aparte las ediciones manuales que quieras conservar. `scripts/mallas_volumetricas.py` define la geometría; `scripts/generar_mallas_juego.py` prepara las escenas, los materiales, la exportación y las comprobaciones.
+Este comando sustituye el archivo Blender y los OBJ/MTL generados. Guarda aparte las ediciones manuales que quieras conservar. `scripts/mallas_volumetricas.py` define la geometría; `scripts/generar_mallas_juego.py` prepara escenas, materiales, exportación y validaciones.
 
-Para regenerar exclusivamente los dos LOD a partir del archivo Blender existente:
+Para regenerar exclusivamente los dos LOD:
 
 ```powershell
 blender --background Recursos_Galaga3D/blender/Mallas_Galaga3D.blend --python-exit-code 1 --python Recursos_Galaga3D/scripts/generar_mallas_juego.py -- --lod-only
 ```
 
-Esta opción escribe únicamente los dos pares OBJ/MTL reducidos y actualiza `catalogo.json`; no guarda el archivo Blender ni reexporta los nueve modelos originales. Aplica el modificador Decimate a copias independientes, conserva las piezas que definen el contorno y ajusta los extremos de cada pieza a sus límites originales. Después ejecuta las mismas comprobaciones de cierre, orientación, volumen y triángulos degenerados que usa el exportador normal. También comprueba que cada LOD tenga entre 800 y 1.100 triángulos. La generación completa y la opción `--export-only` producen igualmente los dos LOD.
+Los LOD se calculan sobre copias temporales con Decimate. Se conservan las alas y las piezas pequeñas; se ajustan los extremos de cada pieza a los límites originales. Los originales editables no se modifican. La generación completa y `--export-only` también producen los LOD.
 
-## Relación con OpenGL y VGI
+## Comprobaciones y OpenGL
 
-El juego lee las mallas OBJ y los materiales MTL, transforma los datos al formato intercalado de sus vértices y los sube a la GPU. Los VBO contienen los datos; los VAO describen sus atributos. Las matrices `model`, `view` y `projection` permiten colocar el mismo modelo en distintos puntos del espacio sin reconstruirlo. La matriz normal permite iluminar correctamente las superficies después de transformar el modelo. El buffer de profundidad resuelve qué cara queda delante.
+El exportador comprueba coordenadas finitas, ausencia de triángulos degenerados, volumen firmado positivo y exactamente dos caras por arista con sentidos opuestos. Cada pieza es un sólido cerrado; distintas piezas pueden solaparse para formar un conjunto unido. Estas comprobaciones no sustituyen la inspección de uniones, siluetas, cámara y composición.
 
-El archivo Blender permite revisar y editar los sólidos; la apariencia y la lectura durante la partida deben comprobarse también en el ejecutable, porque la cámara y la iluminación del juego son diferentes de las de Blender.
+El juego carga posiciones, normales, UV, colores y propiedades del material en buffers estáticos. Los VBO/EBO guardan los vértices e índices, y los VAO describen los atributos. Las matrices `model`, `view`, `projection` y la matriz normal permiten colocar e iluminar cada instancia. El buffer de profundidad resuelve las ocultaciones entre superficies.
+
+Los renders de Blender permiten revisar los modelos desde distintos ángulos. La lectura de amenazas, la composición y el rendimiento deben comprobarse también en el ejecutable, con su cámara e iluminación.
 
 El modelado y la exportación se han realizado con asistencia de Codex. El código docente y los constructores anteriores del proyecto conservan sus créditos.

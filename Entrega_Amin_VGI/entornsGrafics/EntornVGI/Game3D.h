@@ -7,10 +7,12 @@ struct Vec2 { float x = 0, y = 0; };
 enum class Phase { Menu, Playing, Paused, Victory, Defeat };
 enum class Stage { Combat, Evasion, Boss };
 enum class Weapon { Single, Double, Triple, Missile };
+enum class PowerMode { Balanced, Engines, Weapons, Shields };
 enum class EnemyPhase { Entering, Formation, Warning, Diving, Returning };
 struct Input {
     bool left = false, right = false, fire = false;
     bool up = false, down = false, special = false;
+    bool boost = false;
 };
 struct Enemy {
     int id = 0, type = 0;
@@ -69,17 +71,23 @@ public:
     static constexpr float PlayerLimitX = 7.68f;
     static constexpr float PlayerMinZ = -3.2f;
     static constexpr float PlayerMaxZ = 4.6f;
+    static constexpr float MaxHull = 100.f;
+    static constexpr float MaxShield = 60.f;
     Phase phase = Phase::Menu;
     Stage stage = Stage::Combat;
     Weapon weapon = Weapon::Single;
+    PowerMode powerMode = PowerMode::Balanced;
     Vec2 player{0, -4}, previousPlayer{0, -4};
     float playerZ = 0, previousPlayerZ = 0;
+    float velocityX = 0, velocityZ = 0;
+    float hull = MaxHull, shield = MaxShield, weaponHeat = 0, boostCharge = 100;
+    bool overheated = false, boosting = false, cockpitView = false;
     int lives = 3, score = 0, shots = 0, hits = 0, kills = 0;
     int selectedShip = 0, bestScore = 0, hitStreak = 0, multiplier = 1;
     int wave = 1, bossHealth = 0, bossMaxHealth = 36;
     float time = 0, stageTime = 0, stageDuration = 0;
     float invulnerable = 1.5f, respawn = 0, specialCooldown = 0;
-    float damageFlash = 0;
+    float damageFlash = 0, shieldFlash = 0;
     std::vector<Enemy> enemies;
     std::vector<Bullet> bullets;
     std::vector<Spark> sparks;
@@ -88,6 +96,9 @@ public:
     void returnToMenu();
     void selectShip(int ship);
     void selectWeapon(int index);
+    void cyclePower();
+    void toggleCockpit();
+    void cancelInput();
     void pause();
     void update(const Input& input, float dt = Step);
     int remaining() const;
@@ -98,6 +109,7 @@ public:
 private:
     float fireClock = 0, enemyFireClock = 3.f, diveClock = 5.f, obstacleClock = 1.f;
     float bossOrbit = 0;
+    float shieldRecovery = 0;
     int nextId = 100, nextAttacker = 0, obstacleBurst = 0;
     void startWave();
     void startEvasion();
@@ -108,7 +120,7 @@ private:
     void moveEnemies(float dt);
     void moveObstacles(float dt);
     void resolveContacts(float dt);
-    void damage();
+    void damage(float amount);
     void clearCombo();
     void addEffect(Vec2 pos, float z, bool playerHit, float size);
 };

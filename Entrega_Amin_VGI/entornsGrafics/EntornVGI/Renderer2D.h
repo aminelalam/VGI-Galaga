@@ -27,6 +27,8 @@ private:
     void image(unsigned int texture,float x,float y,float w,float h);
     void quad(float x,float y,float w,float h,Color,float u1=0,float v1=0,float u2=1,float v2=1);
     void border(float x,float y,float w,float h,Color);
+    void panel(float x,float y,float w,float h,Color accent);
+    void meter(const std::string& label,float x,float y,float w,float value,float maximum,Color);
     void text(const std::string&,float x,float y,int height,Color,bool center=false);
 };
 }

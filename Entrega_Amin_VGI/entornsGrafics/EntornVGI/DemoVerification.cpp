@@ -61,7 +61,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         };
         auto key=[&](UINT code){GameKeyDown(code,0);OnKeyUp(code,1,0);};
         // Exercise the MFC interception path, including the new flight axes.
-        for(UINT code:{UINT('W'),UINT('S'),UINT(VK_UP),UINT(VK_DOWN),UINT('Q')}){
+        for(UINT code:{UINT('W'),UINT('S'),UINT(VK_UP),UINT(VK_DOWN),UINT('Q'),UINT('E'),UINT('C'),UINT(VK_SHIFT)}){
             MSG message{};message.message=WM_KEYDOWN;message.wParam=code;
             if(!PreTranslateMessage(&message)||!gameKeys[code])throw std::runtime_error("flight input not routed to game");
             message.message=WM_KEYUP;
@@ -73,12 +73,15 @@ bool CEntornVGIView::VerifyDemoRendering() {
         capture("02-delta-selected",1280,720);
         key('3');if(game.selectedShip!=2)throw std::runtime_error("third ship selection failed");
         key(VK_RETURN);if(game.phase!=galaga::Phase::Playing||game.selectedShip!=2)throw std::runtime_error("Enter did not preserve selected ship");
+        key('E');if(game.powerMode!=galaga::PowerMode::Engines)throw std::runtime_error("energy priority key failed");
+        key('E');key('E');key('E');
         for(int i=0;i<220;++i)game.update({});
         capture("03-combat",1280,720);capture("04-combat-4x3",1024,768);
         game.selectedShip=0;capture("03-combat-flecha",1280,720);
         game.selectedShip=1;capture("03-combat-delta",1280,720);game.selectedShip=2;
         auto placePlayer=[&](float x,float z){
             game.player.x=x;game.previousPlayer=game.player;game.playerZ=game.previousPlayerZ=z;
+            game.velocityX=game.velocityZ=0;
         };
         placePlayer(-7.68f,0);capture("04-left-limit",1280,720);
         placePlayer(7.68f,0);capture("04-right-limit",1280,720);
@@ -92,6 +95,24 @@ bool CEntornVGIView::VerifyDemoRendering() {
         auto still=capture("05-depth-levels",1280,720);
         if(still!=capture("05-static-repeat",1280,720))throw std::runtime_error("static scene changed without simulation");
         auto savedGame=game;
+        for(int power=0;power<4;++power){
+            capture(("33-power-"+std::to_string(power)).c_str(),1280,720);key('E');
+        }
+        key('C');if(!game.cockpitView)throw std::runtime_error("cockpit camera key failed");
+        capture("29-combat-cockpit",1280,720);capture("29-combat-cockpit-4x3",1024,768);
+        placePlayer(galaga::Game3D::PlayerLimitX,galaga::Game3D::PlayerMaxZ);
+        capture("29-combat-cockpit-upper-right",1280,720);
+        placePlayer(-galaga::Game3D::PlayerLimitX,galaga::Game3D::PlayerMinZ);
+        capture("29-combat-cockpit-lower-left",1024,768);key('C');
+        game=savedGame;game.selectWeapon(2);
+        for(int step=0;step<360&&!game.overheated;++step)game.update({false,false,true});
+        if(!game.overheated)throw std::runtime_error("held laser did not reach heat lock");
+        capture("31-laser-overheat",1280,720);
+        game=savedGame;key('E');
+        for(int step=0;step<25;++step)game.update({false,true,false,true,false,false,true});
+        if(!game.boosting||game.boostCharge>=100)throw std::runtime_error("boost feedback does not match flight");
+        capture("32-engine-boost",1280,720);
+        game=savedGame;
         placePlayer(game.enemies[1].pos.x,game.enemies[1].z);
         capture("11-aligned-shot",1280,720);
         game.update({false,false,true});
@@ -121,6 +142,11 @@ bool CEntornVGIView::VerifyDemoRendering() {
         galaga::Bullet incoming;incoming.id=9000;incoming.ally=false;
         incoming.pos=incoming.previous=game.player;incoming.z=incoming.previousZ=game.playerZ;
         game.bullets.push_back(incoming);game.update({});
+        if(game.lives!=3||game.shield>=galaga::Game3D::MaxShield||game.hull!=galaga::Game3D::MaxHull||game.shieldFlash<=0)
+            throw std::runtime_error("shield impact feedback was not activated");
+        capture("30-shield-impact",1280,720);
+        game.invulnerable=0;game.shield=0;game.hull=30;
+        game.bullets.push_back(incoming);game.update({});
         if(game.lives!=2||game.damageFlash<=0)throw std::runtime_error("damage feedback was not activated");
         capture("21-damage-combat",1280,720);
         for(int step=0;step<45;++step)game.update({});
@@ -133,6 +159,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         for(int step=0;step<180;++step)game.update({});
         capture("17-cockpit-evasion",1280,720);capture("17-cockpit-4x3",1024,768);
         const auto evasionGame=game;
+        game.shield=0;game.hull=30;
         galaga::Obstacle collisionRock;collisionRock.id=9001;
         collisionRock.pos=collisionRock.previous=game.player;collisionRock.z=collisionRock.previousZ=game.playerZ;
         game.obstacles.push_back(collisionRock);game.update({});
@@ -170,7 +197,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         game.phase=galaga::Phase::Victory;game.score=2100;for(auto& e:game.enemies)e.alive=false;
         capture("07-victory-fixture",1280,720);
         key('R');if(game.remaining()!=12||game.score!=0||game.lives!=3)throw std::runtime_error("restart integration failed");
-        game.phase=galaga::Phase::Defeat;game.lives=0;game.score=750;
+        game.phase=galaga::Phase::Defeat;game.lives=0;game.hull=0;game.shield=0;game.score=750;
         capture("08-defeat-fixture",1280,720);
         auto front=capture("09-models-front",1280,720,true,.25f);
         auto side=capture("10-models-side",1280,720,true,1.05f);
@@ -189,7 +216,7 @@ bool CEntornVGIView::VerifyDemoRendering() {
         }
         if(gameRenderer.uploadCount()!=uploads||!gameRenderer.verifyGpu(report))throw std::runtime_error("mesh buffers changed across frames");
         if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("OpenGL error after verification");
-        report<<"PASS MFC handlers: XYZ flight keys / 4 weapons / audio / 3 ships / start / pause / resume / focus loss / menu / restart\n";
+        report<<"PASS MFC handlers: XYZ flight / 4 weapons / E energy / C cockpit / Shift boost / audio / 3 ships / pause / focus loss / restart\n";
         report<<"PASS static meshes reused through all captures and 60 frames; XYZ depth buffer active\n";
         cleanup();return true;
     }catch(const std::exception& e){report<<"FAIL "<<e.what()<<"\n";}

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Renderer2D.h"
+#include "RendererFont.h"
 #include <gl/SOIL2.h>
 #include <algorithm>
 #include <array>
@@ -42,28 +43,14 @@ void main(){outColor=texture(image,texCoord)*tint;})";
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
     };
     unsigned char pixel[]={255,255,255,255};texture(white,1,1,pixel);
-    // Original 5x7 glyph atlas generated once. No installed-font dependency.
-    const char* glyphs="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:/.-+[]!<>";
-    const unsigned char rows[][7]={
-      {14,17,17,31,17,17,17},{30,17,17,30,17,17,30},{15,16,16,16,16,16,15},
-      {30,17,17,17,17,17,30},{31,16,16,30,16,16,31},{31,16,16,30,16,16,16},
-      {15,16,16,23,17,17,15},{17,17,17,31,17,17,17},{31,4,4,4,4,4,31},
-      {7,2,2,2,18,18,12},{17,18,20,24,20,18,17},{16,16,16,16,16,16,31},
-      {17,27,21,21,17,17,17},{17,25,25,21,19,19,17},{14,17,17,17,17,17,14},
-      {30,17,17,30,16,16,16},{14,17,17,17,21,18,13},{30,17,17,30,20,18,17},
-      {15,16,16,14,1,1,30},{31,4,4,4,4,4,4},{17,17,17,17,17,17,14},
-      {17,17,17,17,17,10,4},{17,17,17,21,21,21,10},{17,17,10,4,10,17,17},
-      {17,17,10,4,4,4,4},{31,1,2,4,8,16,31},
-      {14,17,19,21,25,17,14},{4,12,4,4,4,4,14},{14,17,1,2,4,8,31},
-      {30,1,1,14,1,1,30},{2,6,10,18,31,2,2},{31,16,16,30,1,1,30},
-      {14,16,16,30,17,17,14},{31,1,2,4,8,8,8},{14,17,17,14,17,17,14},{14,17,17,15,1,1,14},
-      {0,4,4,0,4,4,0},{1,1,2,4,8,16,16},{0,0,0,0,0,6,6},{0,0,0,31,0,0,0},
-      {0,4,4,31,4,4,0},{14,8,8,8,8,8,14},{14,2,2,2,2,2,14},{4,4,4,4,4,0,4},
-      {2,4,8,16,8,4,2},{8,4,2,1,2,4,8}};
-    std::array<unsigned char,128*64*4> atlas{};
-    for(int i=0;glyphs[i];++i){unsigned ch=unsigned(glyphs[i]);int x=(ch%16)*8,y=(ch/16)*8;
-        for(int r=0;r<7;++r)for(int c=0;c<5;++c)if(rows[i][r]&(1<<(4-c))){auto p=((y+r)*128+x+c)*4;atlas[p]=atlas[p+1]=atlas[p+2]=atlas[p+3]=255;}}
-    texture(font,128,64,atlas.data());glBindVertexArray(0);
+    const auto fontPath=executableDirectory()/L"Recursos_Galaga3D"/L"hud"/L"instrument_font.png";
+    int fw=0,fh=0,channels=0;
+    auto* pixels=SOIL_load_image(fontPath.string().c_str(),&fw,&fh,&channels,SOIL_LOAD_RGBA);
+    if(!pixels)throw std::runtime_error("Falta el atlas de instrumentos del HUD.");
+    texture(font,fw,fh,pixels);SOIL_free_image_data(pixels);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);glBindVertexArray(0);
 }
 void Renderer2D::release(){if(scoreLabel)glDeleteTextures(1,&scoreLabel);if(font)glDeleteTextures(1,&font);if(white)glDeleteTextures(1,&white);if(vbo)glDeleteBuffers(1,&vbo);if(vao)glDeleteVertexArrays(1,&vao);if(program)glDeleteProgram(program);scoreLabel=font=white=vbo=vao=program=0;}
 void Renderer2D::begin(int width,int height){
@@ -93,70 +80,139 @@ void Renderer2D::image(unsigned int texture,float x,float y,float w,float h){
 }
 void Renderer2D::border(float x,float y,float w,float h,Color c){quad(x,y,w,2,c);quad(x,y+h-2,w,2,c);quad(x,y,2,h,c);quad(x+w-2,y,2,h,c);}
 void Renderer2D::text(const std::string& value,float x,float y,int height,Color c,bool center){
-    flush();float unit=height/7.f,advance=unit*6;if(center)x-=(value.size()*advance-unit)*.5f;
-    for(unsigned char ch:value){if(ch>='a'&&ch<='z')ch-=32;if(ch>127)ch=' ';float u=float((ch%16)*8)/128,v=float((ch/16)*8)/64;quad(x,y,unit*5,float(height),c,u,v,u+5.f/128,v+7.f/64);x+=advance;}flush(font);
+    flush();
+    const float scale=height/HudCapHeight;
+    auto glyph=[](unsigned char ch){if(ch>='a'&&ch<='z')ch-=32;return ch<128?ch:static_cast<unsigned char>(' ');};
+    if(center){float length=0;for(unsigned char ch:value)length+=HudAdvance[glyph(ch)];x-=length*scale*.5f;}
+    for(unsigned char source:value){
+        const unsigned char ch=glyph(source);
+        if(ch!=' '){const float u=float((ch%16)*64)/1024,v=float((ch/16)*64)/512;
+            quad(x-8*scale,y-8*scale,64*scale,64*scale,c,u,v,u+64.f/1024,v+64.f/512);}
+        x+=HudAdvance[ch]*scale;
+    }
+    flush(font);
+}
+void Renderer2D::panel(float x,float y,float w,float h,Color accent){
+    quad(x,y,w,h,{.012f,.018f,.023f,.88f});
+    quad(x,y,w,1,{.24f,.30f,.33f,.65f});
+    quad(x,y,28,2,accent);quad(x+w-1,y,1,h,{.16f,.22f,.25f,.45f});
+}
+void Renderer2D::meter(const std::string& label,float x,float y,float w,float value,float maximum,Color color){
+    const float ratio=std::clamp(value/std::max(1.f,maximum),0.f,1.f);
+    text(label,x,y,10,{.58f,.65f,.68f});
+    text(std::to_string(int(std::round(ratio*100)))+"%",x+w-42,y,11,color);
+    quad(x,y+18,w,3,{.12f,.17f,.20f,.9f});quad(x,y+18,w*ratio,3,color);
+    for(int i=1;i<4;++i)quad(x+w*i/4.f,y+17,1,5,{.34f,.4f,.43f,.5f});
 }
 void Renderer2D::background(const Game3D& g,int width,int height){
-    begin(width,height);glClearColor(0,0,0,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    quad(0,0,1280,720,{0,0,0});
-    if(g.phase==Phase::Menu){for(int i=0;i<3;++i){float x=215+i*300.f;bool selected=i==g.selectedShip;quad(x,257,250,242,selected?Color{.055f,.06f,.07f}:Color{.025f,.028f,.032f});border(x,257,250,242,selected?Color{1,.8f,.25f}:Color{.15f,.17f,.19f});if(selected)quad(x,257,250,3,{1,.8f,.25f});}}
+    begin(width,height);glClearColor(.002f,.004f,.007f,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    quad(0,0,1280,720,{.002f,.004f,.007f});
+    if(g.phase==Phase::Menu){
+        for(int row=0;row<48;++row){const float shade=.018f+.016f*(1.f-row/48.f);
+            quad(0,row*15.f,1280,15,{shade*.85f,shade*.96f,shade*1.08f});}
+        quad(632,64,1,576,{.17f,.22f,.25f,.7f});
+        for(int i=0;i<3;++i){float x=680+i*184.f;
+            panel(x,558,166,66,i==g.selectedShip?Color{.86f,.63f,.32f}:Color{.27f,.32f,.35f});
+            if(i==g.selectedShip)quad(x,622,166,2,{.86f,.63f,.32f});}
+        // Hangar datum marks give the solid preview a quiet frame of reference.
+        for(int i=0;i<6;++i)quad(685+i*96.f,516,30,1,{.21f,.26f,.28f,.7f});
+    }
     finish();
 }
 void Renderer2D::overlay(const Game3D& g,int width,int height){
     begin(width,height);
-    const Color whiteC{.91f,.94f,.98f},yellow{1,.83f,.25f},red{1,.3f,.22f},blue{.43f,.83f,.95f},muted{.53f,.59f,.65f};
+    const Color whiteC{.89f,.92f,.92f},amber{.9f,.67f,.35f},red{1,.36f,.24f},cyan{.41f,.76f,.85f},muted{.54f,.62f,.66f};
     const char* ships[]={"FLECHA","DELTA","DOBLE MOTOR"};
+    const char* codes[]={"F-01","D-02","M-03"};
+    const char* powerNames[]={"EQUILIBRADA","MOTORES","ARMAS","ESCUDOS"};
+    const char* powerNotes[]={"MOVILIDAD / FUEGO / DEFENSA","MAS VELOCIDAD / MENOS DEFENSA","MAS FUEGO / MENOR VELOCIDAD","MAS ESCUDO / MENOS FUEGO"};
+    const char* weapons[]={"LASER SIMPLE","DOBLE PARALELO","TRIPLE","MISIL"};
     if(g.phase==Phase::Menu){
-        text("GALAGA 3D",640,71,52,whiteC,true);text("SECTOR ORBITAL",640,148,17,yellow,true);
-        text("ELIGE TU NAVE",640,216,18,whiteC,true);
-        for(int i=0;i<3;++i){float x=340+i*300.f;text(std::to_string(i+1),x-100,277,14,i==g.selectedShip?yellow:muted);text(ships[i],x,461,17,i==g.selectedShip?yellow:whiteC,true);}
-        text("1 / 2 / 3  SELECCIONAR",640,530,14,muted,true);
-        text("ENTER  EMPEZAR",640,578,24,yellow,true);
-        text("WASD / FLECHAS  VOLAR     ESPACIO  DISPARAR     1-4  ARMAS",640,637,12,whiteC,true);
-        text("3 COMBATES + 2 ESQUIVAS + JEFE FINAL    Q MISIL    P PAUSA    M AUDIO    F2 MALLA",640,678,10,muted,true);
+        text("VGI / OPERACIONES DE VUELO",64,65,11,muted);
+        text("GALAGA",60,111,58,whiteC);text("SECTOR ORBITAL",64,187,17,amber);
+        quad(64,226,96,2,amber);
+        text("INTERCEPTA LA FORMACION",64,264,23,whiteC);
+        text("DOMINA LA ENERGIA. PROTEGE TU CASCO.",64,308,12,muted);
+        text("01 / ROMPE LAS OLEADAS",64,364,12,whiteC);
+        text("02 / CRUZA EL CAMPO DE RESTOS",64,399,12,whiteC);
+        text("03 / NEUTRALIZA EL ACORAZADO",64,434,12,whiteC);
+        panel(64,506,490,77,amber);
+        text("ENTER",84,526,23,amber);text("INICIAR MISION",205,530,16,whiteC);
+        text("TRES CAZAS / UNA MISION",64,615,11,muted);
+        text("1 / 2 / 3  SELECCIONAR NAVE",64,642,12,whiteC);
+        text("HANGAR / "+std::string(codes[g.selectedShip]),680,71,12,muted);
+        text("SISTEMAS LISTOS",1170,71,10,amber,true);
+        text(ships[g.selectedShip],896,475,25,whiteC,true);
+        for(int i=0;i<3;++i){float x=680+i*184.f;
+            text(codes[i],x+14,572,9,i==g.selectedShip?amber:muted);
+            text(ships[i],x+14,595,12,i==g.selectedShip?whiteC:muted);}
+        text("WASD VOLAR / ESPACIO FUEGO / E ENERGIA / SHIFT IMPULSO / C CABINA",640,692,10,muted,true);
     }else{
-        // One quiet information band; no target boxes or aim overlay.
-        quad(0,0,1280,83,{.012f,.016f,.02f,.8f});
-        text("PUNTOS",30,19,11,muted);text(std::to_string(g.score),30,42,22,whiteC);
-        if(g.multiplier>1)text("X"+std::to_string(g.multiplier),185,48,14,yellow);
-        const std::string stage=g.stage==Stage::Combat?"COMBATE "+std::to_string(g.wave)+" / 3":g.stage==Stage::Evasion?"ESQUIVA "+std::to_string(g.wave)+" / 2":"JEFE FINAL";
-        text(stage,640,20,14,whiteC,true);
-        if(g.stage==Stage::Evasion)
-            text("RESISTE  "+std::to_string(std::max(0,int(std::ceil(g.stageDuration-g.stageTime))))+" S",640,49,12,yellow,true);
-        else text(g.stage==Stage::Boss?"ACORAZADO":"HOSTILES  "+std::to_string(g.remaining()),640,49,11,muted,true);
-        text("VIDAS",1000,19,11,muted);
-        for(int i=0;i<3;++i)quad(1062+i*18.f,18,11,12,i<g.lives?blue:Color{.16f,.19f,.21f});
-        const char* weapons[]={"SIMPLE","DOBLE","TRIPLE","MISIL"};
-        text(g.stage==Stage::Evasion?"MODO  CABINA":"ARMA  "+std::string(weapons[int(g.weapon)]),1000,46,12,whiteC);
-        if(g.lives>0){
-            if(g.respawn>0)text("REAPARECIENDO",1000,67,9,red);
-            else if(g.invulnerable>0)text("ESCUDO  "+std::to_string(int(std::ceil(g.invulnerable)))+" S",1000,67,9,blue);
-        }
-        if(g.stage==Stage::Boss){
-            quad(460,88,360,5,{.2f,.13f,.11f});
-            quad(460,88,360.f*std::max(0,g.bossHealth)/std::max(1,g.bossMaxHealth),5,red);
-        }
-        quad(0,688,1280,32,{.012f,.016f,.02f,.75f});
-        text(g.stage==Stage::Evasion?"WASD / FLECHAS  ESQUIVAR":"WASD VOLAR   ESPACIO DISPARAR   1-4 ARMAS",30,700,10,muted);
-        text("P PAUSA   M AUDIO   F2 MALLA",640,700,10,muted,true);
-        const std::string special=g.specialCooldown<=0?"Q  MISIL LISTO":"Q  RECARGA "+std::to_string(int(std::ceil(g.specialCooldown)))+" S";
-        text(g.stage==Stage::Evasion?"ARMAS EN ESPERA":special,1062,700,10,g.stage!=Stage::Evasion&&g.specialCooldown<=0?yellow:muted);
-        if(g.stageTime<(g.stage==Stage::Evasion?2.4f:1.6f)&&g.phase==Phase::Playing){
-            text(g.stage==Stage::Evasion?"CABINA - BUSCA LOS HUECOS":g.stage==Stage::Boss?"ACORAZADO EN APROXIMACION":"FORMACION EN APROXIMACION",640,111,15,yellow,true);
-        }
-        if(g.damageFlash>0&&g.phase==Phase::Playing){
-            const Color damage{1,.19f,.08f,.8f*g.damageFlash/.35f};
-            quad(0,83,1280,5,damage);quad(0,683,1280,5,damage);
-            quad(0,88,5,595,damage);quad(1275,88,5,595,damage);
+        const bool cockpit=g.stage==Stage::Evasion||g.cockpitView;
+        // Sparse instruments around the flight view; each reports real simulation state.
+        panel(24,20,205,77,amber);
+        text("PUNTOS",40,33,9,muted);
+        std::string score=std::to_string(g.score);if(score.size()<6)score.insert(0,6-score.size(),'0');
+        text(score,38,55,24,whiteC);
+        if(g.multiplier>1)text("X"+std::to_string(g.multiplier),178,61,12,amber);
+        const std::string stage=g.stage==Stage::Combat?"INTERCEPCION / "+std::to_string(g.wave)+" DE 3":g.stage==Stage::Evasion?"CAMPO DE RESTOS / "+std::to_string(g.wave)+" DE 2":"ACORAZADO / ASALTO FINAL";
+        text(stage,640,27,13,whiteC,true);
+        text(g.stage==Stage::Evasion?"SALIDA EN "+std::to_string(std::max(0,int(std::ceil(g.stageDuration-g.stageTime))))+" S":g.stage==Stage::Boss?"DESTRUYE LA NAVE DE MANDO":std::to_string(g.remaining())+" CONTACTOS HOSTILES",640,52,10,muted,true);
+        if(g.stage==Stage::Boss){quad(480,76,320,3,{.2f,.12f,.09f});quad(480,76,320.f*std::max(0,g.bossHealth)/std::max(1,g.bossMaxHealth),3,amber);}
+        panel(986,20,270,77,amber);
+        text("E / PRIORIDAD DE ENERGIA",1002,33,9,muted);
+        text(powerNames[int(g.powerMode)],1002,54,14,amber);
+        for(int i=0;i<4;++i)quad(1162+i*19.f,57,12,4,int(g.powerMode)==i?amber:Color{.19f,.24f,.26f});
+        text(powerNotes[int(g.powerMode)],1002,81,9,muted);
+
+        panel(24,555,280,119,cyan);
+        text("NAVE / "+std::string(ships[g.selectedShip]),40,570,10,whiteC);
+        meter("CASCO",40,593,248,g.hull,Game3D::MaxHull,g.hull<35?red:whiteC);
+        meter("ESCUDO",40,630,248,g.shield,Game3D::MaxShield,cyan);
+
+        panel(976,555,280,119,g.overheated?red:amber);
+        text(g.stage==Stage::Evasion?"ARMAMENTO / EN ESPERA":"1-4 / "+std::string(weapons[int(g.weapon)]),992,570,10,whiteC);
+        meter(g.overheated?"ENFRIANDO LASER":"CALOR DEL LASER",992,593,248,g.weaponHeat,100,g.overheated?red:amber);
+        const std::string special=g.stage==Stage::Evasion?"Q / ARMAS EN ESPERA":g.specialCooldown<=0?"Q / MISIL DISPONIBLE":"Q / MISIL EN "+std::to_string(int(std::ceil(g.specialCooldown)))+" S";
+        text(special,992,638,11,g.stage!=Stage::Evasion&&g.specialCooldown<=0?cyan:muted);
+
+        meter(g.boosting?"IMPULSO / ARMAS EN ESPERA":"SHIFT + DIRECCION / IMPULSO",454,644,372,g.boostCharge,100,g.boosting?cyan:muted);
+        const std::string reserves="RESERVAS "+std::to_string(std::max(0,g.lives-1))+" / "+(cockpit?"CABINA":"CAMARA TRASERA");
+        text(reserves,640,618,9,muted,true);
+        if(g.respawn>0&&g.lives>0)text("DESPLEGANDO NAVE DE RESERVA",640,126,15,red,true);
+        else if(g.invulnerable>.35f)text("PROTECCION DE DESPLIEGUE / "+std::to_string(int(std::ceil(g.invulnerable)))+" S",640,126,11,cyan,true);
+        else if(g.stageTime<(g.stage==Stage::Evasion?2.4f:1.6f)&&g.phase==Phase::Playing)
+            text(g.stage==Stage::Evasion?"BUSCA EL HUECO. CONSERVA EL IMPULSO.":g.stage==Stage::Boss?"CONTACTO PESADO EN APROXIMACION":"FORMACION EN APROXIMACION",640,126,11,amber,true);
+
+        text(g.stage==Stage::Evasion?"WASD / FLECHAS ESQUIVAR    SHIFT IMPULSO    E ENERGIA    P PAUSA    M AUDIO":"WASD VOLAR    ESPACIO FUEGO    1-4 ARMAS    C CAMARA    P PAUSA    M AUDIO",640,701,10,muted,true);
+        const float impact=std::max(g.damageFlash/.35f,g.shieldFlash/.3f);
+        if(impact>0&&g.phase==Phase::Playing){
+            Color flash=g.damageFlash>0?red:cyan;flash.a=.55f*std::clamp(impact,0.f,1.f);
+            quad(0,0,1280,3,flash);quad(0,717,1280,3,flash);quad(0,3,3,714,flash);quad(1277,3,3,714,flash);
         }
         if(g.phase==Phase::Paused||g.phase==Phase::Victory||g.phase==Phase::Defeat){
-            quad(0,83,1280,605,{0,0,0,.65f});quad(320,205,640,340,{.035f,.04f,.048f,.97f});border(320,205,640,340,{.24f,.28f,.31f});
-            text(g.phase==Phase::Paused?"PAUSA":g.phase==Phase::Victory?"SECTOR LIBERADO":"NAVE DESTRUIDA",640,247,30,g.phase==Phase::Defeat?red:yellow,true);
-            text(g.phase==Phase::Paused?"WASD / FLECHAS  MOVER EN X Y ALTURA":"PUNTOS  "+std::to_string(g.score),640,316,14,whiteC,true);
-            const bool evasionPause=g.phase==Phase::Paused&&g.stage==Stage::Evasion;
-            text(g.phase==Phase::Paused?(evasionPause?"BUSCA UN HUECO ENTRE LOS ASTEROIDES":"1 SIMPLE   2 DOBLE   3 TRIPLE   4 MISIL"):"BAJAS  "+std::to_string(g.kills)+"    TIEMPO  "+std::to_string(int(g.time))+" S",640,356,12,muted,true);
-            text(g.phase==Phase::Paused?(evasionPause?"ARMAS EN ESPERA DURANTE LA ESQUIVA":"ESPACIO DISPARAR   Q MISIL ESPECIAL"):"RECORD  "+std::to_string(std::max(g.bestScore,g.score)),640,391,12,muted,true);
-            text(g.phase==Phase::Paused?"P  CONTINUAR":"R  VOLVER A JUGAR",640,452,18,whiteC,true);text("ESC  ELEGIR NAVE",640,503,12,muted,true);
+            quad(0,0,1280,720,{0,0,0,.72f});panel(280,165,720,412,g.phase==Phase::Defeat?red:amber);
+            text(g.phase==Phase::Paused?"VUELO EN PAUSA":g.phase==Phase::Victory?"SECTOR ASEGURADO":"MISION INTERRUMPIDA",640,203,28,g.phase==Phase::Defeat?red:whiteC,true);
+            if(g.phase==Phase::Paused){
+                text("CONTROL DE VUELO",320,263,10,amber);
+                text("WASD / FLECHAS   DESPLAZAMIENTO",320,291,11,whiteC);
+                text("SHIFT   IMPULSO CON CARGA LIMITADA",320,319,11,whiteC);
+                text(g.stage==Stage::Evasion?"VISTA   CABINA DE ESQUIVA":"C   CAMARA / CABINA",320,347,11,whiteC);
+                text("M   AUDIO     F2   VER MALLA",320,375,11,muted);
+                text("SISTEMAS",700,263,10,amber);
+                text("E   PRIORIDAD DE ENERGIA",700,291,11,whiteC);
+                text(g.stage==Stage::Evasion?"ESQUIVA   ARMAS EN ESPERA":"ESPACIO   FUEGO POR RAFAGAS",700,319,11,whiteC);
+                text("1-4   SIMPLE / DOBLE / TRIPLE / MISIL",700,347,10,muted);
+                text("Q   MISIL AUXILIAR",700,375,11,whiteC);
+                if(g.stage!=Stage::Evasion)text("SI SE BLOQUEA: ENFRIA HASTA 35%",700,403,10,muted);
+                text("P / REANUDAR VUELO",640,459,18,amber,true);
+            }else{
+                text("PUNTUACION / "+std::to_string(g.score),640,287,21,whiteC,true);
+                text(std::to_string(g.kills)+" OBJETIVOS NEUTRALIZADOS / "+std::to_string(int(g.time))+" S DE VUELO",640,334,12,muted,true);
+                text("RECORD / "+std::to_string(std::max(g.bestScore,g.score)),640,371,12,muted,true);
+                text("R / VOLVER A DESPLEGAR",640,459,18,amber,true);
+            }
+            text("ESC / VOLVER AL HANGAR",640,532,10,muted,true);
         }
     }
     finish();
