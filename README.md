@@ -1,5 +1,14 @@
 # Galaga 3D · VGI
 
+**Descargas para enseñar y comparar:** [versión actual y anterior para Windows](https://github.com/aminelalam/VGI-Galaga/releases/tag/comparativa-2026-11-12).
+
+| Paquete | Versión del código | Contenido |
+| --- | --- | --- |
+| `Galaga3D-Anterior-cc3ced6-Windows.zip` | [cc3ced6](https://github.com/aminelalam/VGI-Galaga/tree/cc3ced65878d21a25af445dcc3eb670e831aa792) | Naves de colores, escenario y HUD anteriores; movimiento directo. |
+| `Galaga3D-Actual-f097858-Windows.zip` | [f097858](https://github.com/aminelalam/VGI-Galaga/tree/f0978585eb19ae4b5f3bf34f822e9433638857e4) | Diseño industrial, HUD nuevo, inercia, impulso, energía, casco, escudo y calor. |
+
+Descarga el ZIP de cada versión, **extrae toda su carpeta y abre `Galaga3D.exe`**. Incluyen recursos, bibliotecas y Mesa OpenGL; se pueden ejecutar sin compilar ni instalar Visual Studio. Las dos versiones se han verificado desde sus carpetas de distribución. Cada paquete incluye instrucciones, una captura, su revisión exacta y hashes SHA-256. El resto de este README describe la versión actual.
+
 Juego nativo en C++/MFC/OpenGL, integrado en la estructura de EntornVGI. La campaña encadena **tres combates, dos tramos de esquiva desde la cabina y un jefe final**. Puedes elegir entre tres cazas y moverte a izquierda, derecha, arriba y abajo. Los enemigos entran en formación a diferentes distancias y alturas, disparan y realizan picados en el espacio 3D.
 
 La revisión de dirección visual incorpora cascos industriales, alas y armas con grosor, toberas, superficies metálicas y cristales. El sector contiene un planeta, un astillero lateral y un carguero. El HUD organiza casco, escudo, armas y movilidad alrededor de la vista de vuelo. La gestión de energía, el calor del láser y el impulso añaden decisiones durante las formaciones de Galaga.
