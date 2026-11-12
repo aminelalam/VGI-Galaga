@@ -47,7 +47,7 @@ El verificador usa el render OpenGL real. También recorre la campaña mediante 
 
 ## Acta de seguimiento
 
-El [acta en PDF](Actes/Acta_seguiment_naves_curves.pdf) y el [Word editable](Actes/Acta_seguiment_naves_curves.docx) incorporan seis capturas y la discusión sobre las naves y el puzle de curvas. Conservan el catalán y el formato de las actas anteriores. La integración de las curvas figura como mejora propuesta.
+El [acta en PDF](Actes/Acta_seguiment_naves_curves.pdf) y el [Word editable](Actes/Acta_seguiment_naves_curves.docx) incorporan seis capturas y una discusión ficticia para revisar, con el formato de las actas anteriores. Ferran Fernandez figura como responsable de presentar y explicar la idea de las curvas. El texto distingue las Bézier que ya usa la versión de referencia de los ajustes propuestos y de una posible aplicación futura de B-splines, explicando dónde serían útiles y por qué.
 
 ## Compilar
 
